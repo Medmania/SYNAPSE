@@ -40,30 +40,21 @@
 
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
 
-        <!-- Banner Alert -->
-        <div class="mb-6 p-4 rounded-xl bg-gradient-to-r from-emerald-950/60 to-slate-900 border border-emerald-500/30 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span></span>
-                <div><h4 class="text-xs font-bold uppercase text-emerald-400">Live Updates Active</h4><p class="text-xs text-slate-300">Cricket scores and e-sports match results updating real-time.</p></div>
-            </div>
-            <span class="text-xs font-semibold px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700 hidden sm:inline-block">MAMC, New Delhi</span>
-        </div>
-
         <!-- Schedule Tab -->
         <section id="sec-schedule" class="tab-content space-y-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div><h1 class="text-2xl font-bold text-white">Event Schedule</h1><p class="text-sm text-slate-400">Select day to view all events and venues.</p></div>
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="loadDay(2)" id="day-btn-2" class="day-tab px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-800 bg-slate-900 text-slate-400">Day 2 (Feb 12)</button>
-                    <button onclick="loadDay(3)" id="day-btn-3" class="day-tab px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-800 bg-slate-900 text-slate-400">Day 3 (Feb 13)</button>
-                    <button onclick="loadDay(5)" id="day-btn-5" class="day-tab px-3 py-1.5 text-xs font-bold rounded-lg border border-emerald-500/50 bg-emerald-500/20 text-emerald-300">Day 5 (Feb 15)</button>
+                <div><h1 class="text-2xl font-bold text-white">Event Schedule</h1><p class="text-sm text-slate-400">Select day to view live schedule & locations.</p></div>
+                <div class="flex flex-wrap gap-2" id="day-selector-container">
+                    <button onclick="switchDay(1)" id="day-btn-1" class="day-tab px-3 py-1.5 text-xs font-bold rounded-lg border border-emerald-500/50 bg-emerald-500/20 text-emerald-300">Day 1</button>
+                    <button onclick="switchDay(2)" id="day-btn-2" class="day-tab px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-800 bg-slate-900 text-slate-400">Day 2</button>
+                    <button onclick="switchDay(3)" id="day-btn-3" class="day-tab px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-800 bg-slate-900 text-slate-400">Day 3</button>
                 </div>
             </div>
             <div class="glass-panel rounded-2xl overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-slate-300">
                         <thead class="bg-slate-900/80 text-xs uppercase text-slate-400 border-b border-slate-800">
-                            <tr><th class="py-3.5 px-4">Time Slot</th><th class="py-3.5 px-4">Event</th><th class="py-3.5 px-4">Category</th><th class="py-3.5 px-4">Venue</th><th class="py-3.5 px-4 text-right">Status</th></tr>
+                            <tr><th class="py-3.5 px-4">Time Slot</th><th class="py-3.5 px-4">Event Name</th><th class="py-3.5 px-4">Category</th><th class="py-3.5 px-4">Venue</th><th class="py-3.5 px-4 text-right">Status</th></tr>
                         </thead>
                         <tbody id="schedule-table-body" class="divide-y divide-slate-800/60"></tbody>
                     </table>
@@ -114,7 +105,7 @@
                         <label class="block text-xs font-semibold text-slate-300 mb-1">Pass Type</label>
                         <select id="pass-type" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white">
                             <option value="All-Access Delegate Pass">All-Access Delegate Pass</option>
-                            <option value="Star Night Pass">Star Night Pass (Feb 15)</option>
+                            <option value="Star Night Pass">Star Night Pass</option>
                         </select>
                     </div>
                     <button onclick="generatePass()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 rounded-xl transition text-sm">Generate Digital Pass</button>
@@ -136,8 +127,41 @@
 
         <!-- Admin Portal Tab -->
         <section id="sec-admin" class="tab-content hidden space-y-6">
-            <div class="max-w-3xl mx-auto space-y-6">
-                <div><h1 class="text-2xl font-bold text-white">Admin & Gatekeeper Portal</h1><p class="text-sm text-slate-400">Control match stats and check-in pass holders.</p></div>
+            <div class="max-w-4xl mx-auto space-y-6">
+                <div><h1 class="text-2xl font-bold text-white">Admin Control Panel</h1><p class="text-sm text-slate-400">Manage festival schedule events, scores, and gate passes.</p></div>
+
+                <!-- Admin Action 1: Add/Edit Event Form -->
+                <div class="glass-panel p-6 rounded-2xl space-y-4">
+                    <h3 class="text-base font-bold text-white flex items-center justify-between">
+                        <span id="form-title">Add New Schedule Event</span>
+                        <button onclick="resetEventForm()" class="text-xs text-slate-400 hover:text-white">Clear Form</button>
+                    </h3>
+                    <input type="hidden" id="admin-event-id">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div><label class="block text-xs text-slate-400 mb-1">Fest Day</label><select id="admin-event-day" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"><option value="1">Day 1</option><option value="2">Day 2</option><option value="3">Day 3</option></select></div>
+                        <div><label class="block text-xs text-slate-400 mb-1">Time Slot</label><input type="text" id="admin-event-time" placeholder="e.g. 10:00 AM - 1:00 PM" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"></div>
+                        <div><label class="block text-xs text-slate-400 mb-1">Event Name</label><input type="text" id="admin-event-name" placeholder="e.g. Battle of Bands" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"></div>
+                        <div><label class="block text-xs text-slate-400 mb-1">Category</label><input type="text" id="admin-event-cat" placeholder="e.g. Music / Dance / Sports" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"></div>
+                        <div><label class="block text-xs text-slate-400 mb-1">Venue</label><input type="text" id="admin-event-venue" placeholder="e.g. Auditorium / Main Stage" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"></div>
+                        <div><label class="block text-xs text-slate-400 mb-1">Status</label><select id="admin-event-status" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"><option value="Upcoming">Upcoming</option><option value="Live Now">Live Now</option><option value="Active">Active</option><option value="Completed">Completed</option></select></div>
+                    </div>
+                    <button onclick="saveEvent()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition">Save Event to Schedule</button>
+                </div>
+
+                <!-- Admin Action 2: Existing Schedule Manager Table -->
+                <div class="glass-panel p-6 rounded-2xl space-y-4">
+                    <h3 class="text-base font-bold text-white">Manage & Delete Schedule Events</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-900 text-slate-400 uppercase">
+                                <tr><th class="p-2">Day</th><th class="p-2">Event</th><th class="p-2">Time</th><th class="p-2">Venue</th><th class="p-2 text-right">Actions</th></tr>
+                            </thead>
+                            <tbody id="admin-schedule-table" class="divide-y divide-slate-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Admin Action 3: Pass Check-In -->
                 <div class="glass-panel p-6 rounded-2xl space-y-4">
                     <h3 class="text-base font-bold text-white">Gate Pass Verification</h3>
                     <div class="flex gap-2">
@@ -145,14 +169,6 @@
                         <button onclick="verifyPass()" class="bg-emerald-500 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm">Verify</button>
                     </div>
                     <div id="scan-result" class="hidden p-3 rounded-xl text-xs font-semibold"></div>
-                </div>
-                <div class="glass-panel p-6 rounded-2xl space-y-4">
-                    <h3 class="text-base font-bold text-white">Live Cricket Scoreboard Controller</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><label class="block text-xs text-slate-400 mb-1">Score/Overs</label><input type="text" id="admin-cricket-score" value="142/4 (15.2 Ov)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white"></div>
-                        <div><label class="block text-xs text-slate-400 mb-1">4s / 6s</label><div class="flex gap-2"><input type="number" id="admin-4s" value="14" class="w-1/2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white"><input type="number" id="admin-6s" value="8" class="w-1/2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white"></div></div>
-                    </div>
-                    <button onclick="updateCricketScore()" class="bg-slate-800 text-emerald-400 border border-emerald-500/30 font-semibold px-4 py-2 rounded-xl text-xs">Publish Live Update</button>
                 </div>
             </div>
         </section>
@@ -164,6 +180,6 @@
     <script src="js/scoreboard.js"></script>
     <script src="js/pass.js"></script>
     <script src="js/admin.js"></script>
-    <script>{ lucide.createIcons(); loadDay(5); renderEsports(); }</script>
+    <script>{ lucide.createIcons(); initSchedule(); renderEsports(); }</script>
 </body>
 </html>

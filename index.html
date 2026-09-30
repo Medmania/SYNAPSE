@@ -3,48 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYNAPSE 2027 - MAMC</title>
+    <title>SYNAPSE 2026 - MAMC Delhi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass-panel { background: rgba(18, 24, 38, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .neon-glow { box-shadow: 0 0 20px rgba(16, 185, 129, 0.25); }
+        .glass-panel { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .neon-glow { box-shadow: 0 0 25px rgba(16, 185, 129, 0.2); }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
 
-    <!-- Top Navigation -->
+    <!-- Navigation Header -->
     <header class="sticky top-0 z-50 glass-panel border-b border-slate-800">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('events')">
                 <div class="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center font-extrabold text-emerald-400 text-lg">S</div>
                 <div>
                     <span class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">SYNAPSE '26</span>
                     <span class="block text-[10px] text-slate-400 font-semibold uppercase">MAMC Annual Fest</span>
                 </div>
             </div>
-            <nav class="hidden md:flex items-center space-x-1">
-                <button onclick="switchTab('schedule')" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-emerald-400 bg-slate-800/60">Schedule</button>
-                <button onclick="switchTab('live-scores')" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:text-white">Live Scores</button>
-                <button onclick="switchTab('pass-portal')" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:text-white">Fest Pass</button>
-                <button onclick="switchTab('admin')" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:text-white">Admin Portal</button>
+            
+            <nav class="hidden lg:flex items-center space-x-1">
+                <button onclick="switchTab('events')" class="nav-btn px-3.5 py-2 rounded-lg text-xs font-semibold text-emerald-400 bg-slate-800/60">Events & Register</button>
+                <button onclick="switchTab('schedule')" class="nav-btn px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white">Schedule</button>
+                <button onclick="switchTab('my-registrations')" class="nav-btn px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white flex items-center space-x-1">
+                    <span>My Registrations</span>
+                    <span id="nav-reg-count" class="hidden px-1.5 py-0.2 bg-emerald-500 text-slate-950 font-bold rounded-full text-[10px]">0</span>
+                </button>
+                <button onclick="switchTab('live-scores')" class="nav-btn px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white">Live Scores</button>
+                <button onclick="switchTab('admin')" class="nav-btn px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white">Admin Portal</button>
             </nav>
-            <button onclick="switchTab('pass-portal')" class="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center space-x-1.5">
-                <i data-lucide="qr-code" class="w-4 h-4"></i><span>Get Pass</span>
+
+            <button onclick="switchTab('my-registrations')" class="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center space-x-1.5">
+                <i data-lucide="ticket" class="w-4 h-4"></i><span>My Passes</span>
             </button>
         </div>
     </header>
 
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
 
-        <!-- Schedule Tab -->
-        <section id="sec-schedule" class="tab-content space-y-6">
+        <!-- 1. Event Catalog Tab -->
+        <section id="sec-events" class="tab-content space-y-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div><h1 class="text-2xl font-bold text-white">Event Schedule</h1><p class="text-sm text-slate-400">Select day to view live schedule & locations.</p></div>
-                <div class="flex flex-wrap gap-2" id="day-selector-container">
+                <div>
+                    <h1 class="text-2xl font-extrabold text-white">Fest Events & Competitions</h1>
+                    <p class="text-xs text-slate-400">Register for cultural, sports, and e-sports events.</p>
+                </div>
+                <!-- Category Filters -->
+                <div class="flex flex-wrap gap-2" id="category-filter-container">
+                    <button onclick="filterEvents('All')" class="cat-filter-btn px-3 py-1 text-xs font-bold rounded-lg border border-emerald-500/50 bg-emerald-500/20 text-emerald-300">All</button>
+                    <button onclick="filterEvents('Cultural')" class="cat-filter-btn px-3 py-1 text-xs font-bold rounded-lg border border-slate-800 bg-slate-900 text-slate-400">Cultural</button>
+                    <button onclick="filterEvents('Sports')" class="cat-filter-btn px-3 py-1 text-xs font-bold rounded-lg border border-slate-800 bg-slate-900 text-slate-400">Sports</button>
+                    <button onclick="filterEvents('E-Sports')" class="cat-filter-btn px-3 py-1 text-xs font-bold rounded-lg border border-slate-800 bg-slate-900 text-slate-400">E-Sports</button>
+                    <button onclick="filterEvents('Flagship')" class="cat-filter-btn px-3 py-1 text-xs font-bold rounded-lg border border-slate-800 bg-slate-900 text-slate-400">Flagship</button>
+                </div>
+            </div>
+
+            <!-- Event Cards Grid -->
+            <div id="events-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
+
+        <!-- 2. Event Schedule Tab -->
+        <section id="sec-schedule" class="tab-content hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div><h1 class="text-2xl font-bold text-white">Event Schedule</h1><p class="text-xs text-slate-400">Timeline and venues for Synapse 2026.</p></div>
+                <div class="flex gap-2">
                     <button onclick="switchDay(1)" id="day-btn-1" class="day-tab px-3 py-1.5 text-xs font-bold rounded-lg border border-emerald-500/50 bg-emerald-500/20 text-emerald-300">Day 1</button>
                     <button onclick="switchDay(2)" id="day-btn-2" class="day-tab px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-800 bg-slate-900 text-slate-400">Day 2</button>
                     <button onclick="switchDay(3)" id="day-btn-3" class="day-tab px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-800 bg-slate-900 text-slate-400">Day 3</button>
@@ -54,7 +81,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-slate-300">
                         <thead class="bg-slate-900/80 text-xs uppercase text-slate-400 border-b border-slate-800">
-                            <tr><th class="py-3.5 px-4">Time Slot</th><th class="py-3.5 px-4">Event Name</th><th class="py-3.5 px-4">Category</th><th class="py-3.5 px-4">Venue</th><th class="py-3.5 px-4 text-right">Status</th></tr>
+                            <tr><th class="py-3.5 px-4">Time Slot</th><th class="py-3.5 px-4">Event Name</th><th class="py-3.5 px-4">Category</th><th class="py-3.5 px-4">Venue</th><th class="py-3.5 px-4 text-right">Fee</th></tr>
                         </thead>
                         <tbody id="schedule-table-body" class="divide-y divide-slate-800/60"></tbody>
                     </table>
@@ -62,31 +89,33 @@
             </div>
         </section>
 
-        <!-- Live Scoreboard Tab -->
+        <!-- 3. My Registrations Dashboard Tab -->
+        <section id="sec-my-registrations" class="tab-content hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <div><h1 class="text-2xl font-bold text-white">My Registrations & Entry Passes</h1><p class="text-xs text-slate-400">Your registered events with scannable gate passes.</p></div>
+                <button onclick="clearMyRegistrations()" class="text-xs text-red-400 hover:underline">Reset Local Passes</button>
+            </div>
+            
+            <div id="my-registrations-container" class="space-y-4"></div>
+        </section>
+
+        <!-- 4. Live Scores Tab -->
         <section id="sec-live-scores" class="tab-content hidden space-y-6">
-            <div><h1 class="text-2xl font-bold text-white">Live Tournaments & Results</h1><p class="text-sm text-slate-400">Real-time scorecards across sports, e-sports & cultural events.</p></div>
+            <div><h1 class="text-2xl font-bold text-white">Live Tournament Leaderboards</h1><p class="text-xs text-slate-400">Real-time match status across sports and e-sports.</p></div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Cricket Card -->
-                <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-emerald-500">
-                    <div class="flex justify-between items-start mb-4">
+                <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-emerald-500 space-y-3">
+                    <div class="flex justify-between items-start">
                         <div><span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Cricket • Final</span><h3 class="text-lg font-bold text-white mt-1">MAMC Interns vs LHMC XI</h3></div>
-                        <span class="text-xs px-2 py-1 bg-red-500/20 text-red-400 rounded-full font-bold animate-pulse flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span> LIVE</span>
+                        <span class="text-xs px-2 py-1 bg-red-500/20 text-red-400 rounded-full font-bold animate-pulse">● LIVE</span>
                     </div>
-                    <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-800 flex justify-between items-center mb-4">
-                        <div><p class="text-xs text-slate-400">Batting</p><p class="text-2xl font-extrabold text-white" id="cricket-score">142/4 <span class="text-sm font-normal text-slate-400">(15.2 Ov)</span></p></div>
+                    <div class="bg-slate-900 rounded-xl p-4 border border-slate-800 flex justify-between items-center">
+                        <div><p class="text-xs text-slate-400">Batting</p><p class="text-2xl font-extrabold text-white">142/4 <span class="text-xs font-normal text-slate-400">(15.2 Ov)</span></p></div>
                         <div class="text-right"><p class="text-xs text-slate-400">Target</p><p class="text-lg font-bold text-slate-200">165 Runs</p></div>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 text-center text-xs">
-                        <div class="bg-slate-900/50 p-2 rounded-lg border border-slate-800"><span class="text-slate-400 block">4s</span><span id="cricket-fours" class="text-white font-bold text-sm">14</span></div>
-                        <div class="bg-slate-900/50 p-2 rounded-lg border border-slate-800"><span class="text-slate-400 block">6s</span><span id="cricket-sixes" class="text-white font-bold text-sm">8</span></div>
-                        <div class="bg-slate-900/50 p-2 rounded-lg border border-slate-800"><span class="text-slate-400 block">CRR</span><span class="text-emerald-400 font-bold text-sm">9.26</span></div>
-                    </div>
                 </div>
-
-                <!-- E-Sports Leaderboard -->
-                <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-cyan-500">
-                    <div class="flex justify-between items-start mb-4">
-                        <div><span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-400">E-Sports • CoD / PUBG</span><h3 class="text-lg font-bold text-white mt-1">Squad Leaderboard</h3></div>
+                <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-cyan-500 space-y-3">
+                    <div class="flex justify-between items-start">
+                        <div><span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-400">E-Sports • Call of Duty / PUBG</span><h3 class="text-lg font-bold text-white mt-1">Squad Standings</h3></div>
                         <span class="text-xs px-2 py-1 bg-slate-800 text-slate-300 rounded font-semibold">Match 3</span>
                     </div>
                     <div id="esports-list" class="space-y-2"></div>
@@ -94,79 +123,66 @@
             </div>
         </section>
 
-        <!-- Pass Portal Tab -->
-        <section id="sec-pass-portal" class="tab-content hidden space-y-6">
-            <div class="max-w-2xl mx-auto space-y-6">
-                <div class="text-center"><h1 class="text-2xl font-bold text-white">Generate Fest Pass</h1><p class="text-sm text-slate-400">Instant digital badge with verification QR code.</p></div>
-                <div class="glass-panel p-6 rounded-2xl space-y-4">
-                    <div><label class="block text-xs font-semibold text-slate-300 mb-1">Full Name</label><input type="text" id="pass-name" placeholder="e.g. Dr. Ankit Raj" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white"></div>
-                    <div><label class="block text-xs font-semibold text-slate-300 mb-1">College</label><input type="text" id="pass-college" placeholder="e.g. MAMC Delhi" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white"></div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Pass Type</label>
-                        <select id="pass-type" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white">
-                            <option value="All-Access Delegate Pass">All-Access Delegate Pass</option>
-                            <option value="Star Night Pass">Star Night Pass</option>
-                        </select>
-                    </div>
-                    <button onclick="generatePass()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 rounded-xl transition text-sm">Generate Digital Pass</button>
-                </div>
-                <div id="pass-card" class="hidden glass-panel p-6 rounded-2xl border-2 border-emerald-500/40 relative neon-glow">
-                    <div class="flex flex-col sm:flex-row justify-between items-center gap-6">
-                        <div class="space-y-1 text-center sm:text-left">
-                            <span class="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-extrabold uppercase">Official Pass</span>
-                            <h2 class="text-xl font-black text-white" id="card-name">---</h2>
-                            <p class="text-xs text-slate-300" id="card-college">---</p>
-                            <p class="text-xs font-semibold text-emerald-400" id="card-type">---</p>
-                            <p class="text-[10px] text-slate-500 font-mono pt-2" id="card-id">ID: ---</p>
-                        </div>
-                        <div class="bg-white p-3 rounded-xl flex flex-col items-center"><div id="qrcode"></div><span class="text-[9px] text-slate-800 font-bold mt-1">SCAN AT GATE</span></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Admin Portal Tab -->
+        <!-- 5. Admin Portal Tab -->
         <section id="sec-admin" class="tab-content hidden space-y-6">
-            <div class="max-w-4xl mx-auto space-y-6">
-                <div><h1 class="text-2xl font-bold text-white">Admin Control Panel</h1><p class="text-sm text-slate-400">Manage festival schedule events, scores, and gate passes.</p></div>
+            <!-- Lock Screen -->
+            <div id="admin-lock-screen" class="max-w-md mx-auto glass-panel p-6 rounded-2xl text-center space-y-4 my-12">
+                <div class="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center mx-auto text-emerald-400"><i data-lucide="lock" class="w-6 h-6"></i></div>
+                <h2 class="text-xl font-bold text-white">Admin Authentication</h2>
+                <p class="text-xs text-slate-400">Enter administrator passcode to manage schedule and registrations. (Default Demo PIN: <code class="text-emerald-400">1234</code>)</p>
+                <input type="password" id="admin-pin-input" placeholder="Enter PIN" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-center text-lg font-mono text-white">
+                <button onclick="unlockAdmin()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 rounded-xl text-sm">Unlock Portal</button>
+            </div>
 
-                <!-- Admin Action 1: Add/Edit Event Form -->
+            <!-- Admin Main Controls (Hidden until unlocked) -->
+            <div id="admin-dashboard" class="hidden max-w-5xl mx-auto space-y-6">
+                <div class="flex justify-between items-center">
+                    <div><h1 class="text-2xl font-bold text-white">Admin Management Dashboard</h1><p class="text-xs text-slate-400">Control event listings, pricing, and verify passes at gates.</p></div>
+                    <button onclick="lockAdmin()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold">Lock Admin</button>
+                </div>
+
+                <!-- Metrics Overview -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="glass-panel p-4 rounded-xl border-l-4 border-l-emerald-500"><p class="text-xs text-slate-400">Total Events</p><p class="text-2xl font-black text-white" id="stat-total-events">0</p></div>
+                    <div class="glass-panel p-4 rounded-xl border-l-4 border-l-cyan-500"><p class="text-xs text-slate-400">Total Registrations</p><p class="text-2xl font-black text-white" id="stat-total-regs">0</p></div>
+                    <div class="glass-panel p-4 rounded-xl border-l-4 border-l-amber-500"><p class="text-xs text-slate-400">Total Revenue Collected</p><p class="text-2xl font-black text-amber-400" id="stat-total-rev">₹0</p></div>
+                </div>
+
+                <!-- Add / Edit Event Form -->
                 <div class="glass-panel p-6 rounded-2xl space-y-4">
-                    <h3 class="text-base font-bold text-white flex items-center justify-between">
-                        <span id="form-title">Add New Schedule Event</span>
-                        <button onclick="resetEventForm()" class="text-xs text-slate-400 hover:text-white">Clear Form</button>
-                    </h3>
+                    <h3 class="text-base font-bold text-white flex justify-between items-center"><span id="form-title">Add New Event / Competition</span><button onclick="resetEventForm()" class="text-xs text-slate-400 hover:text-white">Clear Form</button></h3>
                     <input type="hidden" id="admin-event-id">
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div><label class="block text-xs text-slate-400 mb-1">Fest Day</label><select id="admin-event-day" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"><option value="1">Day 1</option><option value="2">Day 2</option><option value="3">Day 3</option></select></div>
-                        <div><label class="block text-xs text-slate-400 mb-1">Time Slot</label><input type="text" id="admin-event-time" placeholder="e.g. 10:00 AM - 1:00 PM" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"></div>
                         <div><label class="block text-xs text-slate-400 mb-1">Event Name</label><input type="text" id="admin-event-name" placeholder="e.g. Battle of Bands" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"></div>
-                        <div><label class="block text-xs text-slate-400 mb-1">Category</label><input type="text" id="admin-event-cat" placeholder="e.g. Music / Dance / Sports" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"></div>
-                        <div><label class="block text-xs text-slate-400 mb-1">Venue</label><input type="text" id="admin-event-venue" placeholder="e.g. Auditorium / Main Stage" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"></div>
-                        <div><label class="block text-xs text-slate-400 mb-1">Status</label><select id="admin-event-status" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"><option value="Upcoming">Upcoming</option><option value="Live Now">Live Now</option><option value="Active">Active</option><option value="Completed">Completed</option></select></div>
+                        <div><label class="block text-xs text-slate-400 mb-1">Category</label><select id="admin-event-cat" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"><option value="Cultural">Cultural</option><option value="Sports">Sports</option><option value="E-Sports">E-Sports</option><option value="Flagship">Flagship</option></select></div>
+                        <div><label class="block text-xs text-slate-400 mb-1">Registration Fee (₹)</label><input type="number" id="admin-event-fee" placeholder="0 for Free" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"></div>
+                        <div><label class="block text-xs text-slate-400 mb-1">Fest Day</label><select id="admin-event-day" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"><option value="1">Day 1</option><option value="2">Day 2</option><option value="3">Day 3</option></select></div>
+                        <div><label class="block text-xs text-slate-400 mb-1">Time Slot</label><input type="text" id="admin-event-time" placeholder="e.g. 2:00 PM - 5:00 PM" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"></div>
+                        <div><label class="block text-xs text-slate-400 mb-1">Venue</label><input type="text" id="admin-event-venue" placeholder="e.g. Main Auditorium" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"></div>
                     </div>
-                    <button onclick="saveEvent()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition">Save Event to Schedule</button>
+                    <div><label class="block text-xs text-slate-400 mb-1">Description</label><input type="text" id="admin-event-desc" placeholder="Brief event description & rules" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"></div>
+                    <button onclick="saveEvent()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs">Save Event</button>
                 </div>
 
-                <!-- Admin Action 2: Existing Schedule Manager Table -->
+                <!-- Existing Events CRUD Table -->
                 <div class="glass-panel p-6 rounded-2xl space-y-4">
-                    <h3 class="text-base font-bold text-white">Manage & Delete Schedule Events</h3>
+                    <h3 class="text-base font-bold text-white">Manage & Modify Listed Events</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs text-slate-300">
                             <thead class="bg-slate-900 text-slate-400 uppercase">
-                                <tr><th class="p-2">Day</th><th class="p-2">Event</th><th class="p-2">Time</th><th class="p-2">Venue</th><th class="p-2 text-right">Actions</th></tr>
+                                <tr><th class="p-2">Name</th><th class="p-2">Category</th><th class="p-2">Day/Time</th><th class="p-2">Fee</th><th class="p-2 text-right">Actions</th></tr>
                             </thead>
-                            <tbody id="admin-schedule-table" class="divide-y divide-slate-800"></tbody>
+                            <tbody id="admin-events-table" class="divide-y divide-slate-800"></tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Admin Action 3: Pass Check-In -->
+                <!-- Gate Ticket Verification -->
                 <div class="glass-panel p-6 rounded-2xl space-y-4">
-                    <h3 class="text-base font-bold text-white">Gate Pass Verification</h3>
+                    <h3 class="text-base font-bold text-white">Gate Pass Verification Scanner</h3>
                     <div class="flex gap-2">
-                        <input type="text" id="scan-input" placeholder="Enter or scan Pass ID" class="flex-grow bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white">
-                        <button onclick="verifyPass()" class="bg-emerald-500 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm">Verify</button>
+                        <input type="text" id="scan-input" placeholder="Scan or enter Pass Registration ID (e.g., REG-8291)" class="flex-grow bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white">
+                        <button onclick="verifyPass()" class="bg-emerald-500 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs">Verify Entry</button>
                     </div>
                     <div id="scan-result" class="hidden p-3 rounded-xl text-xs font-semibold"></div>
                 </div>
@@ -175,11 +191,47 @@
 
     </main>
 
-    <!-- Load JavaScript Modules -->
+    <!-- Registration & Payment Modal -->
+    <div id="registration-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="glass-panel max-w-md w-full p-6 rounded-2xl space-y-4 relative border border-slate-800">
+            <button onclick="closeRegistrationModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <h2 class="text-lg font-bold text-white" id="modal-event-title">Event Registration</h2>
+            <p class="text-xs text-slate-400" id="modal-event-details">Fill details to register.</p>
+            
+            <form id="reg-form" onsubmit="handleRegistrationSubmit(event)" class="space-y-3">
+                <input type="hidden" id="modal-event-id">
+                <div><label class="block text-xs font-semibold text-slate-300 mb-1">Full Name</label><input type="text" id="reg-user-name" required placeholder="e.g. Dr. Ankit Raj" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white"></div>
+                <div><label class="block text-xs font-semibold text-slate-300 mb-1">College / Institution</label><input type="text" id="reg-user-college" required placeholder="e.g. MAMC Delhi" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white"></div>
+                <div><label class="block text-xs font-semibold text-slate-300 mb-1">Phone Number</label><input type="tel" id="reg-user-phone" required placeholder="10-digit mobile number" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white"></div>
+                
+                <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex justify-between items-center">
+                    <span class="text-xs text-slate-400">Total Payable:</span>
+                    <span class="text-base font-extrabold text-emerald-400" id="modal-event-price">₹0</span>
+                </div>
+
+                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">Pay Fee & Confirm Registration</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Module Loading -->
+    <script src="js/data.js"></script>
     <script src="js/schedule.js"></script>
+    <script src="js/registration.js"></script>
+    <script src="js/dashboard.js"></script>
     <script src="js/scoreboard.js"></script>
-    <script src="js/pass.js"></script>
     <script src="js/admin.js"></script>
-    <script>{ lucide.createIcons(); initSchedule(); renderEsports(); }</script>
+    
+    <script>
+        // Global App Initialization
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+            initData();
+            renderEventsGrid();
+            renderSchedule();
+            updateNavCount();
+            renderEsports();
+        });
+    </script>
 </body>
 </html>

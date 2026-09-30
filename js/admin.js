@@ -1,81 +1,139 @@
-function saveEvent() {
-    const idInput = document.getElementById("admin-event-id").value;
-    const day = document.getElementById("admin-event-day").value;
-    const time = document.getElementById("admin-event-time").value.trim();
-    const name = document.getElementById("admin-event-name").value.trim();
-    const cat = document.getElementById("admin-event-cat").value.trim();
-    const venue = document.getElementById("admin-event-venue").value.trim();
-    const status = document.getElementById("admin-event-status").value;
+let isAdminUnlocked = false;
 
-    if (!time || !name || !venue) { alert("Please fill in Time, Event Name, and Venue!"); return; }
-
-    let schedule = getSchedule();
-    if (idInput) {
-        schedule = schedule.map(ev => ev.id === Number(idInput) ? { id: Number(idInput), day: Number(day), time, name, category: cat, venue, status } : ev);
-    } else {
-        const newEv = { id: Date.now(), day: Number(day), time, name, category: cat || "General", venue, status };
-        schedule.push(newEv);
+function switchTab(tabId) {
+    document.querySelectorAll(".tab-content").forEach(el => { el.classList.add("hidden"); });
+    document.getElementById(`sec-${tabId}`).classList.remove("hidden");
+    
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.className = "nav-btn px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition";
+    });
+    if (event && event.currentTarget) {
+        event.currentTarget.className = "nav-btn px-3.5 py-2 rounded-lg text-xs font-semibold text-emerald-400 bg-slate-800/60 transition";
     }
 
-    saveScheduleData(schedule);
+    if (tabId === "my-registrations") { renderMyRegistrations(); }
+    if (tabId === "admin" && isAdminUnlocked) { updateAdminStats(); renderAdminEventsTable(); }
+}
+
+function unlockAdmin() {
+    const pin = document.getElementById("admin-pin-input").value;
+    if (pin === "1234") {
+        isAdminUnlocked = true;
+        document.getElementById("admin-lock-screen").classList.add("hidden");
+        document.getElementById("admin-dashboard").classList.remove("hidden");
+        updateAdminStats();
+        renderAdminEventsTable();
+    } else {
+        alert("Incorrect PIN! (Default demo PIN is 1234)");
+    }
+}
+
+function lockAdmin() {
+    isAdminUnlocked = false;
+    document.getElementById("admin-pin-input").value = "";
+    document.getElementById("admin-lock-screen").classList.remove("hidden");
+    document.getElementById("admin-dashboard").classList.add("hidden");
+}
+
+function updateAdminStats() {
+    const events = getEvents();
+    const regs = getUserRegistrations();
+    const totalRevenue = regs.reduce((sum, r) => sum + Number(r.feePaid), 0);
+
+    document.getElementById("stat-total-events").innerText = events.length;
+    document.getElementById("stat-total-regs").innerText = regs.length;
+    document.getElementById("stat-total-rev").innerText = `₹${totalRevenue}`;
+}
+
+function saveEvent() {
+    const idInput = document.getElementById("admin-event-id").value;
+    const name = document.getElementById("admin-event-name").value.trim();
+    const cat = document.getElementById("admin-event-cat").value;
+    const fee = Number(document.getElementById("admin-event-fee").value || 0);
+    const day = Number(document.getElementById("admin-event-day").value);
+    const time = document.getElementById("admin-event-time").value.trim();
+    const venue = document.getElementById("admin-event-venue").value.trim();
+    const desc = document.getElementById("admin-event-desc").value.trim();
+
+    if (!name || !time || !venue) { alert("Please complete required fields (Name, Time, Venue)"); return; }
+
+    let events = getEvents();
+    if (idInput) {
+        events = events.map(e => e.id === Number(idInput) ? { id: Number(idInput), name, category: cat, fee, day, time, venue, desc } : e);
+    } else {
+        events.push({ id: Date.now(), name, category: cat, fee, day, time, venue, desc });
+    }
+
+    saveEventsData(events);
     resetEventForm();
-    alert("Schedule updated successfully!");
+    renderAdminEventsTable();
 }
 
 function editEvent(id) {
-    const ev = getSchedule().find(e => e.id === id);
+    const ev = getEvents().find(e => e.id === id);
     if (!ev) { return; }
     document.getElementById("admin-event-id").value = ev.id;
-    document.getElementById("admin-event-day").value = ev.day;
-    document.getElementById("admin-event-time").value = ev.time;
     document.getElementById("admin-event-name").value = ev.name;
     document.getElementById("admin-event-cat").value = ev.category;
+    document.getElementById("admin-event-fee").value = ev.fee;
+    document.getElementById("admin-event-day").value = ev.day;
+    document.getElementById("admin-event-time").value = ev.time;
     document.getElementById("admin-event-venue").value = ev.venue;
-    document.getElementById("admin-event-status").value = ev.status;
-    document.getElementById("form-title").innerText = `Edit Event: ${ev.name}`;
+    document.getElementById("admin-event-desc").value = ev.desc;
+    document.getElementById("form-title").innerText = `Edit: ${ev.name}`;
 }
 
 function deleteEvent(id) {
-    if (confirm("Are you sure you want to delete this event from the schedule?")) {
-        const updated = getSchedule().filter(e => e.id !== id);
-        saveScheduleData(updated);
+    if (confirm("Delete this event from fest catalog?")) {
+        const updated = getEvents().filter(e => e.id !== id);
+        saveEventsData(updated);
+        renderAdminEventsTable();
     }
 }
 
 function resetEventForm() {
     document.getElementById("admin-event-id").value = "";
-    document.getElementById("admin-event-time").value = "";
     document.getElementById("admin-event-name").value = "";
-    document.getElementById("admin-event-cat").value = "";
+    document.getElementById("admin-event-fee").value = "";
+    document.getElementById("admin-event-time").value = "";
     document.getElementById("admin-event-venue").value = "";
-    document.getElementById("form-title").innerText = "Add New Schedule Event";
+    document.getElementById("admin-event-desc").value = "";
+    document.getElementById("form-title").innerText = "Add New Event / Competition";
 }
 
-function renderAdminScheduleTable() {
-    const tbody = document.getElementById("admin-schedule-table");
+function renderAdminEventsTable() {
+    const tbody = document.getElementById("admin-events-table");
     if (!tbody) { return; }
     tbody.innerHTML = "";
-    const schedule = getSchedule();
 
-    if (schedule.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-slate-500">No events found. Add one above!</td></tr>`;
-        return;
-    }
-
-    schedule.forEach(ev => {
-        tbody.innerHTML += `<tr><td class="p-2 text-emerald-400 font-bold">Day ${ev.day}</td><td class="p-2 font-bold text-white">${ev.name}</td><td class="p-2 text-slate-400">${ev.time}</td><td class="p-2 text-slate-300">${ev.venue}</td><td class="p-2 text-right space-x-2"><button onclick="editEvent(${ev.id})" class="text-cyan-400 hover:underline">Edit</button><button onclick="deleteEvent(${ev.id})" class="text-red-400 hover:underline">Delete</button></td></tr>`;
+    getEvents().forEach(ev => {
+        tbody.innerHTML += `
+            <tr>
+                <td class="p-2 font-bold text-white">${ev.name}</td>
+                <td class="p-2 text-slate-400">${ev.category}</td>
+                <td class="p-2 text-slate-300">Day ${ev.day} (${ev.time})</td>
+                <td class="p-2 font-bold text-emerald-400">₹${ev.fee}</td>
+                <td class="p-2 text-right space-x-2">
+                    <button onclick="editEvent(${ev.id})" class="text-cyan-400 hover:underline">Edit</button>
+                    <button onclick="deleteEvent(${ev.id})" class="text-red-400 hover:underline">Delete</button>
+                </td>
+            </tr>
+        `;
     });
 }
 
 function verifyPass() {
-    const input = document.getElementById("scan-input").value.trim();
+    const input = document.getElementById("scan-input").value.trim().toUpperCase();
     const res = document.getElementById("scan-result");
     res.classList.remove("hidden");
-    if (input.length > 3) {
+
+    const record = getUserRegistrations().find(r => r.regId.toUpperCase() === input);
+
+    if (record) {
         res.className = "p-3 rounded-xl text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
-        res.innerHTML = "✅ VALID PASS: Entry Approved for Campus & Main Stage.";
+        res.innerHTML = `✅ ENTRY CONFIRMED: ${record.userName} (${record.userCollege}) for ${record.eventName}`;
     } else {
         res.className = "p-3 rounded-xl text-xs font-semibold bg-red-500/20 text-red-300 border border-red-500/40";
-        res.innerHTML = "❌ INVALID PASS ID: Record not found.";
+        res.innerHTML = "❌ INVALID PASS ID: Registration record not found.";
     }
 }

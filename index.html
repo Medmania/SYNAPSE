@@ -2373,6 +2373,119 @@ async function checkAuthSession() {
 
     }
 
+/* =========================================================
+   GOOGLE AUTH
+========================================================= */
+
+async function handleGoogleSignIn() {
+
+    if (!supabaseClient) {
+
+        alert("Supabase is not initialized.");
+
+        return;
+    }
+
+    try {
+
+        // Your actual GitHub Pages application URL
+        const redirectUrl =
+            "https://medmania.github.io/SYNAPSE/";
+
+        const {
+            data,
+            error
+        } = await supabaseClient.auth.signInWithOAuth({
+
+            provider: "google",
+
+            options: {
+                redirectTo: redirectUrl
+            }
+
+        });
+
+        if (error) {
+
+            console.error(
+                "Supabase Google OAuth error:",
+                error
+            );
+
+            alert(
+                "Google login failed:\n\n" +
+                error.message
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Google OAuth error:",
+            error
+        );
+
+        alert(
+            "Google login failed:\n\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CHECK AUTH SESSION
+========================================================= */
+
+async function checkAuthSession() {
+
+    if (!supabaseClient) {
+        return;
+    }
+
+    try {
+
+        const {
+            data: { session }
+        } = await supabaseClient.auth.getSession();
+
+        if (session && session.user) {
+
+            const email =
+                session.user.email;
+
+            const name =
+                session.user.user_metadata?.full_name ||
+                session.user.user_metadata?.name ||
+                email.split("@")[0];
+
+            const role =
+                determineRole(email);
+
+            currentUser = {
+                email,
+                name,
+                role
+            };
+
+            updateAuthUI();
+
+            updateMyPassesBadge();
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Session check failed:",
+            error
+        );
+
+    }
+
 }
 
 

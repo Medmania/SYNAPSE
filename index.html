@@ -2220,153 +2220,226 @@ function saveState() {
 
 }
 
-
 /* =========================================================
-   SUPABASE
-========================================================= */
-
-/* =========================================================
-   SUPABASE
+   SUPABASE INITIALIZATION
 ========================================================= */
 
 function initSupabase() {
+
     try {
-        if (window.supabase) {
-            supabaseClient = window.supabase.createClient(
+
+        if (!window.supabase) {
+
+            console.error(
+                "Supabase JS library was not loaded."
+            );
+
+            return;
+        }
+
+        supabaseClient =
+            window.supabase.createClient(
                 SUPABASE_URL,
                 SUPABASE_ANON_KEY,
                 {
                     auth: {
-                        detectSessionInUrl: true,   // important for OAuth return
                         persistSession: true,
                         autoRefreshToken: true,
-                        flowType: 'pkce'            // modern default
+                        detectSessionInUrl: true,
+                        flowType: "implicit"
                     }
                 }
             );
 
-            // Listen for every auth event (this is the real fix)
-            supabaseClient.auth.onAuthStateChange((event, session) => {
-                console.log('Auth event:', event);
+        console.log(
+            "Supabase initialized successfully."
+        );
 
-                if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-                    if (session?.user) {
-                        const email = session.user.email;
-                        const name =
-                            session.user.user_metadata?.full_name ||
-                            session.user.user_metadata?.name ||
-                            email.split('@')[0];
+        const status =
+            document.getElementById(
+                "supabaseStatusText"
+            );
 
-                        currentUser = {
-                            email,
-                            name,
-                            role: determineRole(email)
-                        };
+        if (status) {
 
-                        updateAuthUI();
-                        updateMyPassesBadge();
+            status.innerText =
+                "Supabase + Google OAuth Ready";
 
-                        // Close the login modal if it is open
-                        closeModal('authModal');
-                    }
-                }
+            status.className =
+                "text-emerald-400";
 
-                if (event === 'SIGNED_OUT') {
-                    currentUser = null;
-                    updateAuthUI();
-                    updateMyPassesBadge();
-                }
-            });
-
-            document.getElementById('supabaseStatusText').innerText =
-                'Supabase + Google OAuth Ready';
-            document.getElementById('supabaseStatusText').className =
-                'text-emerald-400';
         }
+
+        /* ==============================================
+           LISTEN FOR LOGIN / LOGOUT
+        ============================================== */
+
+        supabaseClient.auth.onAuthStateChange(
+            async (event, session) => {
+
+                console.log(
+                    "Supabase Auth Event:",
+                    event
+                );
+
+                if (
+                    event === "SIGNED_IN" &&
+                    session &&
+                    session.user
+                ) {
+
+                    await setCurrentUserFromSession(
+                        session
+                    );
+
+                    /*
+                     * Remove OAuth tokens from
+                     * browser URL after login.
+                     */
+                    if (
+                        window.location.hash.includes(
+                            "access_token"
+                        )
+                    ) {
+
+                        window.history.replaceState(
+                            {},
+                            document.title,
+                            window.location.pathname
+                        );
+
+                    }
+
+                }
+
+                if (event === "SIGNED_OUT") {
+
+                    currentUser = null;
+
+                    updateAuthUI();
+
+                    updateMyPassesBadge();
+
+                }
+
+            }
+        );
+
     } catch (error) {
-        console.error('Supabase initialization error:', error);
+
+        console.error(
+            "Supabase initialization error:",
+            error
+        );
+
     }
+
 }
 
+
 /* =========================================================
-   GOOGLE AUTH
+   SET CURRENT USER
 ========================================================= */
 
-async function handleGoogleSignIn() {
-    if (!supabaseClient) {
-        alert('Supabase is not initialized.');
+async function setCurrentUserFromSession(session) {
+
+    if (
+        !session ||
+        !session.user
+    ) {
+
+        currentUser = null;
+
+        updateAuthUI();
+
         return;
+
     }
 
-    try {
-        // Always use the real current URL (works on GitHub Pages + local)
-        const redirectUrl =
-            window.location.origin +
-            window.location.pathname.replace(/\/$/, '') +  // remove trailing slash
-            '/';
+    const email =
+        session.user.email || "";
 
-        console.log('Redirecting to:', redirectUrl);
+    const name =
+        session.user.user_metadata?.full_name ||
+        session.user.user_metadata?.name ||
+        email.split("@")[0];
 
-        const { data, error } = await supabaseClient.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: redirectUrl,
-                queryParams: {
-                    access_type: 'offline',
-                    prompt: 'consent'
-                }
-            }
-        });
+    const role =
+        determineRole(email);
 
-        if (error) {
-            console.error('Supabase Google OAuth error:', error);
-            alert('Google login failed:\n\n' + error.message);
-        }
-    } catch (error) {
-        console.error('Google OAuth error:', error);
-        alert('Google login failed:\n\n' + error.message);
-    }
+    currentUser = {
+
+        email: email,
+
+        name: name,
+
+        role: role
+
+    };
+
+    console.log(
+        "Logged-in user:",
+        currentUser
+    );
+
+    updateAuthUI();
+
+    updateMyPassesBadge();
+
 }
 
 
 /* =========================================================
-   CHECK AUTH SESSION
+   CHECK EXISTING AUTH SESSION
 ========================================================= */
 
 async function checkAuthSession() {
 
     if (!supabaseClient) {
+
+        console.error(
+            "Supabase client is not initialized."
+        );
+
         return;
+
     }
 
     try {
 
         const {
-            data: { session }
-        } = await supabaseClient.auth.getSession();
+            data,
+            error
+        } =
+            await supabaseClient.auth.getSession();
 
-        if (session && session.user) {
+        if (error) {
 
-            const email =
-                session.user.email;
+            console.error(
+                "getSession() error:",
+                error
+            );
 
-            const name =
-                session.user.user_metadata?.full_name ||
-                session.user.user_metadata?.name ||
-                email.split("@")[0];
+            return;
 
-            const role =
-                determineRole(email);
+        }
 
-            currentUser = {
-                email,
-                name,
-                role
-            };
+        const session =
+            data?.session;
 
-            updateAuthUI();
+        console.log(
+            "Existing session:",
+            session
+        );
 
-            updateMyPassesBadge();
+        if (
+            session &&
+            session.user
+        ) {
+
+            await setCurrentUserFromSession(
+                session
+            );
 
         }
 
@@ -2381,6 +2454,78 @@ async function checkAuthSession() {
 
 }
 
+
+/* =========================================================
+   GOOGLE LOGIN
+========================================================= */
+
+async function handleGoogleSignIn() {
+
+    if (!supabaseClient) {
+
+        alert(
+            "Supabase is not initialized."
+        );
+
+        return;
+
+    }
+
+    try {
+
+        const redirectUrl =
+            "https://medmania.github.io/SYNAPSE/";
+
+        console.log(
+            "Starting Google OAuth..."
+        );
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth.signInWithOAuth({
+
+                provider: "google",
+
+                options: {
+
+                    redirectTo:
+                        redirectUrl
+
+                }
+
+            });
+
+        if (error) {
+
+            console.error(
+                "Google OAuth error:",
+                error
+            );
+
+            alert(
+                "Google login failed:\n\n" +
+                error.message
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Google OAuth exception:",
+            error
+        );
+
+        alert(
+            "Google login failed:\n\n" +
+            error.message
+        );
+
+    }
+
+}
 
 /* =========================================================
    SIMULATE LOGIN

@@ -2316,62 +2316,6 @@ async function handleGoogleSignIn() {
             "User"
         );
 
-    }
-
-}
-
-
-/* =========================================================
-   CHECK AUTH SESSION
-========================================================= */
-
-async function checkAuthSession() {
-
-    if (!supabaseClient) {
-
-        return;
-
-    }
-
-    try {
-
-        const {
-            data: { session }
-        } = await supabaseClient.auth.getSession();
-
-        if (session && session.user) {
-
-            const email =
-                session.user.email;
-
-            const name =
-                session.user.user_metadata?.full_name ||
-                session.user.user_metadata?.name ||
-                email.split("@")[0];
-
-            const role =
-                determineRole(email);
-
-            currentUser = {
-                email,
-                name,
-                role
-            };
-
-            updateAuthUI();
-
-            updateMyPassesBadge();
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Session check failed:",
-            error
-        );
-
-    }
 
 /* =========================================================
    GOOGLE AUTH

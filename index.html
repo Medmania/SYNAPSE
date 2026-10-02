@@ -2225,102 +2225,107 @@ function saveState() {
    SUPABASE
 ========================================================= */
 
+/* =========================================================
+   SUPABASE
+========================================================= */
+
 function initSupabase() {
-
     try {
-
         if (window.supabase) {
+            supabaseClient = window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_ANON_KEY,
+                {
+                    auth: {
+                        detectSessionInUrl: true,   // important for OAuth return
+                        persistSession: true,
+                        autoRefreshToken: true,
+                        flowType: 'pkce'            // modern default
+                    }
+                }
+            );
 
-            supabaseClient =
-                window.supabase.createClient(
-                    SUPABASE_URL,
-                    SUPABASE_ANON_KEY
-                );
+            // Listen for every auth event (this is the real fix)
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                console.log('Auth event:', event);
 
-            document.getElementById(
-                "supabaseStatusText"
-            ).innerText =
-                "Supabase + Google OAuth Ready";
+                if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                    if (session?.user) {
+                        const email = session.user.email;
+                        const name =
+                            session.user.user_metadata?.full_name ||
+                            session.user.user_metadata?.name ||
+                            email.split('@')[0];
 
-            document.getElementById(
-                "supabaseStatusText"
-            ).className =
-                "text-emerald-400";
+                        currentUser = {
+                            email,
+                            name,
+                            role: determineRole(email)
+                        };
 
+                        updateAuthUI();
+                        updateMyPassesBadge();
+
+                        // Close the login modal if it is open
+                        closeModal('authModal');
+                    }
+                }
+
+                if (event === 'SIGNED_OUT') {
+                    currentUser = null;
+                    updateAuthUI();
+                    updateMyPassesBadge();
+                }
+            });
+
+            document.getElementById('supabaseStatusText').innerText =
+                'Supabase + Google OAuth Ready';
+            document.getElementById('supabaseStatusText').className =
+                'text-emerald-400';
         }
-
     } catch (error) {
-
-        console.error(
-            "Supabase initialization error:",
-            error
-        );
-
+        console.error('Supabase initialization error:', error);
     }
-
 }
-
 
 /* =========================================================
    GOOGLE AUTH
 ========================================================= */
 
 async function handleGoogleSignIn() {
-
     if (!supabaseClient) {
-
-        alert("Supabase is not initialized.");
-
+        alert('Supabase is not initialized.');
         return;
     }
 
     try {
-
-        // Your actual GitHub Pages application URL
+        // Always use the real current URL (works on GitHub Pages + local)
         const redirectUrl =
-            "https://medmania.github.io/SYNAPSE/";
+            window.location.origin +
+            window.location.pathname.replace(/\/$/, '') +  // remove trailing slash
+            '/';
 
-        const {
-            data,
-            error
-        } = await supabaseClient.auth.signInWithOAuth({
+        console.log('Redirecting to:', redirectUrl);
 
-            provider: "google",
-
+        const { data, error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
             options: {
-                redirectTo: redirectUrl
+                redirectTo: redirectUrl,
+                queryParams: {
+                    access_type: 'offline',
+                    prompt: 'consent'
+                }
             }
-
         });
 
         if (error) {
-
-            console.error(
-                "Supabase Google OAuth error:",
-                error
-            );
-
-            alert(
-                "Google login failed:\n\n" +
-                error.message
-            );
-
+            console.error('Supabase Google OAuth error:', error);
+            alert('Google login failed:\n\n' + error.message);
         }
-
     } catch (error) {
-
-        console.error(
-            "Google OAuth error:",
-            error
-        );
-
-        alert(
-            "Google login failed:\n\n" +
-            error.message
-        );
-
+        console.error('Google OAuth error:', error);
+        alert('Google login failed:\n\n' + error.message);
     }
-
 }
 
 

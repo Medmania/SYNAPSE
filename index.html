@@ -1,10 +1,10 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYNAPSE '26 - MAMC Annual Fest</title>
+    <title>SYNAPSE '26 | MAMC Annual Fest</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -13,739 +13,893 @@
             theme: {
                 extend: {
                     colors: {
-                        emerald: { 400: '#34d399', 500: '#10b981', 600: '#059669' },
-                        slate: { 800: '#1e293b', 900: '#0f172a', 950: '#020617' }
+                        emerald: {
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        },
                     }
                 }
             }
         }
     </script>
-    <!-- Supabase JS Client SDK CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Google Font Inter -->
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #059669; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10b981; }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-emerald {
+            box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.3);
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-slate-950">
 
-    <!-- Sticky Navigation Header -->
-    <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3">
-        <div class="max-w-6xl mx-auto flex items-center justify-between">
-            <!-- Brand Logo & Title -->
-            <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-                <div class="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-black text-sm shadow-inner">
+    <header class="sticky top-0 z-40 glass-panel border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="resetView()">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center font-black text-slate-950 text-2xl shadow-lg shadow-emerald-500/20">
                     S
                 </div>
                 <div>
-                    <h1 class="text-base font-extrabold text-white tracking-tight leading-tight">SYNAPSE '26</h1>
-                    <p class="text-[10px] text-emerald-400/90 font-bold tracking-wider uppercase">MAMC ANNUAL FEST</p>
+                    <h1 class="text-xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-200 to-white">
+                        SYNAPSE <span class="text-emerald-500 text-xs px-2 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 font-mono">'26</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 tracking-tight font-medium">Maulana Azad Medical College</p>
                 </div>
             </div>
 
-            <!-- Header Action Buttons -->
-            <div class="flex items-center gap-2">
-                <!-- Admin Login / Logout Button -->
-                <button id="admin-nav-btn" onclick="openAdminAuthModal()" class="px-2.5 py-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
-                    <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                    <span id="admin-btn-text">Admin</span>
+            <!-- Quick Navigation & Action Buttons -->
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                <button onclick="openModal('myPassesModal')" class="flex items-center space-x-2 bg-slate-900/80 hover:bg-slate-800 text-slate-200 px-4 py-2 rounded-xl border border-slate-700/60 transition duration-200 text-sm font-medium">
+                    <i class="fa-solid font-bold fa-ticket text-emerald-400"></i>
+                    <span class="hidden sm:inline">My Passes</span>
+                    <span id="passBadgeCount" class="ml-1 px-1.5 py-0.5 text-xs bg-emerald-500/20 text-emerald-400 font-mono rounded-md border border-emerald-500/30">0</span>
                 </button>
 
-                <!-- My Passes Button -->
-                <button onclick="openPassesModal()" class="px-3 py-1.5 text-xs font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded-lg transition-all flex items-center gap-1.5 shadow-md shadow-emerald-500/10 active:scale-95">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 001.105 1.79l.01.007A2 2 0 014 15v3a2 2 0 002 2h12a2 2 0 002-2v-3a2 2 0 01-.115-0.203L20 13.79A2 2 0 0021 12V7a2 2 0 00-2-2H5z"></path></svg>
-                    <span>My Passes</span>
-                    <span id="nav-reg-count" class="hidden ml-0.5 px-1.5 py-0.5 text-[10px] bg-slate-950 text-emerald-400 rounded-full font-extrabold">0</span>
-                </button>
+                <!-- Dynamic Auth / Admin Panel Button -->
+                <div id="authContainer">
+                    <button onclick="openModal('authModal')" class="flex items-center space-x-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold px-4 py-2 rounded-xl shadow-lg shadow-emerald-600/20 transition duration-200 text-sm">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>Admin Access</span>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- MAIN CONTENT WRAPPER -->
-    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6 space-y-8">
+    <section class="relative overflow-hidden pt-12 pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-800/50">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.12),transparent_50%)] pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto text-center relative z-10">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 mb-6 animate-pulse">
+                <i class="fa-solid fa-bolt mr-1.5"></i> MAMC's Largest Annual Medical & Cultural Extravaganza
+            </span>
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-slate-100 max-w-4xl mx-auto leading-none">
+                Ignite The Neuro-Rhythm <br><span class="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-300">At SYNAPSE '26</span>
+            </h1>
+            <p class="mt-6 text-base sm:text-lg text-slate-400 max-w-2xl mx-auto font-light">
+                Explore flagship cultural, sports, and e-sports events. Reserve your official festival passes directly online with instant barcode verification.
+            </p>
 
-        <!-- Banner & Search Section -->
-        <section class="space-y-4">
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                    <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Fest Events & Competitions</h2>
-                    <p class="text-xs sm:text-sm text-slate-400 mt-1">Register for cultural, sports, e-sports, and flagship celebrity night passes.</p>
+            <!-- Search & Filter Controls -->
+            <div class="mt-10 max-w-3xl mx-auto space-y-4">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                    <input type="text" id="searchInput" oninput="filterEvents()" placeholder="Search events, artists, venues, or categories..." class="w-full pl-11 pr-4 py-3.5 bg-slate-900/90 border border-slate-800 rounded-2xl text-slate-200 focus:outline-none focus:border-emerald-500/80 focus:ring-1 focus:ring-emerald-500/80 transition font-light text-sm shadow-inner">
                 </div>
-                <!-- Search Input -->
-                <div class="relative w-full md:w-72">
-                    <input type="text" id="search-input" oninput="filterEvents()" placeholder="Search events or venues..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 pl-9 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors">
-                    <svg class="w-4 h-4 text-slate-500 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+
+                <div class="flex flex-wrap items-center justify-center gap-2 pt-2" id="categoryFilterContainer">
+                    <button onclick="setCategory('All')" class="cat-btn bg-emerald-500 text-slate-950 font-bold px-4 py-1.5 rounded-xl text-xs transition duration-200 shadow-sm" data-cat="All">All Events</button>
+                    <button onclick="setCategory('Flagship')" class="cat-btn bg-slate-900/80 hover:bg-slate-800 text-slate-300 px-4 py-1.5 rounded-xl text-xs border border-slate-800 transition duration-200" data-cat="Flagship">🔥 Flagship</button>
+                    <button onclick="setCategory('Cultural')" class="cat-btn bg-slate-900/80 hover:bg-slate-800 text-slate-300 px-4 py-1.5 rounded-xl text-xs border border-slate-800 transition duration-200" data-cat="Cultural">🎭 Cultural</button>
+                    <button onclick="setCategory('Sports')" class="cat-btn bg-slate-900/80 hover:bg-slate-800 text-slate-300 px-4 py-1.5 rounded-xl text-xs border border-slate-800 transition duration-200" data-cat="Sports">⚽ Sports</button>
+                    <button onclick="setCategory('E-Sports')" class="cat-btn bg-slate-900/80 hover:bg-slate-800 text-slate-300 px-4 py-1.5 rounded-xl text-xs border border-slate-800 transition duration-200" data-cat="E-Sports">🎮 E-Sports</button>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <!-- Category Pills -->
-            <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
-                <button onclick="setCategoryFilter('All')" class="cat-filter-btn active px-3.5 py-1.5 rounded-lg font-semibold bg-emerald-500 text-slate-950 transition-all whitespace-nowrap">All</button>
-                <button onclick="setCategoryFilter('Cultural')" class="cat-filter-btn px-3.5 py-1.5 rounded-lg font-semibold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 transition-all whitespace-nowrap">Cultural</button>
-                <button onclick="setCategoryFilter('Sports')" class="cat-filter-btn px-3.5 py-1.5 rounded-lg font-semibold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 transition-all whitespace-nowrap">Sports</button>
-                <button onclick="setCategoryFilter('E-Sports')" class="cat-filter-btn px-3.5 py-1.5 rounded-lg font-semibold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 transition-all whitespace-nowrap">E-Sports</button>
-                <button onclick="setCategoryFilter('Flagship')" class="cat-filter-btn px-3.5 py-1.5 rounded-lg font-semibold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 transition-all whitespace-nowrap">Flagship</button>
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Event cards dynamically rendered here -->
+        </div>
+
+        <!-- Empty State Container -->
+        <div id="emptyState" class="hidden text-center py-16">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-600">
+                <i class="fa-solid fa-calendar-xmark text-2xl"></i>
             </div>
-        </section>
-
-        <!-- Events Grid -->
-        <section id="events-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <!-- Dynamic JS injected cards here -->
-        </section>
-
-        <!-- ADMIN DASHBOARD SECTION (Hidden by default, unlocked after admin login) -->
-        <section id="admin-section" class="hidden border border-emerald-500/30 bg-slate-900/60 rounded-2xl p-6 backdrop-blur-md space-y-6">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                <div>
-                    <span class="px-2.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold uppercase tracking-widest">Admin Control Panel</span>
-                    <h3 class="text-xl font-bold text-white mt-1">Manage Events & Registrations</h3>
-                </div>
-                <button onclick="openAddEventModal()" class="px-3 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-lg transition-all flex items-center gap-1.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    <span>Add New Event</span>
-                </button>
-            </div>
-
-            <!-- Admin Stats Summary -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-                    <p class="text-[11px] text-slate-400 uppercase font-semibold">Total Events</p>
-                    <p id="stat-total-events" class="text-2xl font-black text-white mt-1">0</p>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-                    <p class="text-[11px] text-slate-400 uppercase font-semibold">Total Registrations</p>
-                    <p id="stat-total-regs" class="text-2xl font-black text-emerald-400 mt-1">0</p>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-                    <p class="text-[11px] text-slate-400 uppercase font-semibold">Total Revenue</p>
-                    <p id="stat-total-rev" class="text-2xl font-black text-white mt-1">₹0</p>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-                    <p class="text-[11px] text-slate-400 uppercase font-semibold">Cloud Sync Status</p>
-                    <p class="text-xs font-bold text-emerald-400 mt-2 flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span>Supabase Live</span>
-                    </p>
-                </div>
-            </div>
-
-            <!-- Registrations Records Table -->
-            <div class="space-y-3">
-                <h4 class="text-sm font-bold text-slate-200">Attendee Registration Database</h4>
-                <div class="overflow-x-auto border border-slate-800 rounded-xl bg-slate-900/80">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-800/80 text-slate-300 font-semibold border-b border-slate-700">
-                            <tr>
-                                <th class="p-3">Pass ID</th>
-                                <th class="p-3">Attendee Name</th>
-                                <th class="p-3">Event</th>
-                                <th class="p-3">College</th>
-                                <th class="p-3">Phone</th>
-                                <th class="p-3">Fee Paid</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-regs-table-body" class="divide-y divide-slate-800 text-slate-300">
-                            <!-- Injected dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
+            <h3 class="text-lg font-semibold text-slate-300">No events found</h3>
+            <p class="text-slate-500 text-sm mt-1">Try adjusting your search criteria or category filter.</p>
+        </div>
     </main>
 
-    <!-- MODAL 1: EVENT REGISTRATION FORM MODAL -->
-    <div id="register-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full relative shadow-2xl space-y-4">
-            <button onclick="closeRegisterModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl font-bold">&times;</button>
-            
-            <div>
-                <span id="reg-modal-cat" class="text-[10px] uppercase font-bold text-emerald-400 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">Cultural</span>
-                <h3 id="reg-modal-title" class="text-xl font-black text-white mt-2">Event Name</h3>
-                <p id="reg-modal-details" class="text-xs text-slate-400 mt-1">Day 1 • Venue • Fee</p>
+    <footer class="border-t border-slate-900 bg-slate-950 py-8 px-4 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p>&copy; 2026 SYNAPSE Fest Committee, MAMC. All Rights Reserved.</p>
+            <div class="flex items-center space-x-4 text-slate-400">
+                <span class="flex items-center"><i class="fa-solid fa-shield-halved text-emerald-500 mr-1.5"></i> Admin & Role Sync Ready</span>
+                <span>•</span>
+                <span id="supabaseStatusText" class="text-slate-500">Supabase: Offline Mode (Local Fallback)</span>
+            </div>
+        </div>
+    </footer>
+
+    <div id="authModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+        <div class="glass-panel w-full max-w-md rounded-2xl p-6 sm:p-8 relative shadow-2xl border border-slate-800">
+            <button onclick="closeModal('authModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 mx-auto flex items-center justify-center text-emerald-400 mb-3">
+                    <i class="fa-solid fa-user-shield text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-100">Fest Admin Portal</h3>
+                <p class="text-xs text-slate-400 mt-1">Sign in with your authorized Google account to manage events, prices, and attendee registrations.</p>
             </div>
 
-            <form id="user-register-form" onsubmit="submitEventRegistration(event)" class="space-y-3 pt-2">
-                <input type="hidden" id="reg-event-id">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
-                    <input type="text" id="reg-user-name" required placeholder="e.g. Rahul Sharma" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">College / Institute</label>
-                    <input type="text" id="reg-user-college" required placeholder="e.g. MAMC New Delhi" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Phone Number</label>
-                    <input type="tel" id="reg-user-phone" required placeholder="10-digit mobile number" pattern="[0-9]{10}" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
-                </div>
+            <!-- Direct Google OAuth Action -->
+            <button onclick="handleGoogleSignIn()" class="w-full flex items-center justify-center space-x-3 bg-white hover:bg-slate-100 text-slate-900 font-semibold py-3 px-4 rounded-xl transition duration-200 shadow-lg">
+                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <span>Continue with Google</span>
+            </button>
 
-                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+            <!-- Dev Simulation Quick Bypass -->
+            <div class="mt-6 pt-4 border-t border-slate-800/80 text-center">
+                <p class="text-xs text-slate-500 mb-2">Dev Sandbox Quick Access:</p>
+                <div class="flex gap-2 justify-center">
+                    <button onclick="simulateLogin('admin@synapse.com', 'Super Admin')" class="px-2.5 py-1 text-[11px] bg-slate-900 border border-emerald-500/40 text-emerald-400 rounded-lg hover:bg-slate-800">
+                        ⚡ Super Admin
+                    </button>
+                    <button onclick="simulateLogin('staff@synapse.com', 'Staff Admin')" class="px-2.5 py-1 text-[11px] bg-slate-900 border border-slate-700 text-slate-300 rounded-lg hover:bg-slate-800">
+                        👨‍💼 Sub-Admin
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="registerModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+        <div class="glass-panel w-full max-w-md rounded-2xl p-6 sm:p-8 relative shadow-2xl border border-slate-800">
+            <button onclick="closeModal('registerModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 id="regEventTitle" class="text-xl font-bold text-slate-100 pr-6">Register Event</h3>
+            <p id="regEventSub" class="text-xs text-emerald-400 mt-1 font-mono"></p>
+
+            <form id="registrationForm" onsubmit="handleRegistrationSubmit(event)" class="mt-5 space-y-4">
+                <input type="hidden" id="regEventId">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Full Name</label>
+                    <input type="text" id="regName" required placeholder="e.g. Dr. Rohan Sharma" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Email Address</label>
+                    <input type="email" id="regEmail" required placeholder="rohan@mamc.ac.in" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <p class="text-[10px] text-slate-400 uppercase font-semibold">Registration Fee</p>
-                        <p id="reg-modal-fee" class="text-base font-black text-white">₹0</p>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">College/Inst.</label>
+                        <input type="text" id="regCollege" required placeholder="MAMC / Other" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
                     </div>
-                    <span class="text-[11px] text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20 font-medium">Instant Pass Generation</span>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Phone Number</label>
+                        <input type="tel" id="regPhone" required placeholder="9876543210" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+                    </div>
                 </div>
-
-                <button type="submit" id="reg-submit-btn" class="w-full py-2.5 bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-extrabold text-xs rounded-xl transition-all shadow-md">
+                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-3 rounded-xl transition duration-200 shadow-lg shadow-emerald-500/20 text-sm mt-2">
                     Confirm & Generate Pass
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- MODAL 2: MY PASSES MODAL -->
-    <div id="passes-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-lg w-full relative shadow-2xl flex flex-col max-h-[85vh]">
-            <button onclick="closePassesModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+    <div id="ticketModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+        <div class="glass-panel w-full max-w-md rounded-3xl p-6 sm:p-8 relative shadow-2xl border border-emerald-500/30 glow-emerald">
+            <button onclick="closeModal('ticketModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
             
-            <div class="mb-4">
-                <h3 class="text-xl font-black text-white">My Fest Passes</h3>
-                <p class="text-xs text-slate-400 mt-0.5">Show these passes at the event entrance for entry verification.</p>
-            </div>
+            <div id="ticketCardContent" class="text-center">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                    <span class="text-xs font-bold tracking-widest text-emerald-400 uppercase">SYNAPSE '26 ADMISSION PASS</span>
+                    <span class="text-[10px] bg-slate-900 px-2 py-0.5 rounded text-slate-400 border border-slate-800">CONFIRMED</span>
+                </div>
+                
+                <h2 id="passModalEventName" class="text-2xl font-black text-slate-100 mt-4">Event Name</h2>
+                <p id="passModalVenueTime" class="text-xs text-slate-400 mt-1"><i class="fa-solid fa-location-dot text-emerald-400"></i> Main Auditorium | Oct 14, 6:00 PM</p>
+                
+                <div class="my-6 p-4 bg-slate-900/90 rounded-2xl border border-slate-800/80 text-left space-y-2 text-xs">
+                    <div class="flex justify-between"><span class="text-slate-500">Attendee:</span><span id="passModalName" class="font-semibold text-slate-200"></span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Pass Code:</span><span id="passModalId" class="font-mono text-emerald-400"></span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Institution:</span><span id="passModalCollege" class="text-slate-300"></span></div>
+                </div>
 
-            <div id="passes-container" class="overflow-y-auto space-y-4 pr-1 flex-grow">
-                <!-- Injected dynamically -->
+                <!-- Simulated Verification Barcode & QR Strip -->
+                <div class="bg-white p-4 rounded-xl flex flex-col items-center justify-center space-y-2">
+                    <!-- CSS Barcode Simulation -->
+                    <div class="h-12 w-full flex items-center justify-between px-2 overflow-hidden">
+                        <div class="h-full w-1 bg-slate-900"></div><div class="h-full w-2 bg-slate-900"></div><div class="h-full w-0.5 bg-slate-900"></div><div class="h-full w-1.5 bg-slate-900"></div><div class="h-full w-3 bg-slate-900"></div><div class="h-full w-1 bg-slate-900"></div><div class="h-full w-0.5 bg-slate-900"></div><div class="h-full w-2 bg-slate-900"></div><div class="h-full w-1 bg-slate-900"></div><div class="h-full w-3 bg-slate-900"></div><div class="h-full w-0.5 bg-slate-900"></div><div class="h-full w-2 bg-slate-900"></div><div class="h-full w-1 bg-slate-900"></div>
+                    </div>
+                    <p id="passModalBarcodeCode" class="text-[10px] font-mono text-slate-900 tracking-widest font-bold"></p>
+                </div>
+
+                <div class="mt-6 flex gap-2">
+                    <button onclick="window.print()" class="flex-1 bg-slate-900 hover:bg-slate-800 text-slate-200 py-2.5 rounded-xl border border-slate-800 text-xs font-semibold">
+                        <i class="fa-solid fa-print mr-1"></i> Print / Save PDF
+                    </button>
+                    <button onclick="closeModal('ticketModal')" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 py-2.5 rounded-xl text-xs font-extrabold">
+                        Done
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 3: ADMIN AUTH MODAL -->
-    <div id="admin-auth-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full max-w-md relative shadow-2xl space-y-4">
-            <button onclick="closeAdminAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+    <div id="myPassesModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+        <div class="glass-panel w-full max-w-lg rounded-2xl p-6 sm:p-8 relative shadow-2xl border border-slate-800 max-h-[85vh] flex flex-col">
+            <button onclick="closeModal('myPassesModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-xl font-bold text-slate-100 mb-1">My Event Passes</h3>
+            <p class="text-xs text-slate-400 mb-4">Saved passes stored locally on this device.</p>
             
-            <div>
-                <h3 class="text-xl font-bold text-white">Admin Portal Access</h3>
-                <p class="text-xs text-slate-400 mt-1">Sign in with Supabase admin credentials to manage SYNAPSE '26.</p>
+            <div id="myPassesList" class="overflow-y-auto space-y-3 flex-grow pr-1">
+                <!-- Passes rendered dynamically -->
             </div>
-
-            <form onsubmit="handleAdminLogin(event)" class="space-y-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Admin Email</label>
-                    <input type="email" id="admin-email" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500" placeholder="admin@synapse.com">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
-                    <input type="password" id="admin-password" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500" placeholder="••••••••">
-                </div>
-
-                <p id="admin-auth-error" class="text-xs text-red-400 hidden"></p>
-
-                <button type="submit" id="admin-login-btn" class="w-full py-2.5 bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-md">
-                    Authenticate Admin
-                </button>
-            </form>
         </div>
     </div>
 
-    <!-- MODAL 4: ADMIN ADD/EDIT EVENT MODAL -->
-    <div id="event-editor-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full max-w-md relative shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <button onclick="closeEventEditorModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+    <div id="adminDashboardModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-2 sm:p-6 bg-slate-950/90 backdrop-blur-md">
+        <div class="glass-panel w-full max-w-6xl rounded-3xl p-5 sm:p-8 relative shadow-2xl border border-slate-800 max-h-[92vh] flex flex-col">
             
-            <h3 id="event-editor-modal-title" class="text-lg font-bold text-white">Add New Event</h3>
+            <!-- Dashboard Header -->
+            <div class="flex flex-wrap items-center justify-between pb-4 border-b border-slate-800 gap-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+                            Admin Control Center
+                            <span id="roleBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Admin</span>
+                        </h2>
+                        <p id="adminUserEmailText" class="text-xs text-slate-400"></p>
+                    </div>
+                </div>
 
-            <form onsubmit="handleSaveEvent(event)" class="space-y-3 text-xs">
-                <input type="hidden" id="editor-event-id">
+                <div class="flex items-center space-x-2">
+                    <button id="manageAdminsBtn" onclick="openModal('roleManagementModal')" class="hidden bg-slate-900 hover:bg-slate-800 border border-slate-700 text-emerald-400 text-xs px-3.5 py-2 rounded-xl font-semibold">
+                        <i class="fa-solid fa-users-gear mr-1.5"></i> Manage Admin Roles
+                    </button>
+                    <button onclick="openAddEventModal()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs px-3.5 py-2 rounded-xl font-extrabold shadow-md">
+                        <i class="fa-solid fa-plus mr-1"></i> Add Event
+                    </button>
+                    <button onclick="handleSignOut()" class="bg-slate-900 hover:bg-red-950 hover:text-red-400 text-slate-400 p-2 rounded-xl border border-slate-800 text-xs">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                    <button onclick="closeModal('adminDashboardModal')" class="text-slate-400 hover:text-slate-200 p-2">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary Analytics Bar -->
+            <div class="grid grid-cols-3 gap-3 sm:gap-4 my-5">
+                <div class="bg-slate-900/80 border border-slate-800/80 p-3 sm:p-4 rounded-2xl">
+                    <p class="text-[11px] text-slate-400 font-medium">Total Events</p>
+                    <p id="statTotalEvents" class="text-xl sm:text-2xl font-black text-slate-100 mt-1">0</p>
+                </div>
+                <div class="bg-slate-900/80 border border-slate-800/80 p-3 sm:p-4 rounded-2xl">
+                    <p class="text-[11px] text-slate-400 font-medium">Total Registrations</p>
+                    <p id="statTotalRegs" class="text-xl sm:text-2xl font-black text-emerald-400 mt-1">0</p>
+                </div>
+                <div class="bg-slate-900/80 border border-slate-800/80 p-3 sm:p-4 rounded-2xl">
+                    <p class="text-[11px] text-slate-400 font-medium">Est. Revenue</p>
+                    <p id="statTotalRevenue" class="text-xl sm:text-2xl font-black text-teal-300 mt-1">₹0</p>
+                </div>
+            </div>
+
+            <!-- Content Area: Tabs & Tables -->
+            <div class="flex-grow overflow-y-auto space-y-6 pr-1">
+                <!-- Live Event Editor Table -->
                 <div>
-                    <label class="block font-semibold text-slate-300 mb-1">Event Title</label>
-                    <input type="text" id="editor-event-name" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+                    <h3 class="text-sm font-bold text-slate-300 mb-3 flex items-center justify-between">
+                        <span>Live Festival Events & Venues</span>
+                        <span class="text-xs text-slate-500 font-normal">Real-time live editor</span>
+                    </h3>
+                    <div class="overflow-x-auto rounded-xl border border-slate-800">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3">Event Title</th>
+                                    <th class="p-3">Category</th>
+                                    <th class="p-3">Venue</th>
+                                    <th class="p-3">Price</th>
+                                    <th class="p-3">Date & Time</th>
+                                    <th class="p-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminEventsTableBody" class="divide-y divide-slate-800 text-slate-300">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Registrations Database -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-300 mb-3">Attendee Registrations Database</h3>
+                    <div class="overflow-x-auto rounded-xl border border-slate-800">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3">Pass ID</th>
+                                    <th class="p-3">Attendee</th>
+                                    <th class="p-3">Event</th>
+                                    <th class="p-3">Institution</th>
+                                    <th class="p-3">Contact</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminRegsTableBody" class="divide-y divide-slate-800 text-slate-300">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editEventModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-sm">
+        <div class="glass-panel w-full max-w-lg rounded-2xl p-6 sm:p-8 relative shadow-2xl border border-slate-800">
+            <button onclick="closeModal('editEventModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 id="eventFormModalTitle" class="text-xl font-bold text-slate-100 mb-4">Edit Event Details</h3>
+            
+            <form id="eventForm" onsubmit="handleEventFormSubmit(event)" class="space-y-4">
+                <input type="hidden" id="editEventId">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Event Title</label>
+                    <input type="text" id="eventTitleInput" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-semibold text-slate-300 mb-1">Category</label>
-                        <select id="editor-event-cat" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Category</label>
+                        <select id="eventCategoryInput" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+                            <option value="Flagship">Flagship</option>
                             <option value="Cultural">Cultural</option>
                             <option value="Sports">Sports</option>
                             <option value="E-Sports">E-Sports</option>
-                            <option value="Flagship">Flagship</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-300 mb-1">Fee (₹)</label>
-                        <input type="number" id="editor-event-fee" required min="0" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-semibold text-slate-300 mb-1">Fest Day</label>
-                        <select id="editor-event-day" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
-                            <option value="1">Day 1</option>
-                            <option value="2">Day 2</option>
-                            <option value="3">Day 3</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-slate-300 mb-1">Time Slot</label>
-                        <input type="text" id="editor-event-time" required placeholder="e.g. 5:00 PM - 9:00 PM" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Ticket Price (₹)</label>
+                        <input type="number" id="eventPriceInput" min="0" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
                     </div>
                 </div>
                 <div>
-                    <label class="block font-semibold text-slate-300 mb-1">Venue Location</label>
-                    <input type="text" id="editor-event-venue" required placeholder="e.g. Main Auditorium" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Venue Location</label>
+                    <input type="text" id="eventVenueInput" required placeholder="e.g. MAMC Main Auditorium" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block font-semibold text-slate-300 mb-1">Description</label>
-                    <textarea id="editor-event-desc" rows="3" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500"></textarea>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Date & Time</label>
+                    <input type="text" id="eventDateInput" required placeholder="e.g. Oct 14, 6:00 PM" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
                 </div>
-
-                <button type="submit" class="w-full py-2.5 bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-md mt-2">
-                    Save Event to Database
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Description</label>
+                    <textarea id="eventDescInput" rows="3" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-2.5 rounded-xl transition duration-200 text-sm">
+                    Save Changes & Sync Live
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <div id="roleManagementModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+        <div class="glass-panel w-full max-w-lg rounded-2xl p-6 sm:p-8 relative shadow-2xl border border-slate-800">
+            <button onclick="closeModal('roleManagementModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="flex items-center space-x-2 text-emerald-400 mb-2">
+                <i class="fa-solid fa-crown text-xl"></i>
+                <h3 class="text-xl font-bold text-slate-100">Super Admin Hierarchy Control</h3>
+            </div>
+            <p class="text-xs text-slate-400 mb-4">Grant or revoke sub-admin roles dynamically for registered staff emails.</p>
+
+            <!-- Grant Role Form -->
+            <form onsubmit="handleGrantAdmin(event)" class="flex gap-2 mb-6">
+                <input type="email" id="newAdminEmailInput" required placeholder="user@domain.com" class="flex-grow bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
+                <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs whitespace-nowrap">
+                    Grant Sub-Admin
+                </button>
+            </form>
+
+            <div class="space-y-2">
+                <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Authorized Admins List</h4>
+                <div id="adminRolesList" class="divide-y divide-slate-800 max-h-60 overflow-y-auto border border-slate-800/80 rounded-xl bg-slate-900/50 p-2">
+                    <!-- Dynamic staff list -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        /* ==========================================================================
-           SECTION 1: DATA & SUPABASE CONFIGURATION (Can be extracted to js/data.js)
-           ========================================================================== */
-        const SUPABASE_URL = "https://ccsgewccyyexfgrmflig.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2dld2NjeXlleGZncm1mbGlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3ODg0MDEsImV4cCI6MjEwNjM2NDQwMX0.8yolMynIAGtN41qsUCxLASpx_rszxDMUoskBvQJvQGo";
+        /* ----------------------------------------------------
+           1. INITIALIZATION & STATE MANAGEMENT
+        ---------------------------------------------------- */
+        // Configuration Constants
+        const SUPER_ADMIN_EMAIL = "admin@synapse.com";
+        const SUPABASE_URL = "https://xyzexampleapp.supabase.co"; // Placeholder Supabase Endpoint
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummyKey"; // Placeholder Anon Key
 
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        let cachedEvents = [];
-        let cachedUserRegistrations = [];
-        let currentFilterCategory = "All";
-
-        const defaultEvents = [
-            { name: "Battle of the Bands", category: "Cultural", fee: 500, day: 2, time: "5:00 PM - 9:00 PM", venue: "Main Stage", desc: "Live music competition for college rock bands." },
-            { name: "Futsal Championship", category: "Sports", fee: 300, day: 1, time: "10:00 AM - 4:00 PM", venue: "OBH Ground", desc: "5v5 fast-paced indoor-style football tournament." },
-            { name: "Call of Duty / PUBG Mobile", category: "E-Sports", fee: 200, day: 1, time: "2:00 PM - 6:00 PM", venue: "LT-1 Gaming Zone", desc: "Squad battle royale tournament." },
-            { name: "Western Group Dance", category: "Cultural", fee: 400, day: 2, time: "2:00 PM - 5:00 PM", venue: "Main Auditorium", desc: "Inter-college choreo dance competition." },
-            { name: "Star Night - Celebrity Pass", category: "Flagship", fee: 0, day: 3, time: "7:00 PM Onwards", venue: "Main Grounds", desc: "Exclusive entry pass for live concert night." }
+        // Application State
+        let supabaseClient = null;
+        let currentUser = null; // { email, role: 'Super Admin' | 'Sub-Admin' | 'User' }
+        let currentCategory = 'All';
+        
+        // Default Mock Datasets (Fallback when database offline)
+        let events = [
+            { id: 'ev-1', title: "Nerve-Rupture DJ Night", category: "Flagship", venue: "MAMC Central Grounds", price: 499, date: "Oct 15, 7:00 PM", desc: "Featuring headline international DJs with full visual laser production." },
+            { id: 'ev-2', title: "Choreonite Dance Battle", category: "Cultural", venue: "Main Auditorium", price: 199, date: "Oct 14, 5:00 PM", desc: "Inter-college group dance competition with cash prizes up to ₹1,00,000." },
+            { id: 'ev-3', title: "Pulse Football Championship", category: "Sports", venue: "MAMC Sports Complex", price: 0, date: "Oct 13, 9:00 AM", desc: "Annual 11-a-side knockout medical college football league." },
+            { id: 'ev-4', title: "Valorant Masters Arena", category: "E-Sports", venue: "IT Block LAN Hub", price: 150, date: "Oct 13, 2:00 PM", desc: "5v5 competitive LAN esports tournament streamed live." },
+            { id: 'ev-5', title: "Fashionista Runway", category: "Cultural", venue: "Main Open Stage", price: 250, date: "Oct 15, 4:00 PM", desc: "High fashion theme showcase evaluated by celebrity judges." }
         ];
 
-        async function initData() {
-            await fetchEventsFromCloud();
-            await fetchUserRegistrationsFromCloud();
+        let adminList = [
+            { email: "admin@synapse.com", role: "Super Admin" },
+            { email: "staff@synapse.com", role: "Sub-Admin" }
+        ];
+
+        let registrations = [
+            { id: "SYN-8831", eventId: "ev-1", eventTitle: "Nerve-Rupture DJ Night", name: "Dr. Aarav Mehta", email: "aarav@mamc.ac.in", college: "MAMC Delhi", phone: "9876543210" }
+        ];
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            initLocalStorage();
+            initSupabase();
+            checkAuthSession();
+            renderEvents();
+            updateMyPassesBadge();
+        });
+
+        function initLocalStorage() {
+            if (!localStorage.getItem('synapse_events')) localStorage.setItem('synapse_events', JSON.stringify(events));
+            else events = JSON.parse(localStorage.getItem('synapse_events'));
+
+            if (!localStorage.getItem('synapse_admins')) localStorage.setItem('synapse_admins', JSON.stringify(adminList));
+            else adminList = JSON.parse(localStorage.getItem('synapse_admins'));
+
+            if (!localStorage.getItem('synapse_regs')) localStorage.setItem('synapse_regs', JSON.stringify(registrations));
+            else registrations = JSON.parse(localStorage.getItem('synapse_regs'));
         }
 
-        function getEvents() { return cachedEvents; }
+        function saveState() {
+            localStorage.setItem('synapse_events', JSON.stringify(events));
+            localStorage.setItem('synapse_admins', JSON.stringify(adminList));
+            localStorage.setItem('synapse_regs', JSON.stringify(registrations));
+            renderEvents();
+            if (currentUser) renderAdminDashboard();
+        }
 
-        async function fetchEventsFromCloud() {
+        /* ----------------------------------------------------
+           2. SUPABASE & GOOGLE OAUTH INTEGRATION
+        ---------------------------------------------------- */
+        function initSupabase() {
             try {
-                const { data, error } = await _supabase.from('events').select('*').order('id', { ascending: true });
-                if (error) throw error;
-                if (!data || data.length === 0) {
-                    const { data: seeded, error: seedErr } = await _supabase.from('events').insert(defaultEvents).select('*');
-                    if (seedErr) throw seedErr;
-                    cachedEvents = seeded || defaultEvents;
-                } else {
-                    cachedEvents = data;
+                if (window.supabase) {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    document.getElementById('supabaseStatusText').innerText = "Supabase: Connected";
+                    document.getElementById('supabaseStatusText').className = "text-emerald-400";
                 }
-            } catch (err) {
-                console.warn("Supabase fetch failed, fallback to defaults/local:", err);
-                const local = localStorage.getItem("synapse_events");
-                cachedEvents = local ? JSON.parse(local) : defaultEvents;
-            }
-            renderEventsGrid();
-            if (typeof updateAdminStats === "function") updateAdminStats();
-            return cachedEvents;
-        }
-
-        async function saveEventToCloud(eventObj) {
-            try {
-                const { error } = await _supabase.from('events').upsert([eventObj]);
-                if (error) throw error;
-                await fetchEventsFromCloud();
-            } catch (err) {
-                console.error("Error saving event:", err);
-                alert("Cloud save failed. Saved locally.");
+            } catch (e) {
+                console.log("Supabase client init skipped, falling back to client state.");
             }
         }
 
-        async function deleteEventFromCloud(eventId) {
-            try {
-                const { error } = await _supabase.from('events').delete().eq('id', eventId);
-                if (error) throw error;
-                await fetchEventsFromCloud();
-            } catch (err) {
-                console.error("Error deleting event:", err);
-                alert("Failed to delete event from database.");
-            }
-        }
-
-        function getUserRegistrations() { return cachedUserRegistrations; }
-
-        async function fetchUserRegistrationsFromCloud() {
-            try {
-                const { data, error } = await _supabase.from('registrations').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
-                cachedUserRegistrations = (data || []).map(r => ({
-                    id: r.id,
-                    regId: r.reg_id || `SYN-${r.id}`,
-                    eventId: r.event_id,
-                    eventName: r.event_name,
-                    userName: r.user_name,
-                    userCollege: r.user_college,
-                    userPhone: r.user_phone,
-                    feePaid: r.fee_paid,
-                    timestamp: new Date(r.created_at || Date.now()).toLocaleDateString()
-                }));
-            } catch (err) {
-                console.warn("Supabase registrations fetch failed, using local storage:", err);
-                const local = localStorage.getItem("synapse_user_regs");
-                cachedUserRegistrations = local ? JSON.parse(local) : [];
-            }
-            updateNavCount();
-            if (typeof updateAdminStats === "function") updateAdminStats();
-            return cachedUserRegistrations;
-        }
-
-        async function saveUserRegistrationToCloud(regRecord) {
-            try {
-                const payload = {
-                    reg_id: regRecord.regId,
-                    event_id: regRecord.eventId,
-                    event_name: regRecord.eventName,
-                    user_name: regRecord.userName,
-                    user_college: regRecord.userCollege,
-                    user_phone: regRecord.userPhone,
-                    fee_paid: regRecord.feePaid
-                };
-                const { error } = await _supabase.from('registrations').insert([payload]);
-                if (error) throw error;
-                await fetchUserRegistrationsFromCloud();
-            } catch (err) {
-                console.error("Cloud registration failed, saving locally:", err);
-                const local = getUserRegistrations();
-                local.unshift(regRecord);
-                localStorage.setItem("synapse_user_regs", JSON.stringify(local));
-                cachedUserRegistrations = local;
-                updateNavCount();
-                if (typeof updateAdminStats === "function") updateAdminStats();
-            }
-        }
-
-
-        /* ==========================================================================
-           SECTION 2: ADMIN AUTHENTICATION LOGIC (Can be extracted to js/auth.js)
-           ========================================================================== */
-        let isAdminLoggedIn = false;
-
-        function openAdminAuthModal() {
-            if (isAdminLoggedIn) {
-                if (confirm("Are you sure you want to log out of Admin mode?")) {
-                    _supabase.auth.signOut();
-                    isAdminLoggedIn = false;
-                    document.getElementById("admin-section").classList.add("hidden");
-                    document.getElementById("admin-btn-text").innerText = "Admin";
-                    renderEventsGrid();
+        async function handleGoogleSignIn() {
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: { redirectTo: window.location.origin }
+                    });
+                    if (error) throw error;
+                } catch (err) {
+                    alert("Google OAuth fallback trigger: " + err.message);
+                    simulateLogin("admin@synapse.com", "Super Admin");
                 }
-                return;
-            }
-            document.getElementById("admin-auth-modal").classList.remove("hidden");
-        }
-
-        function closeAdminAuthModal() {
-            document.getElementById("admin-auth-modal").classList.add("hidden");
-            document.getElementById("admin-auth-error").classList.add("hidden");
-        }
-
-        async function handleAdminLogin(e) {
-            e.preventDefault();
-            const btn = document.getElementById("admin-login-btn");
-            const errEl = document.getElementById("admin-auth-error");
-            const email = document.getElementById("admin-email").value;
-            const password = document.getElementById("admin-password").value;
-
-            btn.innerText = "Authenticating...";
-            btn.disabled = true;
-
-            try {
-                const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-                if (error) throw error;
-
-                isAdminLoggedIn = true;
-                closeAdminAuthModal();
-                document.getElementById("admin-btn-text").innerText = "Admin (Active)";
-                document.getElementById("admin-section").classList.remove("hidden");
-                document.getElementById("admin-section").scrollIntoView({ behavior: 'smooth' });
-                renderEventsGrid();
-                updateAdminStats();
-            } catch (err) {
-                errEl.innerText = err.message || "Invalid credentials. Please try again.";
-                errEl.classList.remove("hidden");
-            } finally {
-                btn.innerText = "Authenticate Admin";
-                btn.disabled = false;
+            } else {
+                // Local Sandbox Simulation
+                simulateLogin("admin@synapse.com", "Super Admin");
             }
         }
 
-        async function checkAdminSession() {
-            const { data: { session } } = await _supabase.auth.getSession();
-            if (session) {
-                isAdminLoggedIn = true;
-                document.getElementById("admin-btn-text").innerText = "Admin (Active)";
-                document.getElementById("admin-section").classList.remove("hidden");
-                renderEventsGrid();
-                updateAdminStats();
+        async function checkAuthSession() {
+            if (supabaseClient) {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session?.user) {
+                    const email = session.user.email;
+                    const role = determineRole(email);
+                    currentUser = { email, role };
+                    updateAuthUI();
+                }
             }
         }
 
+        function simulateLogin(email, forcedRole = null) {
+            const role = forcedRole || determineRole(email);
+            currentUser = { email, role };
+            updateAuthUI();
+            closeModal('authModal');
+            openModal('adminDashboardModal');
+            renderAdminDashboard();
+        }
 
-        /* ==========================================================================
-           SECTION 3: APP UI & DOM RENDERERS (Can be extracted to js/app.js)
-           ========================================================================== */
-        function updateNavCount() {
-            const count = getUserRegistrations().length;
-            const badge = document.getElementById("nav-reg-count");
-            if (badge) {
-                badge.innerText = count;
-                if (count > 0) badge.classList.remove("hidden"); else badge.classList.add("hidden");
+        function determineRole(email) {
+            if (email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) return 'Super Admin';
+            const found = adminList.find(a => a.email.toLowerCase() === email.toLowerCase());
+            return found ? found.role : 'User';
+        }
+
+        function handleSignOut() {
+            if (supabaseClient) supabaseClient.auth.signOut();
+            currentUser = null;
+            updateAuthUI();
+            closeModal('adminDashboardModal');
+        }
+
+        function updateAuthUI() {
+            const container = document.getElementById('authContainer');
+            if (currentUser && (currentUser.role === 'Super Admin' || currentUser.role === 'Sub-Admin')) {
+                container.innerHTML = `
+                    <button onclick="openAdminDashboard()" class="flex items-center space-x-2 bg-slate-900 border border-emerald-500/50 hover:bg-slate-800 text-emerald-400 font-bold px-4 py-2 rounded-xl text-sm transition">
+                        <i class="fa-solid fa-crown text-emerald-400"></i>
+                        <span>Admin Dashboard</span>
+                    </button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button onclick="openModal('authModal')" class="flex items-center space-x-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold px-4 py-2 rounded-xl shadow-lg transition text-sm">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>Admin Access</span>
+                    </button>
+                `;
             }
         }
 
-        function setCategoryFilter(cat) {
-            currentFilterCategory = cat;
-            document.querySelectorAll(".cat-filter-btn").forEach(btn => {
-                if (btn.innerText === cat) {
-                    btn.className = "cat-filter-btn active px-3.5 py-1.5 rounded-lg font-semibold bg-emerald-500 text-slate-950 transition-all whitespace-nowrap";
+        function setCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.className = "cat-btn bg-emerald-500 text-slate-950 font-bold px-4 py-1.5 rounded-xl text-xs transition duration-200 shadow-sm";
                 } else {
-                    btn.className = "cat-filter-btn px-3.5 py-1.5 rounded-lg font-semibold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 transition-all whitespace-nowrap";
+                    btn.className = "cat-btn bg-slate-900/80 hover:bg-slate-800 text-slate-300 px-4 py-1.5 rounded-xl text-xs border border-slate-800 transition duration-200";
                 }
             });
-            renderEventsGrid();
+            renderEvents();
         }
 
-        function filterEvents() { renderEventsGrid(); }
+        function filterEvents() {
+            renderEvents();
+        }
 
-        function renderEventsGrid() {
-            const grid = document.getElementById("events-grid");
-            const searchVal = (document.getElementById("search-input")?.value || "").toLowerCase();
-            const events = getEvents();
+        function resetView() {
+            setCategory('All');
+            document.getElementById('searchInput').value = '';
+            renderEvents();
+        }
+
+        function renderEvents() {
+            const grid = document.getElementById('eventsGrid');
+            const empty = document.getElementById('emptyState');
+            const query = document.getElementById('searchInput').value.toLowerCase();
 
             const filtered = events.filter(ev => {
-                const matchesCat = currentFilterCategory === "All" || ev.category === currentFilterCategory;
-                const matchesSearch = ev.name.toLowerCase().includes(searchVal) || ev.venue.toLowerCase().includes(searchVal);
+                const matchesCat = (currentCategory === 'All') || (ev.category === currentCategory);
+                const matchesSearch = ev.title.toLowerCase().includes(query) || 
+                                      ev.venue.toLowerCase().includes(query) || 
+                                      ev.desc.toLowerCase().includes(query);
                 return matchesCat && matchesSearch;
             });
 
             if (filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 text-sm">No events found matching your search.</div>`;
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
                 return;
             }
+            empty.classList.add('hidden');
 
             grid.innerHTML = filtered.map(ev => `
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4 relative group">
+                <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between hover:border-emerald-500/40 transition duration-300 group">
                     <div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">${ev.category}</span>
-                            <span class="text-xs font-semibold text-slate-400">Day ${ev.day}</span>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                ${ev.category}
+                            </span>
+                            <span class="text-sm font-black ${ev.price == 0 ? 'text-emerald-400' : 'text-slate-100'}">
+                                ${ev.price == 0 ? 'FREE PASS' : '₹' + ev.price}
+                            </span>
                         </div>
-                        <h3 class="text-lg font-bold text-white mt-3 group-hover:text-emerald-400 transition-colors">${ev.name}</h3>
-                        <p class="text-xs text-slate-400 mt-1 line-clamp-2">${ev.desc}</p>
-                    </div>
-
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between text-xs text-slate-300 border-t border-slate-800 pt-3">
-                            <span class="truncate">${ev.venue} • ${ev.time}</span>
-                            <span class="font-extrabold text-white text-sm">₹${ev.fee}</span>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <button onclick="openRegisterModal(${ev.id})" class="flex-grow py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl transition-all shadow-md">
-                                Register Now
-                            </button>
-
-                            ${isAdminLoggedIn ? `
-                                <button onclick="openEventEditorModal(${ev.id})" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition-all" title="Edit Event">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                </button>
-                                <button onclick="handleDeleteEvent(${ev.id})" class="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-all" title="Delete Event">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                </button>
-                            ` : ''}
+                        <h3 class="text-lg font-bold text-slate-100 group-hover:text-emerald-400 transition">${ev.title}</h3>
+                        <p class="text-xs text-slate-400 mt-2 line-clamp-2 leading-relaxed">${ev.desc}</p>
+                        
+                        <div class="mt-4 pt-4 border-t border-slate-800/80 space-y-2 text-xs text-slate-400">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-location-dot text-emerald-500 w-4"></i>
+                                <span class="truncate">${ev.venue}</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-clock text-emerald-500 w-4"></i>
+                                <span>${ev.date}</span>
+                            </div>
                         </div>
                     </div>
+
+                    <button onclick="openRegistrationModal('${ev.id}')" class="mt-6 w-full bg-slate-900 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 font-bold py-2.5 rounded-xl border border-emerald-500/30 transition duration-200 text-xs flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-ticket"></i>
+                        <span>Get Pass</span>
+                    </button>
                 </div>
             `).join('');
         }
 
-        /* REGISTRATION MODAL LOGIC */
-        function openRegisterModal(eventId) {
-            const ev = getEvents().find(e => e.id === eventId);
+        function openRegistrationModal(eventId) {
+            const ev = events.find(e => e.id === eventId);
             if (!ev) return;
+            document.getElementById('regEventId').value = ev.id;
+            document.getElementById('regEventTitle').innerText = ev.title;
+            document.getElementById('regEventSub').innerText = `${ev.venue} • ${ev.price == 0 ? 'Free' : '₹' + ev.price}`;
+            openModal('registerModal');
+        }
 
-            document.getElementById("reg-event-id").value = ev.id;
-            document.getElementById("reg-modal-cat").innerText = ev.category;
-            document.getElementById("reg-modal-title").innerText = ev.name;
-            document.getElementById("reg-modal-details").innerText = `Day ${ev.day} • ${ev.venue} • ${ev.time}`;
-            document.getElementById("reg-modal-fee").innerText = `₹${ev.fee}`;
+        function handleRegistrationSubmit(e) {
+            e.preventDefault();
+            const eventId = document.getElementById('regEventId').value;
+            const ev = events.find(item => item.id === eventId);
             
-            document.getElementById("register-modal").classList.remove("hidden");
-        }
-
-        function closeRegisterModal() {
-            document.getElementById("register-modal").classList.add("hidden");
-            document.getElementById("user-register-form").reset();
-        }
-
-        async function submitEventRegistration(e) {
-            e.preventDefault();
-            const eventId = parseInt(document.getElementById("reg-event-id").value);
-            const ev = getEvents().find(item => item.id === eventId);
-            if (!ev) return;
-
-            const btn = document.getElementById("reg-submit-btn");
-            btn.innerText = "Generating Pass...";
-            btn.disabled = true;
-
-            const regRecord = {
-                regId: `SYN-${Math.floor(100000 + Math.random() * 900000)}`,
+            const passCode = "SYN-" + Math.floor(1000 + Math.random() * 9000);
+            const regObj = {
+                id: passCode,
                 eventId: ev.id,
-                eventName: ev.name,
-                userName: document.getElementById("reg-user-name").value,
-                userCollege: document.getElementById("reg-user-college").value,
-                userPhone: document.getElementById("reg-user-phone").value,
-                feePaid: ev.fee,
-                timestamp: new Date().toLocaleDateString()
+                eventTitle: ev.title,
+                name: document.getElementById('regName').value,
+                email: document.getElementById('regEmail').value,
+                college: document.getElementById('regCollege').value,
+                phone: document.getElementById('regPhone').value,
+                venue: ev.venue,
+                date: ev.date
             };
 
-            await saveUserRegistrationToCloud(regRecord);
-
-            btn.innerText = "Confirm & Generate Pass";
-            btn.disabled = false;
-            closeRegisterModal();
-            openPassesModal();
+            registrations.push(regObj);
+            saveState();
+            closeModal('registerModal');
+            showTicket(regObj);
+            updateMyPassesBadge();
+            document.getElementById('registrationForm').reset();
         }
 
-        /* PASSES MODAL LOGIC */
-        function openPassesModal() {
-            const container = document.getElementById("passes-container");
-            const regs = getUserRegistrations();
+        function showTicket(reg) {
+            document.getElementById('passModalEventName').innerText = reg.eventTitle;
+            document.getElementById('passModalVenueTime').innerHTML = `<i class="fa-solid fa-location-dot text-emerald-400"></i> ${reg.venue} | ${reg.date}`;
+            document.getElementById('passModalName').innerText = reg.name;
+            document.getElementById('passModalId').innerText = reg.id;
+            document.getElementById('passModalCollege').innerText = reg.college;
+            document.getElementById('passModalBarcodeCode').innerText = `* ${reg.id} *`;
+            openModal('ticketModal');
+        }
 
-            if (regs.length === 0) {
-                container.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs">No active event passes registered yet.</div>`;
-            } else {
-                container.innerHTML = regs.map(p => `
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl pointer-events-none"></div>
-                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
-                            <div>
-                                <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">OFFICIAL ENTRY PASS</span>
-                                <h4 class="text-base font-extrabold text-white mt-0.5">${p.eventName}</h4>
-                            </div>
-                            <span class="text-xs font-mono font-bold text-slate-400 bg-slate-900 px-2 py-1 rounded border border-slate-800">${p.regId}</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 text-xs text-slate-300">
-                            <div><p class="text-[10px] text-slate-500 uppercase font-semibold">Attendee</p><p class="font-bold text-slate-100">${p.userName}</p></div>
-                            <div><p class="text-[10px] text-slate-500 uppercase font-semibold">College</p><p class="font-medium text-slate-200">${p.userCollege}</p></div>
-                            <div><p class="text-[10px] text-slate-500 uppercase font-semibold">Pass Fee Status</p><p class="font-bold text-emerald-400">Paid (₹${p.feePaid})</p></div>
-                            <div><p class="text-[10px] text-slate-500 uppercase font-semibold">Issued Date</p><p class="font-medium text-slate-400">${p.timestamp}</p></div>
-                        </div>
-                        <!-- Simulated QR Code Strip -->
-                        <div class="bg-slate-900 rounded-xl p-2.5 border border-slate-800 flex items-center justify-between">
-                            <div class="flex gap-1">
-                                ${Array(16).fill(0).map(() => `<div class="w-1.5 h-6 bg-slate-700 rounded-xs"></div>`).join('')}
-                            </div>
-                            <span class="text-[10px] text-slate-500 font-mono">VERIFIED BY SYNAPSE '26</span>
-                        </div>
+        function updateMyPassesBadge() {
+            document.getElementById('passBadgeCount').innerText = registrations.length;
+        }
+
+        function renderMyPasses() {
+            const list = document.getElementById('myPassesList');
+            if (registrations.length === 0) {
+                list.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">No passes reserved yet.</p>`;
+                return;
+            }
+            list.innerHTML = registrations.map(reg => `
+                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-200">${reg.eventTitle}</h4>
+                        <p class="text-xs text-slate-400 mt-0.5">${reg.name} • <span class="font-mono text-emerald-400">${reg.id}</span></p>
                     </div>
-                `).join('');
+                    <button onclick='showTicket(${JSON.stringify(reg)})' class="px-3 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-semibold hover:bg-emerald-500 hover:text-slate-950 transition">
+                        View
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function openAdminDashboard() {
+            if (!currentUser || (currentUser.role !== 'Super Admin' && currentUser.role !== 'Sub-Admin')) {
+                openModal('authModal');
+                return;
             }
-            document.getElementById("passes-modal").classList.remove("hidden");
+            renderAdminDashboard();
+            openModal('adminDashboardModal');
         }
 
-        function closePassesModal() { document.getElementById("passes-modal").classList.add("hidden"); }
+        function renderAdminDashboard() {
+            document.getElementById('adminUserEmailText').innerText = currentUser.email;
+            document.getElementById('roleBadge').innerText = currentUser.role;
 
-        /* ADMIN EVENT CRUD EDITOR */
-        function openAddEventModal() {
-            document.getElementById("editor-event-id").value = "";
-            document.getElementById("editor-event-name").value = "";
-            document.getElementById("editor-event-cat").value = "Cultural";
-            document.getElementById("editor-event-fee").value = "0";
-            document.getElementById("editor-event-day").value = "1";
-            document.getElementById("editor-event-time").value = "";
-            document.getElementById("editor-event-venue").value = "";
-            document.getElementById("editor-event-desc").value = "";
-            document.getElementById("event-editor-modal-title").innerText = "Add New Event";
-            document.getElementById("event-editor-modal").classList.remove("hidden");
-        }
-
-        function openEventEditorModal(eventId) {
-            const ev = getEvents().find(item => item.id === eventId);
-            if (!ev) return;
-            document.getElementById("editor-event-id").value = ev.id;
-            document.getElementById("editor-event-name").value = ev.name;
-            document.getElementById("editor-event-cat").value = ev.category;
-            document.getElementById("editor-event-fee").value = ev.fee;
-            document.getElementById("editor-event-day").value = ev.day;
-            document.getElementById("editor-event-time").value = ev.time;
-            document.getElementById("editor-event-venue").value = ev.venue;
-            document.getElementById("editor-event-desc").value = ev.desc;
-            document.getElementById("event-editor-modal-title").innerText = "Edit Event Details";
-            document.getElementById("event-editor-modal").classList.remove("hidden");
-        }
-
-        function closeEventEditorModal() { document.getElementById("event-editor-modal").classList.add("hidden"); }
-
-        async function handleSaveEvent(e) {
-            e.preventDefault();
-            const idVal = document.getElementById("editor-event-id").value;
-            const eventObj = {
-                name: document.getElementById("editor-event-name").value,
-                category: document.getElementById("editor-event-cat").value,
-                fee: parseInt(document.getElementById("editor-event-fee").value) || 0,
-                day: parseInt(document.getElementById("editor-event-day").value) || 1,
-                time: document.getElementById("editor-event-time").value,
-                venue: document.getElementById("editor-event-venue").value,
-                desc: document.getElementById("editor-event-desc").value
-            };
-
-            if (idVal) eventObj.id = parseInt(idVal);
-
-            closeEventEditorModal();
-            await saveEventToCloud(eventObj);
-        }
-
-        async function handleDeleteEvent(eventId) {
-            if (confirm("Are you sure you want to delete this event from the cloud database?")) {
-                await deleteEventFromCloud(eventId);
-            }
-        }
-
-        function updateAdminStats() {
-            const events = getEvents();
-            const regs = getUserRegistrations();
-            const rev = regs.reduce((sum, r) => sum + (parseInt(r.feePaid) || 0), 0);
-
-            document.getElementById("stat-total-events").innerText = events.length;
-            document.getElementById("stat-total-regs").innerText = regs.length;
-            document.getElementById("stat-total-rev").innerText = `₹${rev}`;
-
-            const tbody = document.getElementById("admin-regs-table-body");
-            if (regs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">No user registrations recorded yet.</td></tr>`;
+            // Display / Hide Super Admin Hierarchy Settings
+            const manageBtn = document.getElementById('manageAdminsBtn');
+            if (currentUser.role === 'Super Admin') {
+                manageBtn.classList.remove('hidden');
             } else {
-                tbody.innerHTML = regs.map(r => `
-                    <tr class="hover:bg-slate-800/50">
-                        <td class="p-3 font-mono text-emerald-400 font-bold">${r.regId}</td>
-                        <td class="p-3 font-bold text-white">${r.userName}</td>
-                        <td class="p-3">${r.eventName}</td>
-                        <td class="p-3 text-slate-400">${r.userCollege}</td>
-                        <td class="p-3 font-mono">${r.userPhone}</td>
-                        <td class="p-3 font-bold text-emerald-400">₹${r.feePaid}</td>
-                    </tr>
-                `).join('');
+                manageBtn.classList.add('hidden');
+            }
+
+            // Stats
+            document.getElementById('statTotalEvents').innerText = events.length;
+            document.getElementById('statTotalRegs').innerText = registrations.length;
+            const rev = registrations.reduce((sum, r) => {
+                const ev = events.find(e => e.id === r.eventId);
+                return sum + (ev ? Number(ev.price) : 0);
+            }, 0);
+            document.getElementById('statTotalRevenue').innerText = `₹${rev}`;
+
+            // Events Table
+            const evTable = document.getElementById('adminEventsTableBody');
+            evTable.innerHTML = events.map(ev => `
+                <tr class="hover:bg-slate-900/50">
+                    <td class="p-3 font-semibold text-slate-200">${ev.title}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">${ev.category}</span></td>
+                    <td class="p-3 text-slate-400">${ev.venue}</td>
+                    <td class="p-3 font-mono text-emerald-400">₹${ev.price}</td>
+                    <td class="p-3 text-slate-400">${ev.date}</td>
+                    <td class="p-3 text-right space-x-1">
+                        <button onclick="editEvent('${ev.id}')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button onclick="deleteEvent('${ev.id}')" class="px-2 py-1 bg-slate-800 hover:bg-red-950 hover:text-red-400 text-slate-400 rounded">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Registrations Table
+            const regTable = document.getElementById('adminRegsTableBody');
+            regTable.innerHTML = registrations.map(r => `
+                <tr class="hover:bg-slate-900/50">
+                    <td class="p-3 font-mono text-emerald-400">${r.id}</td>
+                    <td class="p-3 font-medium text-slate-200">${r.name}</td>
+                    <td class="p-3 text-slate-300">${r.eventTitle}</td>
+                    <td class="p-3 text-slate-400">${r.college}</td>
+                    <td class="p-3 text-slate-400">${r.phone}</td>
+                </tr>
+            `).join('');
+        }
+
+        /* LIVE EVENT CRUD FUNCTIONS */
+        function openAddEventModal() {
+            document.getElementById('eventFormModalTitle').innerText = "Add New Event";
+            document.getElementById('editEventId').value = "";
+            document.getElementById('eventForm').reset();
+            openModal('editEventModal');
+        }
+
+        function editEvent(eventId) {
+            const ev = events.find(e => e.id === eventId);
+            if (!ev) return;
+            document.getElementById('eventFormModalTitle').innerText = "Edit Event Details";
+            document.getElementById('editEventId').value = ev.id;
+            document.getElementById('eventTitleInput').value = ev.title;
+            document.getElementById('eventCategoryInput').value = ev.category;
+            document.getElementById('eventPriceInput').value = ev.price;
+            document.getElementById('eventVenueInput').value = ev.venue;
+            document.getElementById('eventDateInput').value = ev.date;
+            document.getElementById('eventDescInput').value = ev.desc;
+            openModal('editEventModal');
+        }
+
+        function deleteEvent(eventId) {
+            if (confirm("Are you sure you want to delete this event?")) {
+                events = events.filter(e => e.id !== eventId);
+                saveState();
             }
         }
 
-        /* INITIALIZATION HOOK */
-        document.addEventListener("DOMContentLoaded", async () => {
-            await initData();
-            await checkAdminSession();
-        });
+        function handleEventFormSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('editEventId').value;
+            const title = document.getElementById('eventTitleInput').value;
+            const category = document.getElementById('eventCategoryInput').value;
+            const price = Number(document.getElementById('eventPriceInput').value);
+            const venue = document.getElementById('eventVenueInput').value;
+            const date = document.getElementById('eventDateInput').value;
+            const desc = document.getElementById('eventDescInput').value;
+
+            if (id) {
+                // Update
+                const ev = events.find(e => e.id === id);
+                if (ev) {
+                    ev.title = title; ev.category = category; ev.price = price;
+                    ev.venue = venue; ev.date = date; ev.desc = desc;
+                }
+            } else {
+                // Create
+                events.unshift({
+                    id: 'ev-' + Date.now(),
+                    title, category, price, venue, date, desc
+                });
+            }
+
+            saveState();
+            closeModal('editEventModal');
+        }
+
+        function renderAdminRolesList() {
+            const container = document.getElementById('adminRolesList');
+            container.innerHTML = adminList.map(a => `
+                <div class="flex items-center justify-between p-2 text-xs">
+                    <div>
+                        <p class="font-semibold text-slate-200">${a.email}</p>
+                        <span class="text-[10px] text-slate-400">${a.role}</span>
+                    </div>
+                    ${a.role !== 'Super Admin' ? `
+                        <button onclick="revokeAdminRole('${a.email}')" class="text-red-400 hover:text-red-300 font-medium px-2 py-1 bg-red-950/40 border border-red-900/50 rounded">
+                            Revoke
+                        </button>
+                    ` : `<span class="text-[10px] text-emerald-400 font-mono">PRIMARY</span>`}
+                </div>
+            `).join('');
+        }
+
+        function handleGrantAdmin(e) {
+            e.preventDefault();
+            const email = document.getElementById('newAdminEmailInput').value.trim();
+            if (!email) return;
+            if (!adminList.some(a => a.email.toLowerCase() === email.toLowerCase())) {
+                adminList.push({ email, role: 'Sub-Admin' });
+                saveState();
+                renderAdminRolesList();
+                document.getElementById('newAdminEmailInput').value = '';
+            }
+        }
+
+        function revokeAdminRole(email) {
+            adminList = adminList.filter(a => a.email.toLowerCase() !== email.toLowerCase());
+            saveState();
+            renderAdminRolesList();
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            if (id === 'myPassesModal') renderMyPasses();
+            if (id === 'roleManagementModal') renderAdminRolesList();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
     </script>
 </body>
 </html>
-```

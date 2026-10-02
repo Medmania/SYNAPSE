@@ -2269,62 +2269,6 @@ async function handleGoogleSignIn() {
 
     if (!supabaseClient) {
 
-        simulateLogin(
-            "student@gmail.com",
-            "User"
-        );
-
-        return;
-    }
-
-    try {
-
-        const {
-            data,
-            error
-        } = await supabaseClient.auth.signInWithOAuth({
-
-            provider: "google",
-
-            options: {
-                redirectTo: redirectUrl
-            }
-
-        });
-
-        if (error) {
-
-            throw error;
-
-        }
-
-    } catch (error) {
-
-        console.warn(
-            "OAuth error:",
-            error
-        );
-
-        alert(
-            "Google OAuth is not fully configured yet.\n\n" +
-            "Using demo login for testing.\n\n" +
-            "Configure Google OAuth in your Supabase project for production."
-        );
-
-        simulateLogin(
-            "student@gmail.com",
-            "User"
-        );
-
-
-/* =========================================================
-   GOOGLE AUTH
-========================================================= */
-
-async function handleGoogleSignIn() {
-
-    if (!supabaseClient) {
-
         alert("Supabase is not initialized.");
 
         return;

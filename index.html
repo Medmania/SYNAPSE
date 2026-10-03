@@ -33,6 +33,7 @@
           rel="stylesheet">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <style>
         body {
@@ -534,14 +535,14 @@
                           text-emerald-500 mr-1.5">
                 </i>
 
-                Google Auth Ready
+                Google Authentication
             </span>
 
             <span>•</span>
 
             <span id="supabaseStatusText"
                   class="text-slate-500">
-                Local Mode + Google OAuth
+                Secure Google Authentication
             </span>
 
         </div>
@@ -628,43 +629,7 @@
             Admins are automatically detected by email.
         </p>
 
-        <!-- DEV LOGIN -->
 
-        <div class="mt-6 pt-4 border-t
-                    border-slate-800/80 text-center">
-
-            <p class="text-xs text-slate-500 mb-2">
-                Dev / Testing only:
-            </p>
-
-            <div class="flex gap-2 justify-center flex-wrap">
-
-                <button onclick="simulateLogin(
-                    'dr.ankitraj8558@gmail.com',
-                    'Super Admin'
-                )"
-                        class="px-2.5 py-1 text-[11px]
-                               bg-slate-900
-                               border border-emerald-500/40
-                               text-emerald-400 rounded-lg">
-
-                    ⚡ Super Admin
-                </button>
-
-                <button onclick="simulateLogin(
-                    'student@gmail.com',
-                    'User'
-                )"
-                        class="px-2.5 py-1 text-[11px]
-                               bg-slate-900
-                               border border-slate-700
-                               text-slate-300 rounded-lg">
-
-                    👤 Demo Attendee
-                </button>
-
-            </div>
-        </div>
 
     </div>
 </div>
@@ -793,6 +758,11 @@
                                   focus:border-emerald-500">
                 </div>
 
+            </div>
+
+            <div id="paymentStatus"
+                 class="hidden rounded-xl border border-slate-800
+                        bg-slate-900/70 px-3 py-2 text-xs text-slate-300">
             </div>
 
             <button type="submit"
@@ -1891,6 +1861,18 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2dld2NjeXlleGZncm1mbGlnIiwiaWF0IjoxNzkwNzg4NDAxLCJleHAiOjIxMDYzNjQ0MDB9.8yolMynIAGtN41qsUCxLASpx_rszxDMUoskBvQJvQGo";
 
+/* Razorpay is intentionally disabled until the server-side order/verification
+   endpoints are connected. Never put the Razorpay secret key in this file. */
+const PAYMENT_CONFIG = {
+    enabled: false,
+    keyId: "",
+    createOrderEndpoint: "",
+    verifyPaymentEndpoint: "",
+    currency: "INR",
+    merchantName: "SYNAPSE '26",
+    themeColor: "#10b981"
+};
+
 
 /* =========================================================
    STATE
@@ -2082,18 +2064,18 @@ let announcements = [
 window.addEventListener("DOMContentLoaded", async () => {
 
     initLocalStorage();
-
     initSupabase();
 
+    /* Supabase automatically restores/detects OAuth sessions.
+       This explicit check handles a normal page reload as well. */
     await checkAuthSession();
 
+    updateAuthUI();
     renderEvents();
-
     updateMyPassesBadge();
-
     renderSchedule();
-
     renderAnnouncementsPublic();
+    renderResultsPublic();
 
 });
 
@@ -2221,254 +2203,201 @@ function saveState() {
 }
 
 /* =========================================================
-   SUPABASE INITIALIZATION
+   SUPABASE INITIALIZATION / AUTH
 ========================================================= */
 
 function initSupabase() {
 
+    if (!window.supabase || typeof window.supabase.createClient !== "function") {
+        console.error("Supabase JS library was not loaded.");
+        setSupabaseStatus("Authentication unavailable", false);
+        return;
+    }
+
     try {
 
-        if (!window.supabase) {
-
-            console.error(
-                "Supabase JS library was not loaded."
-            );
-
-            return;
-        }
-
-        supabaseClient =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_ANON_KEY,
-                {
-                    auth: {
-                        persistSession: true,
-                        autoRefreshToken: true,
-                        detectSessionInUrl: true,
-                        flowType: "implicit"
-                    }
+        supabaseClient = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY,
+            {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true,
+                    flowType: "implicit"
                 }
-            );
-
-        console.log(
-            "Supabase initialized successfully."
-        );
-
-        const status =
-            document.getElementById(
-                "supabaseStatusText"
-            );
-
-        if (status) {
-
-            status.innerText =
-                "Supabase + Google OAuth Ready";
-
-            status.className =
-                "text-emerald-400";
-
-        }
-
-        /* ==============================================
-           LISTEN FOR LOGIN / LOGOUT
-        ============================================== */
-
-        supabaseClient.auth.onAuthStateChange(
-            async (event, session) => {
-
-                console.log(
-                    "Supabase Auth Event:",
-                    event
-                );
-
-                if (
-                    event === "SIGNED_IN" &&
-                    session &&
-                    session.user
-                ) {
-
-                    await setCurrentUserFromSession(
-                        session
-                    );
-
-                    /*
-                     * Remove OAuth tokens from
-                     * browser URL after login.
-                     */
-                    if (
-                        window.location.hash.includes(
-                            "access_token"
-                        )
-                    ) {
-
-                        window.history.replaceState(
-                            {},
-                            document.title,
-                            window.location.pathname
-                        );
-
-                    }
-
-                }
-
-                if (event === "SIGNED_OUT") {
-
-                    currentUser = null;
-
-                    updateAuthUI();
-
-                    updateMyPassesBadge();
-
-                }
-
             }
         );
 
+        setSupabaseStatus("Google Authentication Ready", true);
+
+        /* Register this immediately after createClient().
+           Supabase emits INITIAL_SESSION after restoring/detecting OAuth. */
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+
+            console.log("Supabase Auth Event:", event);
+
+            if (
+                event === "INITIAL_SESSION" ||
+                event === "SIGNED_IN" ||
+                event === "TOKEN_REFRESHED" ||
+                event === "USER_UPDATED"
+            ) {
+                setCurrentUserFromSession(session);
+
+                if (session && session.user) {
+                    cleanOAuthUrl();
+                }
+            }
+
+            if (event === "SIGNED_OUT") {
+                currentUser = null;
+                updateAuthUI();
+                updateMyPassesBadge();
+            }
+
+        });
+
     } catch (error) {
 
-        console.error(
-            "Supabase initialization error:",
-            error
+        console.error("Supabase initialization error:", error);
+        setSupabaseStatus("Authentication error", false);
+
+    }
+
+}
+
+function setSupabaseStatus(text, ok = true) {
+
+    const status = document.getElementById("supabaseStatusText");
+
+    if (!status) return;
+
+    status.innerText = text;
+    status.className = ok
+        ? "text-emerald-400"
+        : "text-red-400";
+
+}
+
+function cleanOAuthUrl() {
+
+    const hash = window.location.hash || "";
+
+    if (
+        hash.includes("access_token=") ||
+        hash.includes("refresh_token=") ||
+        hash.includes("error=")
+    ) {
+
+        window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname + window.location.search
         );
 
     }
 
 }
 
+function setCurrentUserFromSession(session) {
 
-/* =========================================================
-   SET CURRENT USER
-========================================================= */
-
-async function setCurrentUserFromSession(session) {
-
-    if (
-        !session ||
-        !session.user
-    ) {
+    if (!session || !session.user) {
 
         currentUser = null;
-
         updateAuthUI();
-
+        updateMyPassesBadge();
         return;
 
     }
 
-    const email =
-        session.user.email || "";
+    const user = session.user;
+    const email = (user.email || "").trim().toLowerCase();
+
+    if (!email) {
+        currentUser = null;
+        updateAuthUI();
+        return;
+    }
 
     const name =
-        session.user.user_metadata?.full_name ||
-        session.user.user_metadata?.name ||
+        user.user_metadata?.full_name ||
+        user.user_metadata?.name ||
         email.split("@")[0];
 
-    const role =
-        determineRole(email);
-
     currentUser = {
-
-        email: email,
-
-        name: name,
-
-        role: role
-
+        id: user.id,
+        email,
+        name,
+        role: determineRole(email)
     };
 
-    console.log(
-        "Logged-in user:",
-        currentUser
-    );
-
     updateAuthUI();
-
     updateMyPassesBadge();
 
 }
 
-
-/* =========================================================
-   CHECK EXISTING AUTH SESSION
-========================================================= */
-
 async function checkAuthSession() {
 
-    if (!supabaseClient) {
-
-        console.error(
-            "Supabase client is not initialized."
-        );
-
-        return;
-
-    }
+    if (!supabaseClient) return;
 
     try {
 
         const {
             data,
             error
-        } =
-            await supabaseClient.auth.getSession();
+        } = await supabaseClient.auth.getSession();
 
         if (error) {
 
-            console.error(
-                "getSession() error:",
-                error
-            );
+            console.error("getSession() error:", error);
 
+            /* A stale browser token must never leave the UI in a
+               half-logged-in state. Clear only the local session. */
+            try {
+                await supabaseClient.auth.signOut({ scope: "local" });
+            } catch (_) {}
+
+            currentUser = null;
+            updateAuthUI();
+            updateMyPassesBadge();
             return;
 
         }
 
-        const session =
-            data?.session;
+        setCurrentUserFromSession(data?.session || null);
 
-        console.log(
-            "Existing session:",
-            session
-        );
-
-        if (
-            session &&
-            session.user
-        ) {
-
-            await setCurrentUserFromSession(
-                session
-            );
-
+        if (data?.session) {
+            cleanOAuthUrl();
         }
 
     } catch (error) {
 
-        console.error(
-            "Session check failed:",
-            error
-        );
+        console.error("Session restoration failed:", error);
+        currentUser = null;
+        updateAuthUI();
+        updateMyPassesBadge();
 
     }
 
 }
 
-
-/* =========================================================
-   GOOGLE LOGIN
-========================================================= */
-
 async function handleGoogleSignIn() {
 
     if (!supabaseClient) {
 
-        alert(
-            "Supabase is not initialized."
-        );
-
+        alert("Google authentication is currently unavailable.");
         return;
 
+    }
+
+    const button = document.querySelector(
+        '#authModal button[onclick="handleGoogleSignIn()"]'
+    );
+
+    if (button) {
+        button.disabled = true;
+        button.classList.add("opacity-60", "cursor-wait");
     }
 
     try {
@@ -2476,113 +2405,34 @@ async function handleGoogleSignIn() {
         const redirectUrl =
             "https://medmania.github.io/SYNAPSE/";
 
-        console.log(
-            "Starting Google OAuth..."
-        );
-
         const {
-            data,
             error
-        } =
-            await supabaseClient.auth.signInWithOAuth({
+        } = await supabaseClient.auth.signInWithOAuth({
+            provider: "google",
+            options: {
+                redirectTo: redirectUrl
+            }
+        });
 
-                provider: "google",
-
-                options: {
-
-                    redirectTo:
-                        redirectUrl
-
-                }
-
-            });
-
-        if (error) {
-
-            console.error(
-                "Google OAuth error:",
-                error
-            );
-
-            alert(
-                "Google login failed:\n\n" +
-                error.message
-            );
-
-        }
+        if (error) throw error;
 
     } catch (error) {
 
-        console.error(
-            "Google OAuth exception:",
-            error
-        );
+        console.error("Google OAuth error:", error);
 
         alert(
-            "Google login failed:\n\n" +
-            error.message
+            "Google login could not be started.\n\n" +
+            (error?.message || "Please try again.")
         );
+
+        if (button) {
+            button.disabled = false;
+            button.classList.remove("opacity-60", "cursor-wait");
+        }
 
     }
 
 }
-
-/* =========================================================
-   SIMULATE LOGIN
-========================================================= */
-
-function simulateLogin(
-    email,
-    forcedRole = null
-) {
-
-    const cleanEmail =
-        email.trim().toLowerCase();
-
-    const role =
-        forcedRole ||
-        determineRole(cleanEmail);
-
-    const name =
-        cleanEmail.split("@")[0];
-
-    currentUser = {
-        email: cleanEmail,
-        name,
-        role
-    };
-
-    updateAuthUI();
-
-    closeModal("authModal");
-
-    updateMyPassesBadge();
-
-    if (
-        role === "Super Admin" ||
-        role === "Sub-Admin"
-    ) {
-
-        openModal(
-            "adminDashboardModal"
-        );
-
-        renderAdminDashboard();
-
-    } else {
-
-        alert(
-            "Logged in successfully as " +
-            currentUser.email
-        );
-
-    }
-
-}
-
-/* =========================================================
-   DETERMINE ROLE
-========================================================= */
 
 function determineRole(email) {
 
@@ -2595,17 +2445,13 @@ function determineRole(email) {
         clean ===
         SUPER_ADMIN_EMAIL.toLowerCase()
     ) {
-
         return "Super Admin";
-
     }
 
     const found =
         adminList.find(
             admin =>
-                admin.email
-                    .trim()
-                    .toLowerCase() === clean
+                admin.email.trim().toLowerCase() === clean
         );
 
     return found
@@ -2614,42 +2460,24 @@ function determineRole(email) {
 
 }
 
-
-/* =========================================================
-   SIGN OUT
-========================================================= */
-
 async function handleSignOut() {
 
     if (supabaseClient) {
 
         try {
-
             await supabaseClient.auth.signOut();
-
         } catch (error) {
-
-            console.error(
-                "Sign out error:",
-                error
-            );
-
+            console.error("Sign out error:", error);
         }
 
     }
 
     currentUser = null;
-
     updateAuthUI();
-
-    closeModal(
-        "adminDashboardModal"
-    );
-
+    closeModal("adminDashboardModal");
     updateMyPassesBadge();
 
 }
-
 
 /* =========================================================
    AUTH UI
@@ -3827,11 +3655,19 @@ function openRegistrationModal(eventId) {
     );
 
 
-    document.getElementById(
-        "regSubmitBtn"
-    ).disabled =
-        false;
+    const paymentStatus = document.getElementById("paymentStatus");
+    if (paymentStatus) {
+        paymentStatus.classList.add("hidden");
+        paymentStatus.innerText = "";
+    }
 
+    const submitButton = document.getElementById("regSubmitBtn");
+    submitButton.disabled = false;
+    submitButton.innerText =
+        event.price > 0
+            ? `Continue to Payment • ₹${Number(event.price).toLocaleString("en-IN")}`
+            : "Confirm & Generate Pass";
+    submitButton.classList.remove("opacity-60", "cursor-wait");
 
     openModal(
         "registerModal"
@@ -3841,82 +3677,408 @@ function openRegistrationModal(eventId) {
 
 
 /* =========================================================
-   SUBMIT REGISTRATION
+   REGISTRATION / PAYMENT
 ========================================================= */
 
-function handleRegistrationSubmit(e) {
+function getRegistrationFormData() {
 
-    e.preventDefault();
+    return {
+        name: document.getElementById("regName").value.trim(),
+        email: currentUser?.email?.toLowerCase() || "",
+        college: document.getElementById("regCollege").value.trim(),
+        phone: document.getElementById("regPhone").value.trim()
+    };
 
+}
 
-    if (!currentUser) {
+function setPaymentStatus(message, type = "info") {
+
+    const box = document.getElementById("paymentStatus");
+
+    if (!box) return;
+
+    if (!message) {
+
+        box.classList.add("hidden");
+        box.innerHTML = "";
+        return;
+
+    }
+
+    box.classList.remove("hidden");
+
+    const classes = {
+        info: "border-slate-700 bg-slate-900/80 text-slate-300",
+        success: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
+        error: "border-red-500/30 bg-red-500/10 text-red-300",
+        warning: "border-amber-500/30 bg-amber-500/10 text-amber-300"
+    };
+
+    box.className =
+        "rounded-xl border px-3 py-2 text-xs " +
+        (classes[type] || classes.info);
+
+    box.innerText = message;
+
+}
+
+function setRegistrationButtonBusy(busy, text) {
+
+    const button = document.getElementById("regSubmitBtn");
+
+    if (!button) return;
+
+    button.disabled = busy;
+
+    button.innerText =
+        text ||
+        (busy ? "Processing…" : "Confirm & Generate Pass");
+
+    button.classList.toggle("opacity-60", busy);
+    button.classList.toggle("cursor-wait", busy);
+
+}
+
+function isPaymentConfigured() {
+
+    return Boolean(
+        PAYMENT_CONFIG.enabled &&
+        PAYMENT_CONFIG.keyId &&
+        PAYMENT_CONFIG.createOrderEndpoint &&
+        PAYMENT_CONFIG.verifyPaymentEndpoint &&
+        window.Razorpay
+    );
+
+}
+
+async function postPaymentEndpoint(url, body) {
+
+    if (!url) {
+        throw new Error("Payment endpoint is not configured.");
+    }
+
+    let accessToken = "";
+
+    if (supabaseClient) {
+
+        const {
+            data
+        } = await supabaseClient.auth.getSession();
+
+        accessToken =
+            data?.session?.access_token || "";
+
+    }
+
+    const response =
+        await fetch(
+            url,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(accessToken
+                        ? {
+                            "Authorization":
+                                `Bearer ${accessToken}`
+                        }
+                        : {})
+                },
+                body: JSON.stringify(body)
+            }
+        );
+
+    let result = null;
+
+    try {
+        result = await response.json();
+    } catch (_) {
+        result = null;
+    }
+
+    if (!response.ok) {
+
+        throw new Error(
+            result?.error ||
+            result?.message ||
+            `Payment server returned HTTP ${response.status}.`
+        );
+
+    }
+
+    return result || {};
+
+}
+
+async function startRazorpayPayment(event, formData) {
+
+    if (!isPaymentConfigured()) {
+
+        setPaymentStatus(
+            "Online payment is not connected yet. The fest can enable Razorpay by adding the server order + verification endpoints in PAYMENT_CONFIG.",
+            "warning"
+        );
 
         alert(
-            "Please login with Google first."
+            "Payment gateway is not connected yet.\n\n" +
+            "No money will be requested and no paid pass will be issued."
         );
 
         return;
 
     }
 
+    setRegistrationButtonBusy(true, "Creating secure order…");
+    setPaymentStatus(
+        "Creating a secure payment order…",
+        "info"
+    );
 
-    const eventId =
-        document.getElementById(
-            "regEventId"
-        ).value;
+    try {
 
+        /* IMPORTANT:
+           The server must calculate the final amount from eventId.
+           The client amount below is display/context only and must
+           never be trusted by the server. */
 
-    const event =
-        events.find(
-            item =>
-                item.id === eventId
+        const order =
+            await postPaymentEndpoint(
+                PAYMENT_CONFIG.createOrderEndpoint,
+                {
+                    action: "create_order",
+                    eventId: event.id,
+                    amount: Number(event.price) * 100,
+                    currency: PAYMENT_CONFIG.currency,
+                    customer: {
+                        name: formData.name,
+                        email: formData.email,
+                        phone: formData.phone
+                    }
+                }
+            );
+
+        const orderId =
+            order.orderId ||
+            order.id ||
+            order.order_id;
+
+        const amount =
+            Number(
+                order.amount ||
+                Number(event.price) * 100
+            );
+
+        const currency =
+            order.currency ||
+            PAYMENT_CONFIG.currency;
+
+        if (!orderId) {
+            throw new Error("Payment order ID was not returned by the server.");
+        }
+
+        setRegistrationButtonBusy(true, "Opening payment…");
+        setPaymentStatus(
+            `Secure checkout ready for ₹${event.price.toLocaleString("en-IN")}.`,
+            "info"
         );
 
+        const razorpay =
+            new window.Razorpay({
 
-    if (!event) {
+                key: PAYMENT_CONFIG.keyId,
 
-        return;
+                amount,
+
+                currency,
+
+                name: PAYMENT_CONFIG.merchantName,
+
+                description:
+                    `${event.title} — SYNAPSE '26`,
+
+                order_id: orderId,
+
+                prefill: {
+                    name: formData.name,
+                    email: formData.email,
+                    contact: formData.phone
+                },
+
+                notes: {
+                    event_id: event.id,
+                    attendee_email: formData.email
+                },
+
+                theme: {
+                    color: PAYMENT_CONFIG.themeColor
+                },
+
+                modal: {
+                    ondismiss: function () {
+                        setRegistrationButtonBusy(
+                            false,
+                            "Continue to Payment"
+                        );
+
+                        setPaymentStatus(
+                            "Payment window closed. No pass was issued.",
+                            "warning"
+                        );
+                    }
+                },
+
+                handler: async function (response) {
+
+                    try {
+
+                        setRegistrationButtonBusy(
+                            true,
+                            "Verifying payment…"
+                        );
+
+                        setPaymentStatus(
+                            "Payment received. Verifying transaction…",
+                            "info"
+                        );
+
+                        const verification =
+                            await postPaymentEndpoint(
+                                PAYMENT_CONFIG.verifyPaymentEndpoint,
+                                {
+                                    action: "verify_payment",
+                                    eventId: event.id,
+                                    orderId:
+                                        response.razorpay_order_id,
+                                    paymentId:
+                                        response.razorpay_payment_id,
+                                    signature:
+                                        response.razorpay_signature,
+                                    customer: formData
+                                }
+                            );
+
+                        if (
+                            verification.verified !== true &&
+                            verification.status !== "verified" &&
+                            verification.success !== true
+                        ) {
+                            throw new Error(
+                                "Payment verification failed."
+                            );
+                        }
+
+                        const registration =
+                            buildRegistration(
+                                event,
+                                formData,
+                                {
+                                    paymentStatus: "paid",
+                                    paymentProvider: "razorpay",
+                                    razorpayOrderId:
+                                        response.razorpay_order_id,
+                                    razorpayPaymentId:
+                                        response.razorpay_payment_id
+                                }
+                            );
+
+                        registrations.push(registration);
+                        saveState();
+
+                        closeModal("registerModal");
+                        showTicket(registration);
+                        updateMyPassesBadge();
+
+                        document
+                            .getElementById("registrationForm")
+                            .reset();
+
+                        setPaymentStatus("", "info");
+
+                    } catch (error) {
+
+                        console.error(
+                            "Payment verification error:",
+                            error
+                        );
+
+                        setRegistrationButtonBusy(
+                            false,
+                            "Continue to Payment"
+                        );
+
+                        setPaymentStatus(
+                            error?.message ||
+                            "Payment verification failed. Your pass was not issued.",
+                            "error"
+                        );
+
+                        alert(
+                            "Payment was completed but the verification step failed.\n\n" +
+                            "Do not pay again immediately. Please contact the fest committee with your Razorpay payment ID:\n\n" +
+                            (response?.razorpay_payment_id || "Unavailable")
+                        );
+
+                    }
+
+                }
+
+            });
+
+        razorpay.on(
+            "payment.failed",
+            function (response) {
+
+                console.error(
+                    "Razorpay payment failed:",
+                    response
+                );
+
+                setRegistrationButtonBusy(
+                    false,
+                    "Continue to Payment"
+                );
+
+                setPaymentStatus(
+                    response?.error?.description ||
+                    "Payment failed. No pass was issued.",
+                    "error"
+                );
+
+            }
+        );
+
+        razorpay.open();
+
+    } catch (error) {
+
+        console.error(
+            "Payment initialization error:",
+            error
+        );
+
+        setRegistrationButtonBusy(
+            false,
+            "Continue to Payment"
+        );
+
+        setPaymentStatus(
+            error?.message ||
+            "Could not start payment.",
+            "error"
+        );
 
     }
 
+}
 
-    const already =
-        registrations.find(
-            registration =>
-                registration.eventId === eventId &&
-                registration.email.toLowerCase() ===
-                    currentUser.email.toLowerCase()
-        );
-
-
-    if (already) {
-
-        alert(
-            "You already have a pass for this event."
-        );
-
-        showTicket(
-            already
-        );
-
-        closeModal(
-            "registerModal"
-        );
-
-        return;
-
-    }
-
+function buildRegistration(event, formData, payment = {}) {
 
     const passCode =
         "SYN-" +
-        Math.floor(
-            1000 +
-            Math.random() * 9000
-        );
+        Date.now().toString(36).toUpperCase().slice(-5) +
+        Math.random().toString(36).slice(2, 5).toUpperCase();
 
-
-    const registration = {
+    return {
 
         id: passCode,
 
@@ -3924,64 +4086,147 @@ function handleRegistrationSubmit(e) {
 
         eventTitle: event.title,
 
-        name:
-            document
-                .getElementById("regName")
-                .value
-                .trim(),
+        name: formData.name,
 
-        email:
-            currentUser.email
-                .toLowerCase(),
+        email: formData.email,
 
-        college:
-            document
-                .getElementById("regCollege")
-                .value
-                .trim(),
+        college: formData.college,
 
-        phone:
-            document
-                .getElementById("regPhone")
-                .value
-                .trim(),
+        phone: formData.phone,
 
         venue: event.venue,
 
-        date: event.date
+        date: event.date,
+
+        amount: Number(event.price) || 0,
+
+        currency: PAYMENT_CONFIG.currency,
+
+        paymentStatus:
+            payment.paymentStatus ||
+            (Number(event.price) === 0
+                ? "free"
+                : "unpaid"),
+
+        paymentProvider:
+            payment.paymentProvider || null,
+
+        razorpayOrderId:
+            payment.razorpayOrderId || null,
+
+        razorpayPaymentId:
+            payment.razorpayPaymentId || null,
+
+        createdAt:
+            new Date().toISOString()
 
     };
 
+}
 
-    registrations.push(
-        registration
-    );
+function completeFreeRegistration(event, formData) {
 
+    const registration =
+        buildRegistration(
+            event,
+            formData,
+            {
+                paymentStatus: "free"
+            }
+        );
 
+    registrations.push(registration);
     saveState();
 
-
-    closeModal(
-        "registerModal"
-    );
-
-
-    showTicket(
-        registration
-    );
-
-
+    closeModal("registerModal");
+    showTicket(registration);
     updateMyPassesBadge();
 
-
     document
-        .getElementById(
-            "registrationForm"
-        )
+        .getElementById("registrationForm")
         .reset();
 
 }
 
+async function handleRegistrationSubmit(e) {
+
+    e.preventDefault();
+
+    if (!currentUser) {
+
+        alert("Please login with Google first.");
+        return;
+
+    }
+
+    const eventId =
+        document.getElementById("regEventId").value;
+
+    const event =
+        events.find(
+            item => item.id === eventId
+        );
+
+    if (!event) {
+        alert("Event could not be found.");
+        return;
+    }
+
+    const formData =
+        getRegistrationFormData();
+
+    if (
+        !formData.name ||
+        !formData.email ||
+        !formData.college ||
+        !/^[0-9+()\\-\\s]{7,15}$/.test(formData.phone)
+    ) {
+
+        alert(
+            "Please enter a valid name, college and phone number."
+        );
+
+        return;
+
+    }
+
+    const already =
+        registrations.find(
+            registration =>
+                registration.eventId === eventId &&
+                (registration.email || "").toLowerCase() ===
+                    currentUser.email.toLowerCase() &&
+                registration.paymentStatus !== "failed"
+        );
+
+    if (already) {
+
+        alert(
+            "You already have a pass for this event."
+        );
+
+        showTicket(already);
+        closeModal("registerModal");
+        return;
+
+    }
+
+    if (event.price > 0) {
+
+        await startRazorpayPayment(
+            event,
+            formData
+        );
+
+        return;
+
+    }
+
+    setRegistrationButtonBusy(true, "Generating pass…");
+    completeFreeRegistration(event, formData);
+    setRegistrationButtonBusy(false);
+
+}
 
 /* =========================================================
    SHOW TICKET

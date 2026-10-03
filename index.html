@@ -981,6 +981,82 @@
 
 
 <!-- =========================================================
+     USER PROFILE
+========================================================= -->
+
+<div id="userProfileModal"
+     class="fixed inset-0 z-50 hidden
+            flex items-center justify-center p-4
+            bg-slate-950/80 backdrop-blur-sm">
+
+    <div class="glass-panel w-full max-w-lg
+                rounded-2xl p-6 sm:p-8 relative
+                shadow-2xl border border-slate-800
+                max-h-[85vh] flex flex-col">
+
+        <button onclick="closeModal('userProfileModal')"
+                class="absolute top-4 right-4
+                       text-slate-400 hover:text-slate-200">
+            <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full
+                        bg-emerald-500/20 border border-emerald-500/40
+                        flex items-center justify-center
+                        text-emerald-400 text-lg font-bold">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="min-w-0">
+                <h3 id="profileName"
+                    class="text-lg font-bold text-slate-100 truncate">
+                    Profile
+                </h3>
+                <p id="profileEmail"
+                   class="text-xs text-slate-400 truncate"></p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mb-4 text-xs">
+            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3">
+                <p class="text-slate-500">Role</p>
+                <p id="profileRole" class="font-semibold text-emerald-400 mt-0.5">User</p>
+            </div>
+            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3">
+                <p class="text-slate-500">Passes</p>
+                <p id="profilePassCount" class="font-semibold text-slate-100 mt-0.5">0</p>
+            </div>
+        </div>
+
+        <h4 class="text-sm font-bold text-slate-300 mb-2">
+            Your registrations
+        </h4>
+
+        <div id="profilePassesList"
+             class="overflow-y-auto space-y-3 flex-grow pr-1">
+        </div>
+
+        <div class="mt-4 flex gap-2">
+            <button onclick="openMyPasses(); closeModal('userProfileModal')"
+                    class="flex-1 bg-slate-900 hover:bg-slate-800
+                           text-slate-200 py-2.5 rounded-xl
+                           border border-slate-800 text-xs font-semibold">
+                <i class="fa-solid fa-ticket mr-1"></i>
+                All Passes
+            </button>
+            <button onclick="handleSignOut(); closeModal('userProfileModal')"
+                    class="flex-1 bg-red-950/40 hover:bg-red-950
+                           text-red-300 py-2.5 rounded-xl
+                           border border-red-900/50 text-xs font-semibold">
+                Logout
+            </button>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- =========================================================
      ADMIN DASHBOARD
 ========================================================= -->
 
@@ -1861,6 +1937,11 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2dld2NjeXlleGZncm1mbGlnIiwiaWF0IjoxNzkwNzg4NDAxLCJleHAiOjIxMDYzNjQ0MDB9.8yolMynIAGtN41qsUCxLASpx_rszxDMUoskBvQJvQGo";
 
+/* true = try Supabase tables for shared data (events/regs/announcements/admins).
+   Falls back to localStorage if tables are missing. Create tables using the SQL
+   at the bottom of this file, then set Site URL + Redirect URLs in Supabase Auth. */
+const USE_SUPABASE_DATA = true;
+
 /* Razorpay is intentionally disabled until the server-side order/verification
    endpoints are connected. Never put the Razorpay secret key in this file. */
 const PAYMENT_CONFIG = {
@@ -2070,6 +2151,9 @@ window.addEventListener("DOMContentLoaded", async () => {
        This explicit check handles a normal page reload as well. */
     await checkAuthSession();
 
+    /* Prefer shared cloud data so admin updates are visible to everyone */
+    await loadSharedDataFromSupabase();
+
     updateAuthUI();
     renderEvents();
     updateMyPassesBadge();
@@ -2081,7 +2165,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 
 /* =========================================================
-   LOCAL STORAGE
+   LOCAL STORAGE (offline cache only)
 ========================================================= */
 
 function initLocalStorage() {
@@ -2095,9 +2179,11 @@ function initLocalStorage() {
 
     } else {
 
-        events = JSON.parse(
-            localStorage.getItem("synapse_events_v3")
-        );
+        try {
+            events = JSON.parse(
+                localStorage.getItem("synapse_events_v3")
+            ) || events;
+        } catch (_) {}
 
     }
 
@@ -2111,9 +2197,11 @@ function initLocalStorage() {
 
     } else {
 
-        adminList = JSON.parse(
-            localStorage.getItem("synapse_admins_v3")
-        );
+        try {
+            adminList = JSON.parse(
+                localStorage.getItem("synapse_admins_v3")
+            ) || adminList;
+        } catch (_) {}
 
     }
 
@@ -2127,9 +2215,11 @@ function initLocalStorage() {
 
     } else {
 
-        registrations = JSON.parse(
-            localStorage.getItem("synapse_regs_v3")
-        );
+        try {
+            registrations = JSON.parse(
+                localStorage.getItem("synapse_regs_v3")
+            ) || registrations;
+        } catch (_) {}
 
     }
 
@@ -2143,20 +2233,17 @@ function initLocalStorage() {
 
     } else {
 
-        announcements = JSON.parse(
-            localStorage.getItem("synapse_ann_v3")
-        );
+        try {
+            announcements = JSON.parse(
+                localStorage.getItem("synapse_ann_v3")
+            ) || announcements;
+        } catch (_) {}
 
     }
 
 }
 
-
-/* =========================================================
-   SAVE STATE
-========================================================= */
-
-function saveState() {
+function persistLocalCache() {
 
     localStorage.setItem(
         "synapse_events_v3",
@@ -2177,6 +2264,235 @@ function saveState() {
         "synapse_ann_v3",
         JSON.stringify(announcements)
     );
+
+}
+
+
+/* =========================================================
+   SUPABASE SHARED DATA (visible to all users)
+========================================================= */
+
+async function loadSharedDataFromSupabase() {
+
+    if (!USE_SUPABASE_DATA || !supabaseClient) {
+        setSupabaseStatus("Local mode (not shared)", false);
+        return;
+    }
+
+    try {
+
+        const [evRes, regRes, annRes, admRes] = await Promise.all([
+            supabaseClient.from("events").select("*").order("id"),
+            supabaseClient.from("registrations").select("*").order("created_at", { ascending: false }),
+            supabaseClient.from("announcements").select("*").order("id", { ascending: false }),
+            supabaseClient.from("admins").select("*")
+        ]);
+
+        const missing =
+            (evRes.error && (evRes.error.code === "42P01" || /relation|does not exist|permission/i.test(evRes.error.message || ""))) ||
+            (regRes.error && /relation|does not exist/i.test(regRes.error.message || ""));
+
+        if (missing) {
+            console.warn("Supabase tables not ready — using local cache. Run SETUP SQL.", evRes.error || regRes.error);
+            setSupabaseStatus("Tables missing — local only", false);
+            return;
+        }
+
+        if (evRes.error) throw evRes.error;
+        if (regRes.error) throw regRes.error;
+        if (annRes.error) throw annRes.error;
+        if (admRes.error) throw admRes.error;
+
+        if (Array.isArray(evRes.data) && evRes.data.length > 0) {
+            events = evRes.data.map(row => ({
+                id: row.id,
+                title: row.title,
+                category: row.category,
+                venue: row.venue,
+                price: Number(row.price) || 0,
+                capacity: Number(row.capacity) || 0,
+                date: row.date,
+                desc: row.description || row.desc || "",
+                results: row.results || { type: "leaderboard", entries: [], notes: "", published: false }
+            }));
+        } else if (Array.isArray(evRes.data) && evRes.data.length === 0) {
+            /* Seed cloud with default events once */
+            await syncEventsToSupabase(true);
+        }
+
+        if (Array.isArray(regRes.data)) {
+            registrations = regRes.data.map(row => ({
+                id: row.id,
+                eventId: row.event_id,
+                eventTitle: row.event_title,
+                name: row.name,
+                email: row.email,
+                college: row.college,
+                phone: row.phone,
+                venue: row.venue,
+                date: row.date,
+                amount: Number(row.amount) || 0,
+                currency: row.currency || "INR",
+                paymentStatus: row.payment_status,
+                paymentProvider: row.payment_provider,
+                razorpayOrderId: row.razorpay_order_id,
+                razorpayPaymentId: row.razorpay_payment_id,
+                createdAt: row.created_at
+            }));
+        }
+
+        if (Array.isArray(annRes.data) && annRes.data.length > 0) {
+            announcements = annRes.data.map(row => ({
+                id: row.id,
+                title: row.title,
+                body: row.body,
+                time: row.time || row.created_at
+            }));
+        }
+
+        if (Array.isArray(admRes.data) && admRes.data.length > 0) {
+            adminList = admRes.data.map(row => ({
+                email: row.email,
+                role: row.role
+            }));
+        }
+
+        persistLocalCache();
+        setSupabaseStatus("Live shared data ✓", true);
+
+        /* Re-apply role if session already restored */
+        if (currentUser) {
+            currentUser.role = determineRole(currentUser.email);
+            updateAuthUI();
+        }
+
+    } catch (error) {
+
+        console.error("loadSharedDataFromSupabase:", error);
+        setSupabaseStatus("Cloud sync offline — local cache", false);
+
+    }
+
+}
+
+async function syncEventsToSupabase(forceSeed = false) {
+
+    if (!USE_SUPABASE_DATA || !supabaseClient) return;
+
+    try {
+        const rows = events.map(e => ({
+            id: e.id,
+            title: e.title,
+            category: e.category,
+            venue: e.venue,
+            price: e.price,
+            capacity: e.capacity,
+            date: e.date,
+            description: e.desc,
+            results: e.results || { type: "leaderboard", entries: [], notes: "", published: false },
+            updated_at: new Date().toISOString()
+        }));
+
+        const { error } = await supabaseClient
+            .from("events")
+            .upsert(rows, { onConflict: "id" });
+
+        if (error) throw error;
+    } catch (error) {
+        console.error("syncEventsToSupabase:", error);
+        if (forceSeed) {
+            setSupabaseStatus("Could not seed events (check RLS)", false);
+        }
+    }
+
+}
+
+async function syncRegistrationToSupabase(reg) {
+
+    if (!USE_SUPABASE_DATA || !supabaseClient) return;
+
+    try {
+        const { error } = await supabaseClient.from("registrations").upsert({
+            id: reg.id,
+            event_id: reg.eventId,
+            event_title: reg.eventTitle,
+            name: reg.name,
+            email: reg.email,
+            college: reg.college,
+            phone: reg.phone,
+            venue: reg.venue,
+            date: reg.date,
+            amount: reg.amount,
+            currency: reg.currency || "INR",
+            payment_status: reg.paymentStatus,
+            payment_provider: reg.paymentProvider,
+            razorpay_order_id: reg.razorpayOrderId,
+            razorpay_payment_id: reg.razorpayPaymentId,
+            created_at: reg.createdAt || new Date().toISOString()
+        }, { onConflict: "id" });
+
+        if (error) throw error;
+    } catch (error) {
+        console.error("syncRegistrationToSupabase:", error);
+    }
+
+}
+
+async function syncAnnouncementsToSupabase() {
+
+    if (!USE_SUPABASE_DATA || !supabaseClient) return;
+
+    try {
+        const rows = announcements.map(a => ({
+            id: a.id,
+            title: a.title,
+            body: a.body,
+            time: a.time
+        }));
+
+        const { error } = await supabaseClient
+            .from("announcements")
+            .upsert(rows, { onConflict: "id" });
+
+        if (error) throw error;
+    } catch (error) {
+        console.error("syncAnnouncementsToSupabase:", error);
+    }
+
+}
+
+async function syncAdminsToSupabase() {
+
+    if (!USE_SUPABASE_DATA || !supabaseClient) return;
+
+    try {
+        const { error } = await supabaseClient
+            .from("admins")
+            .upsert(adminList, { onConflict: "email" });
+
+        if (error) throw error;
+    } catch (error) {
+        console.error("syncAdminsToSupabase:", error);
+    }
+
+}
+
+
+/* =========================================================
+   SAVE STATE
+========================================================= */
+
+function saveState() {
+
+    persistLocalCache();
+
+    /* Fire-and-forget cloud sync so every visitor sees updates */
+    if (USE_SUPABASE_DATA && supabaseClient) {
+        syncEventsToSupabase();
+        syncAnnouncementsToSupabase();
+        syncAdminsToSupabase();
+        /* registrations synced individually on create */
+    }
 
     renderEvents();
 
@@ -2386,7 +2702,7 @@ async function handleGoogleSignIn() {
 
     if (!supabaseClient) {
 
-        alert("Google authentication is currently unavailable.");
+        alert("Google authentication is currently unavailable.\n\nCheck that the Supabase JS library loaded and your project keys are correct.");
         return;
 
     }
@@ -2402,28 +2718,55 @@ async function handleGoogleSignIn() {
 
     try {
 
+        /* Always redirect back to the exact page the user is on.
+           Must match an entry in Supabase → Authentication → URL Configuration
+           → Redirect URLs (add both with and without trailing slash). */
         const redirectUrl =
-            "https://medmania.github.io/SYNAPSE/";
+            window.location.origin +
+            window.location.pathname.replace(/\/?$/, "/");
 
         const {
+            data,
             error
         } = await supabaseClient.auth.signInWithOAuth({
             provider: "google",
             options: {
-                redirectTo: redirectUrl
+                redirectTo: redirectUrl,
+                queryParams: {
+                    access_type: "online",
+                    prompt: "select_account"
+                }
             }
         });
 
         if (error) throw error;
 
+        /* If the browser blocked the redirect, surface a clear message */
+        if (data && data.url) {
+            window.location.href = data.url;
+        }
+
     } catch (error) {
 
         console.error("Google OAuth error:", error);
 
-        alert(
-            "Google login could not be started.\n\n" +
-            (error?.message || "Please try again.")
-        );
+        const msg = (error?.message || "").toLowerCase();
+        let hint = error?.message || "Please try again.";
+
+        if (msg.includes("provider") || msg.includes("not enabled")) {
+            hint =
+                "Google provider is not enabled in Supabase.\n\n" +
+                "Supabase Dashboard → Authentication → Providers → Google → Enable,\n" +
+                "and paste your Google Cloud OAuth Client ID + Secret.";
+        } else if (msg.includes("redirect") || msg.includes("url")) {
+            hint =
+                "Redirect URL is not allowlisted.\n\n" +
+                "Supabase Dashboard → Authentication → URL Configuration:\n" +
+                "• Site URL: https://medmania.github.io/SYNAPSE/\n" +
+                "• Redirect URLs: https://medmania.github.io/SYNAPSE/**";
+        }
+
+        alert("Google login could not be started.\n\n" + hint);
 
         if (button) {
             button.disabled = false;
@@ -2522,97 +2865,51 @@ function updateAuthUI() {
     }
 
 
-    if (
+    const isAdmin =
         currentUser.role === "Super Admin" ||
-        currentUser.role === "Sub-Admin"
-    ) {
+        currentUser.role === "Sub-Admin";
 
-        container.innerHTML = `
+    const adminBtn = isAdmin
+        ? `
+            <button
+                onclick="openAdminDashboard()"
+                class="flex items-center space-x-1.5
+                       bg-slate-900 border border-emerald-500/50
+                       hover:bg-slate-800 text-emerald-400
+                       font-bold px-3 py-2 rounded-xl text-xs">
+                <i class="fa-solid fa-crown"></i>
+                <span class="hidden sm:inline">Dashboard</span>
+            </button>
+          `
+        : "";
 
-            <div class="flex items-center space-x-2">
-
-                <button
-                    onclick="openAdminDashboard()"
-                    class="flex items-center
-                           space-x-1.5
-                           bg-slate-900
-                           border border-emerald-500/50
-                           hover:bg-slate-800
-                           text-emerald-400
-                           font-bold px-3 py-2
-                           rounded-xl text-xs">
-
-                    <i class="fa-solid fa-crown"></i>
-
-                    <span class="hidden sm:inline">
-                        Dashboard
-                    </span>
-
-                </button>
-
-                <button
-                    onclick="handleSignOut()"
-                    class="flex items-center
-                           space-x-1.5
-                           bg-slate-900
-                           hover:bg-red-950
-                           text-slate-400
-                           hover:text-red-400
-                           px-2.5 py-2
-                           rounded-xl
-                           border border-slate-800
-                           text-xs"
-                    title="Logout">
-
-                    <i class="fa-solid fa-right-from-bracket"></i>
-
-                </button>
-
-            </div>
-        `;
-
-    } else {
-
-        container.innerHTML = `
-
-            <div class="flex items-center space-x-2">
-
-                <span
-                    class="hidden sm:inline
-                           text-xs text-slate-300
-                           truncate max-w-[120px]">
-
-                    ${escapeHtml(
-                        currentUser.name ||
-                        currentUser.email
-                    )}
-
+    container.innerHTML = `
+        <div class="flex items-center space-x-2">
+            ${adminBtn}
+            <button
+                onclick="openUserProfile()"
+                class="flex items-center space-x-1.5
+                       bg-slate-900 hover:bg-slate-800
+                       text-slate-200 px-3 py-2 rounded-xl
+                       border border-slate-700/60 text-xs font-medium"
+                title="My Profile">
+                <i class="fa-solid fa-user text-emerald-400"></i>
+                <span class="hidden sm:inline truncate max-w-[100px]">
+                    ${escapeHtml(currentUser.name || currentUser.email)}
                 </span>
-
-                <button
-                    onclick="handleSignOut()"
-                    class="flex items-center
-                           space-x-1.5
-                           bg-slate-900
-                           hover:bg-red-950
-                           text-slate-300
-                           hover:text-red-400
-                           px-3 py-2 rounded-xl
-                           border border-slate-700
-                           text-xs">
-
-                    <i class="fa-solid fa-right-from-bracket"></i>
-
-                    <span class="hidden sm:inline">
-                        Logout
-                    </span>
-
-                </button>
-
-            </div>
-        `;
-
-    }
+            </button>
+            <button
+                onclick="handleSignOut()"
+                class="flex items-center space-x-1.5
+                       bg-slate-900 hover:bg-red-950
+                       text-slate-400 hover:text-red-400
+                       px-2.5 py-2 rounded-xl
+                       border border-slate-800 text-xs"
+                title="Logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+        </div>
+    `;
 
 }
 
@@ -3983,6 +4280,7 @@ async function startRazorpayPayment(event, formData) {
 
                         registrations.push(registration);
                         saveState();
+                        syncRegistrationToSupabase(registration);
 
                         closeModal("registerModal");
                         showTicket(registration);
@@ -4137,6 +4435,7 @@ function completeFreeRegistration(event, formData) {
 
     registrations.push(registration);
     saveState();
+    syncRegistrationToSupabase(registration);
 
     closeModal("registerModal");
     showTicket(registration);
@@ -4295,6 +4594,69 @@ function showTicket(registration) {
 /* =========================================================
    MY PASSES
 ========================================================= */
+
+function openUserProfile() {
+
+    if (!currentUser) {
+        openModal("authModal");
+        return;
+    }
+
+    document.getElementById("profileName").innerText =
+        currentUser.name || "User";
+
+    document.getElementById("profileEmail").innerText =
+        currentUser.email || "";
+
+    document.getElementById("profileRole").innerText =
+        currentUser.role || "User";
+
+    const myRegs = registrations.filter(
+        r => (r.email || "").toLowerCase() === currentUser.email.toLowerCase()
+    );
+
+    document.getElementById("profilePassCount").innerText =
+        String(myRegs.length);
+
+    const list = document.getElementById("profilePassesList");
+
+    if (myRegs.length === 0) {
+        list.innerHTML = `
+            <p class="text-xs text-slate-500 text-center py-6">
+                No registrations yet. Browse events and get a pass!
+            </p>
+        `;
+    } else {
+        list.innerHTML = myRegs.map(reg => {
+            const encoded = encodeURIComponent(JSON.stringify(reg));
+            return `
+                <div class="p-3 rounded-xl bg-slate-900 border border-slate-800
+                            flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                        <h4 class="text-sm font-bold text-slate-200 truncate">
+                            ${escapeHtml(reg.eventTitle)}
+                        </h4>
+                        <p class="text-xs text-slate-400 mt-0.5">
+                            <span class="font-mono text-emerald-400">${escapeHtml(reg.id)}</span>
+                            · ${escapeHtml(reg.date || "")}
+                        </p>
+                    </div>
+                    <button
+                        onclick="showTicketFromEncoded('${encoded}')"
+                        class="shrink-0 px-3 py-1.5 bg-emerald-500/10 text-emerald-400
+                               border border-emerald-500/30 rounded-lg text-xs font-semibold
+                               hover:bg-emerald-500 hover:text-slate-950">
+                        View
+                    </button>
+                </div>
+            `;
+        }).join("");
+    }
+
+    openModal("userProfileModal");
+
+}
+
 
 function openMyPasses() {
 

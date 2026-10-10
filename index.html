@@ -21,6 +21,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -102,7 +103,7 @@
 <footer class="border-t border-slate-900 bg-slate-950 py-5 px-4 text-center text-xs text-slate-500">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
         <p>&copy; 2026 SYNAPSE Fest Committee, MAMC.</p>
-        <span id="supabaseStatus" class="text-slate-400 font-mono">Connecting...</span>
+        <span id="supabaseStatus" class="text-slate-400 font-mono">Initializing App...</span>
     </div>
 </footer>
 
@@ -199,6 +200,7 @@
     </div>
 </div>
 
+<!-- JAVASCRIPT APP LOGIC -->
 <script>
 const SUPER_ADMIN = "dr.ankitraj8558@gmail.com";
 const SUPABASE_URL = "https://ccsgewccyyexfgrmflig.supabase.co";
@@ -214,17 +216,27 @@ let events = [
     { id: "ev-4", title: "Valorant Masters Arena", category: "E-Sports", venue: "IT Block LAN Hub", price: 150, capacity: 64, date: "Oct 13, 2:00 PM", desc: "5v5 competitive LAN tournament." }
 ];
 
-let registrations = JSON.parse(localStorage.getItem("synapse_regs_v4") || "[]");
+let registrations = JSON.parse(localStorage.getItem("synapse_regs_v5") || "[]");
 
 window.addEventListener("DOMContentLoaded", async () => {
+    // 1. Initialize Supabase first
     initSupabase();
-    await fetchDatabaseData();
+
+    if (supabaseClient) {
+        // 2. Await session retrieval so URL hash tokens are fully processed BEFORE database calls
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+            handleUserSession(session);
+        }
+        
+        // 3. Now that Auth is resolved, fetch data securely
+        await fetchDatabaseData();
+    }
+
+    // 4. Render UI
     renderEvents();
     updatePassBadge();
 });
-
-function openModal(id) { document.getElementById(id)?.classList.remove("hidden"); }
-function closeModal(id) { document.getElementById(id)?.classList.add("hidden"); }
 
 function setSupabaseStatus(msg, ok = true) {
     const status = document.getElementById("supabaseStatus");
@@ -239,23 +251,22 @@ function initSupabase() {
         setSupabaseStatus("Auth Library Missing", false);
         return;
     }
-    try {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-            auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-        });
-        setSupabaseStatus("Supabase Connected ✓", true);
+    
+    // Setting detectSessionInUrl: true allows Supabase to automatically read the token and clear the URL correctly.
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    });
+    setSupabaseStatus("Supabase Connected ✓", true);
 
-        supabaseClient.auth.getSession().then(({ data }) => {
-            if (data?.session) handleUserSession(data.session);
-        }).catch(() => {});
-
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (session) handleUserSession(session);
-            else { currentUser = null; updateAuthUI(); }
-        });
-    } catch (e) {
-        setSupabaseStatus("Auth Error", false);
-    }
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            handleUserSession(session);
+        } else if (event === 'SIGNED_OUT') {
+            currentUser = null;
+            updateAuthUI();
+            updatePassBadge();
+        }
+    });
 }
 
 function handleUserSession(session) {
@@ -267,45 +278,28 @@ function handleUserSession(session) {
     currentUser = { id: session.user.id, email, name, role };
     updateAuthUI();
     updatePassBadge();
-
-    if (window.location.hash.includes("access_token")) {
-        window.history.replaceState(null, "", window.location.pathname);
-    }
 }
 
 async function fetchDatabaseData() {
-    if (!supabaseClient) return;
     try {
         const [evRes, regRes] = await Promise.all([
             supabaseClient.from("events").select("*"),
             supabaseClient.from("registrations").select("*")
         ]);
 
-        if (Array.isArray(evRes.data) && evRes.data.length > 0) {
+        if (evRes.data && evRes.data.length > 0) {
             events = evRes.data.map(r => ({
-                id: r.id,
-                title: r.title,
-                category: r.category,
-                venue: r.venue,
-                price: Number(r.price) || 0,
-                capacity: Number(r.capacity) || 0,
-                date: r.date,
-                desc: r.description || ""
+                id: r.id, title: r.title, category: r.category, venue: r.venue,
+                price: Number(r.price) || 0, capacity: Number(r.capacity) || 0,
+                date: r.date, desc: r.description || ""
             }));
         }
 
-        if (Array.isArray(regRes.data)) {
+        if (regRes.data) {
             const remoteRegs = regRes.data.map(r => ({
-                id: r.id,
-                eventId: r.event_id,
-                eventTitle: r.event_title,
-                name: r.name,
-                email: r.email,
-                college: r.college,
-                phone: r.phone,
-                venue: r.venue,
-                date: r.date,
-                amount: r.amount
+                id: r.id, eventId: r.event_id, eventTitle: r.event_title,
+                name: r.name, email: r.email, college: r.college,
+                phone: r.phone, venue: r.venue, date: r.date, amount: r.amount
             }));
             
             const combined = [...remoteRegs];
@@ -313,19 +307,22 @@ async function fetchDatabaseData() {
                 if (!combined.some(c => c.id === local.id)) combined.push(local);
             });
             registrations = combined;
-            localStorage.setItem("synapse_regs_v4", JSON.stringify(registrations));
+            localStorage.setItem("synapse_regs_v5", JSON.stringify(registrations));
         }
     } catch (e) {
-        console.log("Database sync using local state fallback.");
+        console.log("Database sync failed, relying on local state.");
     }
 }
 
 async function handleGoogleSignIn() {
     if (!supabaseClient) return alert("Supabase auth is unavailable.");
-    const redirectUrl = window.location.href.split('#')[0];
+    
+    // We send the clean URL (without hashes) for Google to redirect back to.
+    const cleanRedirectUrl = window.location.origin + window.location.pathname;
+    
     await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: redirectUrl }
+        options: { redirectTo: cleanRedirectUrl }
     });
 }
 
@@ -423,20 +420,13 @@ async function handleRegisterSubmit(e) {
     };
 
     registrations.unshift(pass);
-    localStorage.setItem("synapse_regs_v4", JSON.stringify(registrations));
+    localStorage.setItem("synapse_regs_v5", JSON.stringify(registrations));
 
     if (supabaseClient) {
         supabaseClient.from("registrations").insert([{
-            id: pass.id,
-            event_id: pass.eventId,
-            event_title: pass.eventTitle,
-            name: pass.name,
-            email: pass.email,
-            college: pass.college,
-            phone: pass.phone,
-            venue: pass.venue,
-            date: pass.date,
-            amount: pass.amount
+            id: pass.id, event_id: pass.eventId, event_title: pass.eventTitle,
+            name: pass.name, email: pass.email, college: pass.college,
+            phone: pass.phone, venue: pass.venue, date: pass.date, amount: pass.amount
         }]).then(() => {}).catch(() => {});
     }
 
@@ -526,6 +516,9 @@ function showSection(name) {
         document.getElementById("resultsContainer").innerHTML = `<div class="glass-panel p-6 rounded-2xl text-slate-400 text-sm border border-slate-800">Results and rankings will be updated live during SYNAPSE '26.</div>`;
     }
 }
+
+function openModal(id) { document.getElementById(id)?.classList.remove("hidden"); }
+function closeModal(id) { document.getElementById(id)?.classList.add("hidden"); }
 </script>
 
 </body>

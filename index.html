@@ -25,34 +25,35 @@
 
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .glass-panel { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-panel { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glow-emerald { box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.3); }
     </style>
 </head>
 
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-slate-950">
 
 <!-- HEADER -->
 <header class="sticky top-0 z-40 glass-panel border-b border-slate-800">
     <div class="max-w-7xl mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">
         <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('events')">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center font-black text-slate-950 text-xl">S</div>
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-emerald-500/20">S</div>
             <div>
-                <h1 class="text-lg font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-white">
+                <h1 class="text-lg font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-200 to-white">
                     SYNAPSE <span class="text-emerald-500 text-xs px-2 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 font-mono">'26</span>
                 </h1>
-                <p class="text-[10px] text-slate-400">Maulana Azad Medical College</p>
+                <p class="text-[10px] text-slate-400 font-medium">Maulana Azad Medical College</p>
             </div>
         </div>
 
         <div class="flex items-center space-x-2">
             <button onclick="showSection('results')" class="bg-slate-900 hover:bg-slate-800 text-slate-200 px-3 py-2 rounded-xl border border-slate-700 text-xs font-medium">
-                <i class="fa-solid fa-trophy text-emerald-400 mr-1"></i> Results
+                <i class="fa-solid fa-trophy text-emerald-400 mr-1"></i> Live Results
             </button>
             <button onclick="openMyPasses()" class="bg-slate-900 hover:bg-slate-800 text-slate-200 px-3 py-2 rounded-xl border border-slate-700 text-xs font-medium">
                 <i class="fa-solid fa-ticket text-emerald-400 mr-1"></i> My Passes (<span id="passCount">0</span>)
             </button>
             <div id="authContainer">
-                <button onclick="openModal('authModal')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold px-3 py-2 rounded-xl text-xs">
+                <button onclick="openModal('authModal')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold px-3.5 py-2 rounded-xl text-xs shadow-lg">
                     <i class="fa-solid fa-google mr-1"></i> Login
                 </button>
             </div>
@@ -61,26 +62,36 @@
 </header>
 
 <!-- HERO -->
-<section class="py-8 px-4 text-center border-b border-slate-800/50">
-    <h1 class="text-3xl sm:text-5xl font-black text-slate-100">
-        SYNAPSE <br><span class="text-emerald-400">At SYNAPSE '26</span>
-    </h1>
-    <p class="mt-2 text-xs sm:text-sm text-slate-400">MAMC'S ANNUAL COLLEGE FEST</p>
+<section class="py-10 px-4 text-center border-b border-slate-800/50 relative overflow-hidden">
+    <div class="max-w-4xl mx-auto">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 mb-4">
+            <i class="fa-solid fa-bolt mr-1.5"></i> MAMC's Annual Extravaganza
+        </span>
+        <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-slate-100 leading-tight">
+            Ignite The Neuro-Rhythm <br><span class="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-300">At SYNAPSE '26</span>
+        </h1>
+        <p class="mt-3 text-xs sm:text-sm text-slate-400">Login with Google → Select Event → Instant Official Pass</p>
+        
+        <div class="mt-6 max-w-xl mx-auto flex gap-2">
+            <input type="text" id="searchInput" oninput="renderEvents()" placeholder="Search events or venues..." class="w-full px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+        </div>
+    </div>
 </section>
 
 <!-- MAIN CONTENT -->
-<main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
+<main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8">
 
     <!-- EVENTS SECTION -->
     <div id="eventsSection">
         <div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        <div id="emptyState" class="hidden text-center py-12 text-slate-500 text-sm">No events found matching your search.</div>
     </div>
 
     <!-- RESULTS SECTION -->
     <div id="resultsSection" class="hidden">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold"><i class="fa-solid fa-trophy text-emerald-400 mr-2"></i> Live Results</h2>
-            <button onclick="showSection('events')" class="text-xs bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-xl">← Back</button>
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-trophy text-emerald-400"></i> Live Results & Standings</h2>
+            <button onclick="showSection('events')" class="text-xs bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-xl hover:bg-slate-800">← Back to Events</button>
         </div>
         <div id="resultsContainer" class="space-y-4"></div>
     </div>
@@ -88,51 +99,51 @@
 </main>
 
 <!-- FOOTER -->
-<footer class="border-t border-slate-900 bg-slate-950 py-4 px-4 text-center text-xs text-slate-500">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-        <p>&copy; 2026 SYNAPSE, MAMC</p>
-        <span id="supabaseStatus" class="text-slate-500">Checking Auth...</span>
+<footer class="border-t border-slate-900 bg-slate-950 py-5 px-4 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+        <p>&copy; 2026 SYNAPSE Fest Committee, MAMC.</p>
+        <span id="supabaseStatus" class="text-slate-400 font-mono">Connecting...</span>
     </div>
 </footer>
 
 <!-- AUTH MODAL -->
 <div id="authModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-    <div class="glass-panel w-full max-w-md rounded-2xl p-6 relative text-center">
-        <button onclick="closeModal('authModal')" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
+    <div class="glass-panel w-full max-w-md rounded-2xl p-6 sm:p-8 relative text-center border border-slate-800">
+        <button onclick="closeModal('authModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200"><i class="fa-solid fa-xmark text-lg"></i></button>
         <div class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 mx-auto flex items-center justify-center text-emerald-400 mb-3">
             <i class="fa-solid fa-google text-xl"></i>
         </div>
-        <h3 class="text-xl font-bold mb-1">Login with Google</h3>
-        <p class="text-xs text-slate-400 mb-6">Sign in to register and access passes.</p>
-        <button onclick="handleGoogleSignIn()" class="w-full bg-white hover:bg-slate-100 text-slate-900 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-3">
-            <i class="fa-brands fa-google text-red-500"></i> Continue with Google
+        <h3 class="text-xl font-bold text-slate-100 mb-1">Login with Google</h3>
+        <p class="text-xs text-slate-400 mb-6">Required to register for events and manage passes.</p>
+        <button onclick="handleGoogleSignIn()" class="w-full bg-white hover:bg-slate-100 text-slate-900 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-3 transition shadow-lg">
+            <i class="fa-brands fa-google text-red-500 text-lg"></i> Continue with Google
         </button>
     </div>
 </div>
 
 <!-- REGISTER MODAL -->
 <div id="registerModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-    <div class="glass-panel w-full max-w-md rounded-2xl p-6 relative">
+    <div class="glass-panel w-full max-w-md rounded-2xl p-6 relative border border-slate-800">
         <button onclick="closeModal('registerModal')" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
-        <h3 id="regTitle" class="text-xl font-bold mb-1">Register Event</h3>
+        <h3 id="regTitle" class="text-xl font-bold text-slate-100 mb-0.5">Register Event</h3>
         <p id="regSub" class="text-xs text-emerald-400 mb-4 font-mono"></p>
 
         <form onsubmit="handleRegisterSubmit(event)" class="space-y-3">
             <input type="hidden" id="regEventId">
             <div>
-                <label class="block text-xs text-slate-400 mb-1">Full Name</label>
-                <input type="text" id="regName" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100">
+                <label class="block text-xs font-semibold text-slate-400 mb-1">Full Name</label>
+                <input type="text" id="regName" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
             </div>
             <div>
-                <label class="block text-xs text-slate-400 mb-1">College</label>
-                <input type="text" id="regCollege" required placeholder="MAMC / Other" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100">
+                <label class="block text-xs font-semibold text-slate-400 mb-1">College / Institution</label>
+                <input type="text" id="regCollege" required placeholder="MAMC / Other" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
             </div>
             <div>
-                <label class="block text-xs text-slate-400 mb-1">Phone</label>
-                <input type="tel" id="regPhone" required placeholder="9876543210" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100">
+                <label class="block text-xs font-semibold text-slate-400 mb-1">Phone Number</label>
+                <input type="tel" id="regPhone" required placeholder="9876543210" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
             </div>
-            <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-2.5 rounded-xl text-sm mt-2">
-                Generate Pass
+            <button type="submit" id="regSubmitBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-3 rounded-xl text-sm transition shadow-lg mt-2">
+                Confirm & Generate Pass
             </button>
         </form>
     </div>
@@ -140,37 +151,51 @@
 
 <!-- PASS TICKET MODAL -->
 <div id="ticketModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
-    <div class="glass-panel w-full max-w-md rounded-3xl p-6 relative border border-emerald-500/30 text-center">
+    <div class="glass-panel w-full max-w-md rounded-3xl p-6 relative border border-emerald-500/30 glow-emerald text-center">
         <button onclick="closeModal('ticketModal')" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
         <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">SYNAPSE '26 ADMISSION PASS</span>
-        <h2 id="passEvent" class="text-2xl font-black mt-2"></h2>
-        <p id="passVenue" class="text-xs text-slate-400 mt-1"></p>
+        <h2 id="passEvent" class="text-2xl font-black text-slate-100 mt-2"></h2>
+        <p id="passVenue" class="text-xs text-slate-400 mt-0.5"></p>
 
-        <div class="my-4 p-4 bg-slate-900 rounded-2xl text-left space-y-1 text-xs">
-            <div class="flex justify-between"><span class="text-slate-500">Attendee:</span><span id="passName" class="font-bold"></span></div>
-            <div class="flex justify-between"><span class="text-slate-500">Pass Code:</span><span id="passId" class="font-mono text-emerald-400"></span></div>
-            <div class="flex justify-between"><span class="text-slate-500">College:</span><span id="passCollege"></span></div>
+        <div class="my-5 p-4 bg-slate-900/90 rounded-2xl text-left space-y-2 text-xs border border-slate-800">
+            <div class="flex justify-between"><span class="text-slate-500">Attendee:</span><span id="passName" class="font-bold text-slate-200"></span></div>
+            <div class="flex justify-between"><span class="text-slate-500">Pass Code:</span><span id="passId" class="font-mono text-emerald-400 font-bold"></span></div>
+            <div class="flex justify-between"><span class="text-slate-500">College:</span><span id="passCollege" class="text-slate-300"></span></div>
         </div>
 
-        <button onclick="closeModal('ticketModal')" class="w-full bg-emerald-500 text-slate-950 font-bold py-2 rounded-xl text-xs">Done</button>
+        <div class="flex gap-2">
+            <button onclick="window.print()" class="flex-1 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-200 py-2.5 rounded-xl text-xs font-semibold">Print / Save</button>
+            <button onclick="closeModal('ticketModal')" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs">Done</button>
+        </div>
+    </div>
+</div>
+
+<!-- MY PASSES MODAL -->
+<div id="myPassesModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+    <div class="glass-panel w-full max-w-lg rounded-2xl p-6 relative border border-slate-800 max-h-[85vh] flex flex-col">
+        <button onclick="closeModal('myPassesModal')" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <h3 class="text-xl font-bold text-slate-100 mb-1">My Registered Passes</h3>
+        <p id="myPassesSub" class="text-xs text-slate-400 mb-4"></p>
+        <div id="myPassesList" class="overflow-y-auto space-y-3 flex-grow pr-1 text-xs"></div>
     </div>
 </div>
 
 <!-- ADMIN DASHBOARD MODAL -->
 <div id="adminModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
-    <div class="glass-panel w-full max-w-3xl rounded-3xl p-6 relative border border-slate-800 max-h-[90vh] overflow-y-auto">
+    <div class="glass-panel w-full max-w-4xl rounded-3xl p-6 relative border border-slate-800 max-h-[90vh] flex flex-col">
         <div class="flex justify-between items-center pb-4 border-b border-slate-800 mb-4">
             <h2 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-crown text-emerald-400"></i> Admin Control Center</h2>
             <button onclick="closeModal('adminModal')" class="text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 mb-6">
-            <div class="bg-slate-900 p-4 rounded-xl"><p class="text-xs text-slate-400">Total Events</p><p id="adminEventCount" class="text-2xl font-bold text-emerald-400">0</p></div>
-            <div class="bg-slate-900 p-4 rounded-xl"><p class="text-xs text-slate-400">Total Registrations</p><p id="adminRegCount" class="text-2xl font-bold text-teal-300">0</p></div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800"><p class="text-[11px] text-slate-400">Total Events</p><p id="adminEventCount" class="text-xl font-black text-slate-100 mt-0.5">0</p></div>
+            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800"><p class="text-[11px] text-slate-400">Total Registrations</p><p id="adminRegCount" class="text-xl font-black text-emerald-400 mt-0.5">0</p></div>
+            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800"><p class="text-[11px] text-slate-400">Role</p><p class="text-xl font-black text-teal-300 mt-0.5">Super Admin</p></div>
         </div>
 
-        <h3 class="text-sm font-bold text-slate-300 mb-2">Registrations Overview</h3>
-        <div id="adminRegsList" class="space-y-2 text-xs"></div>
+        <h3 class="text-sm font-bold text-slate-300 mb-2">Attendee Registrations</h3>
+        <div id="adminRegsList" class="overflow-y-auto flex-grow space-y-2 text-xs border border-slate-800 rounded-xl p-2 bg-slate-900/50"></div>
     </div>
 </div>
 
@@ -183,16 +208,17 @@ let supabaseClient = null;
 let currentUser = null;
 
 let events = [
-    { id: "ev-1", title: "Nerve-Rupture DJ Night", category: "Flagship", venue: "MAMC Central Grounds", price: 499, date: "Oct 15, 7:00 PM", desc: "Headline international DJs." },
-    { id: "ev-2", title: "Choreonite Dance Battle", category: "Cultural", venue: "Main Auditorium", price: 199, date: "Oct 14, 5:00 PM", desc: "Inter-college group dance competition." },
-    { id: "ev-3", title: "Pulse Football Championship", category: "Sports", venue: "MAMC Sports Complex", price: 0, date: "Oct 13, 9:00 AM", desc: "11-a-side knockout football league." },
-    { id: "ev-4", title: "Valorant Masters Arena", category: "E-Sports", venue: "IT Block LAN Hub", price: 150, date: "Oct 13, 2:00 PM", desc: "5v5 competitive LAN tournament." }
+    { id: "ev-1", title: "Nerve-Rupture DJ Night", category: "Flagship", venue: "MAMC Central Grounds", price: 499, capacity: 2000, date: "Oct 15, 7:00 PM", desc: "Headline international DJs with full laser production." },
+    { id: "ev-2", title: "Choreonite Dance Battle", category: "Cultural", venue: "Main Auditorium", price: 199, capacity: 500, date: "Oct 14, 5:00 PM", desc: "Inter-college group dance competition." },
+    { id: "ev-3", title: "Pulse Football Championship", category: "Sports", venue: "MAMC Sports Complex", price: 0, capacity: 0, date: "Oct 13, 9:00 AM", desc: "11-a-side knockout medical college football league." },
+    { id: "ev-4", title: "Valorant Masters Arena", category: "E-Sports", venue: "IT Block LAN Hub", price: 150, capacity: 64, date: "Oct 13, 2:00 PM", desc: "5v5 competitive LAN tournament." }
 ];
 
-let registrations = JSON.parse(localStorage.getItem("synapse_regs") || "[]");
+let registrations = JSON.parse(localStorage.getItem("synapse_regs_v4") || "[]");
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
     initSupabase();
+    await fetchDatabaseData();
     renderEvents();
     updatePassBadge();
 });
@@ -200,40 +226,102 @@ window.addEventListener("DOMContentLoaded", () => {
 function openModal(id) { document.getElementById(id)?.classList.remove("hidden"); }
 function closeModal(id) { document.getElementById(id)?.classList.add("hidden"); }
 
+function setSupabaseStatus(msg, ok = true) {
+    const status = document.getElementById("supabaseStatus");
+    if (status) {
+        status.innerText = msg;
+        status.className = ok ? "text-emerald-400 font-mono" : "text-amber-400 font-mono";
+    }
+}
+
 function initSupabase() {
     if (!window.supabase) {
-        document.getElementById("supabaseStatus").innerText = "Supabase SDK missing";
+        setSupabaseStatus("Auth Library Missing", false);
         return;
     }
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    document.getElementById("supabaseStatus").innerText = "Auth Ready ✓";
+    try {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+        });
+        setSupabaseStatus("Supabase Connected ✓", true);
 
-    supabaseClient.auth.getSession().then(({ data }) => {
-        if (data?.session) handleUserSession(data.session);
-    }).catch(() => {});
+        supabaseClient.auth.getSession().then(({ data }) => {
+            if (data?.session) handleUserSession(data.session);
+        }).catch(() => {});
 
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-        if (session) handleUserSession(session);
-        else { currentUser = null; updateAuthUI(); }
-    });
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (session) handleUserSession(session);
+            else { currentUser = null; updateAuthUI(); }
+        });
+    } catch (e) {
+        setSupabaseStatus("Auth Error", false);
+    }
 }
 
 function handleUserSession(session) {
-    const email = session.user.email.toLowerCase();
-    const name = session.user.user_metadata?.full_name || email.split("@")[0];
+    if (!session?.user?.email) return;
+    const email = session.user.email.trim().toLowerCase();
+    const name = session.user.user_metadata?.full_name || session.user.user_metadata?.name || email.split("@")[0];
     const role = (email === SUPER_ADMIN.toLowerCase()) ? "Super Admin" : "User";
-    currentUser = { email, name, role };
+    
+    currentUser = { id: session.user.id, email, name, role };
     updateAuthUI();
     updatePassBadge();
 
-    // Clean OAuth URL fragment
     if (window.location.hash.includes("access_token")) {
         window.history.replaceState(null, "", window.location.pathname);
     }
 }
 
+async function fetchDatabaseData() {
+    if (!supabaseClient) return;
+    try {
+        const [evRes, regRes] = await Promise.all([
+            supabaseClient.from("events").select("*"),
+            supabaseClient.from("registrations").select("*")
+        ]);
+
+        if (Array.isArray(evRes.data) && evRes.data.length > 0) {
+            events = evRes.data.map(r => ({
+                id: r.id,
+                title: r.title,
+                category: r.category,
+                venue: r.venue,
+                price: Number(r.price) || 0,
+                capacity: Number(r.capacity) || 0,
+                date: r.date,
+                desc: r.description || ""
+            }));
+        }
+
+        if (Array.isArray(regRes.data)) {
+            const remoteRegs = regRes.data.map(r => ({
+                id: r.id,
+                eventId: r.event_id,
+                eventTitle: r.event_title,
+                name: r.name,
+                email: r.email,
+                college: r.college,
+                phone: r.phone,
+                venue: r.venue,
+                date: r.date,
+                amount: r.amount
+            }));
+            
+            const combined = [...remoteRegs];
+            registrations.forEach(local => {
+                if (!combined.some(c => c.id === local.id)) combined.push(local);
+            });
+            registrations = combined;
+            localStorage.setItem("synapse_regs_v4", JSON.stringify(registrations));
+        }
+    } catch (e) {
+        console.log("Database sync using local state fallback.");
+    }
+}
+
 async function handleGoogleSignIn() {
-    if (!supabaseClient) return alert("Auth client unavailable");
+    if (!supabaseClient) return alert("Supabase auth is unavailable.");
     const redirectUrl = window.location.href.split('#')[0];
     await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
@@ -246,46 +334,59 @@ async function handleSignOut() {
     currentUser = null;
     updateAuthUI();
     closeModal('adminModal');
+    closeModal('myPassesModal');
 }
 
 function updateAuthUI() {
     const container = document.getElementById("authContainer");
     if (!currentUser) {
         container.innerHTML = `
-            <button onclick="openModal('authModal')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold px-3 py-2 rounded-xl text-xs">
+            <button onclick="openModal('authModal')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold px-3.5 py-2 rounded-xl text-xs shadow-lg">
                 <i class="fa-solid fa-google mr-1"></i> Login
             </button>`;
         return;
     }
 
     const adminBtn = (currentUser.role === "Super Admin") ? `
-        <button onclick="openAdminDashboard()" class="bg-slate-900 border border-emerald-500/50 text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs">
+        <button onclick="openAdminDashboard()" class="bg-slate-900 border border-emerald-500/50 hover:bg-slate-800 text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs">
             <i class="fa-solid fa-crown mr-1"></i> Dashboard
         </button>` : "";
 
     container.innerHTML = `
         <div class="flex items-center space-x-2">
             ${adminBtn}
-            <span class="text-xs text-slate-300 font-medium px-2 py-1 bg-slate-900 rounded-lg border border-slate-800">${currentUser.name}</span>
+            <span class="text-xs text-slate-200 font-semibold px-2.5 py-1.5 bg-slate-900 rounded-xl border border-slate-800 truncate max-w-[120px]">${currentUser.name}</span>
             <button onclick="handleSignOut()" class="text-slate-400 hover:text-red-400 text-xs px-2 py-1"><i class="fa-solid fa-right-from-bracket"></i></button>
         </div>`;
 }
 
 function renderEvents() {
     const grid = document.getElementById("eventsGrid");
-    grid.innerHTML = events.map(e => `
-        <div class="glass-panel rounded-2xl p-5 flex flex-col justify-between">
+    const empty = document.getElementById("emptyState");
+    const query = (document.getElementById("searchInput").value || "").toLowerCase();
+
+    const filtered = events.filter(e => e.title.toLowerCase().includes(query) || e.venue.toLowerCase().includes(query) || e.category.toLowerCase().includes(query));
+
+    if (filtered.length === 0) {
+        grid.innerHTML = "";
+        empty.classList.remove("hidden");
+        return;
+    }
+
+    empty.classList.add("hidden");
+    grid.innerHTML = filtered.map(e => `
+        <div class="glass-panel rounded-2xl p-5 flex flex-col justify-between hover:border-emerald-500/40 transition">
             <div>
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">${e.category}</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase">${e.category}</span>
                     <span class="text-sm font-black text-slate-100">${e.price === 0 ? "FREE" : "₹" + e.price}</span>
                 </div>
                 <h3 class="text-lg font-bold text-slate-100">${e.title}</h3>
-                <p class="text-xs text-slate-400 mt-1">${e.desc}</p>
-                <p class="text-xs text-slate-500 mt-3"><i class="fa-solid fa-location-dot text-emerald-500 mr-1"></i> ${e.venue} • ${e.date}</p>
+                <p class="text-xs text-slate-400 mt-1 line-clamp-2">${e.desc}</p>
+                <p class="text-xs text-slate-400 mt-3"><i class="fa-solid fa-location-dot text-emerald-500 mr-1.5"></i> ${e.venue} • ${e.date}</p>
             </div>
-            <button onclick="openRegistrationModal('${e.id}')" class="mt-4 w-full bg-slate-900 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 border border-emerald-500/30 font-bold py-2 rounded-xl text-xs">
-                Get Pass
+            <button onclick="openRegistrationModal('${e.id}')" class="mt-4 w-full bg-slate-900 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 border border-emerald-500/30 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-ticket"></i> Get Pass
             </button>
         </div>
     `).join("");
@@ -299,26 +400,46 @@ function openRegistrationModal(id) {
     document.getElementById("regEventId").value = event.id;
     document.getElementById("regTitle").innerText = event.title;
     document.getElementById("regSub").innerText = `${event.venue} • ${event.price === 0 ? "Free" : "₹" + event.price}`;
-    document.getElementById("regName").value = currentUser.name;
+    document.getElementById("regName").value = currentUser.name || "";
     openModal("registerModal");
 }
 
-function handleRegisterSubmit(e) {
+async function handleRegisterSubmit(e) {
     e.preventDefault();
     const event = events.find(ev => ev.id === document.getElementById("regEventId").value);
+    if (!event) return;
+
     const pass = {
         id: "SYN26-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+        eventId: event.id,
         eventTitle: event.title,
         venue: event.venue,
         date: event.date,
-        name: document.getElementById("regName").value,
-        college: document.getElementById("regCollege").value,
-        phone: document.getElementById("regPhone").value,
-        email: currentUser.email
+        name: document.getElementById("regName").value.trim(),
+        college: document.getElementById("regCollege").value.trim(),
+        phone: document.getElementById("regPhone").value.trim(),
+        email: currentUser.email,
+        amount: event.price
     };
 
     registrations.unshift(pass);
-    localStorage.setItem("synapse_regs", JSON.stringify(registrations));
+    localStorage.setItem("synapse_regs_v4", JSON.stringify(registrations));
+
+    if (supabaseClient) {
+        supabaseClient.from("registrations").insert([{
+            id: pass.id,
+            event_id: pass.eventId,
+            event_title: pass.eventTitle,
+            name: pass.name,
+            email: pass.email,
+            college: pass.college,
+            phone: pass.phone,
+            venue: pass.venue,
+            date: pass.date,
+            amount: pass.amount
+        }]).then(() => {}).catch(() => {});
+    }
+
     updatePassBadge();
     closeModal("registerModal");
 
@@ -331,34 +452,67 @@ function handleRegisterSubmit(e) {
 }
 
 function updatePassBadge() {
-    if (!currentUser) { document.getElementById("passCount").innerText = "0"; return; }
-    const count = registrations.filter(r => r.email === currentUser.email).length;
-    document.getElementById("passCount").innerText = count;
+    const badge = document.getElementById("passCount");
+    if (!badge) return;
+    if (!currentUser) { badge.innerText = "0"; return; }
+    const count = registrations.filter(r => r.email.toLowerCase() === currentUser.email.toLowerCase()).length;
+    badge.innerText = count;
 }
 
 function openMyPasses() {
     if (!currentUser) return openModal("authModal");
-    const myRegs = registrations.filter(r => r.email === currentUser.email);
-    if (myRegs.length === 0) return alert("No active passes found.");
+    const myRegs = registrations.filter(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
     
-    const latest = myRegs[0];
-    document.getElementById("passEvent").innerText = latest.eventTitle;
-    document.getElementById("passVenue").innerText = `${latest.venue} | ${latest.date}`;
-    document.getElementById("passName").innerText = latest.name;
-    document.getElementById("passId").innerText = latest.id;
-    document.getElementById("passCollege").innerText = latest.college;
+    document.getElementById("myPassesSub").innerText = `Passes registered to ${currentUser.email}`;
+    const list = document.getElementById("myPassesList");
+
+    if (myRegs.length === 0) {
+        list.innerHTML = `<div class="text-center py-8 text-slate-500">No active passes found. Register for an event!</div>`;
+    } else {
+        list.innerHTML = myRegs.map(reg => `
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex justify-between items-center">
+                <div>
+                    <span class="font-mono text-emerald-400 font-bold">${reg.id}</span>
+                    <h4 class="font-bold text-slate-100">${reg.eventTitle}</h4>
+                    <p class="text-slate-400 text-[11px]">${reg.venue} • ${reg.date}</p>
+                </div>
+                <button onclick="closeModal('myPassesModal'); showPassDetailsById('${reg.id}')" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-lg font-bold">View</button>
+            </div>
+        `).join("");
+    }
+    openModal("myPassesModal");
+}
+
+function showPassDetailsById(id) {
+    const pass = registrations.find(r => r.id === id);
+    if (!pass) return;
+    document.getElementById("passEvent").innerText = pass.eventTitle;
+    document.getElementById("passVenue").innerText = `${pass.venue} | ${pass.date}`;
+    document.getElementById("passName").innerText = pass.name;
+    document.getElementById("passId").innerText = pass.id;
+    document.getElementById("passCollege").innerText = pass.college;
     openModal("ticketModal");
 }
 
 function openAdminDashboard() {
+    if (!currentUser || currentUser.role !== "Super Admin") return alert("Admin access required.");
     document.getElementById("adminEventCount").innerText = events.length;
     document.getElementById("adminRegCount").innerText = registrations.length;
-    document.getElementById("adminRegsList").innerHTML = registrations.map(r => `
-        <div class="bg-slate-900 p-2 rounded border border-slate-800 flex justify-between">
-            <div><b>${r.name}</b> (${r.college}) - ${r.eventTitle}</div>
-            <div class="font-mono text-emerald-400">${r.id}</div>
-        </div>
-    `).join("");
+    
+    const list = document.getElementById("adminRegsList");
+    if (registrations.length === 0) {
+        list.innerHTML = `<div class="p-4 text-center text-slate-500">No registrations recorded yet.</div>`;
+    } else {
+        list.innerHTML = registrations.map(r => `
+            <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
+                <div>
+                    <span class="font-bold text-slate-200">${r.name}</span> <span class="text-slate-500">(${r.college} - ${r.phone})</span>
+                    <div class="text-[11px] text-slate-400">${r.eventTitle} • ${r.email}</div>
+                </div>
+                <span class="font-mono text-emerald-400 font-bold">${r.id}</span>
+            </div>
+        `).join("");
+    }
     openModal("adminModal");
 }
 
@@ -369,7 +523,7 @@ function showSection(name) {
     } else {
         document.getElementById("eventsSection").classList.add("hidden");
         document.getElementById("resultsSection").classList.remove("hidden");
-        document.getElementById("resultsContainer").innerHTML = `<p class="text-xs text-slate-400">Results will be published live during the fest.</p>`;
+        document.getElementById("resultsContainer").innerHTML = `<div class="glass-panel p-6 rounded-2xl text-slate-400 text-sm border border-slate-800">Results and rankings will be updated live during SYNAPSE '26.</div>`;
     }
 }
 </script>

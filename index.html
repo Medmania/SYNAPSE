@@ -42,43 +42,50 @@
         .glow-emerald { box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.3); }
         .tab-btn.active { background: #10b981; color: #020617; font-weight: 700; }
         #qr-reader video { border-radius: 1rem; width: 100% !important; }
+        
+        /* Hide scrollbars for mobile header button row */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-slate-950">
 
-<!-- HEADER -->
+<!-- HEADER (MOBILE RESPONSIVE FLEX CONTAINER) -->
 <header class="sticky top-0 z-40 glass-panel border-b border-slate-800">
-    <div class="max-w-7xl mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">
-        <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('events')">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-emerald-500/20">S</div>
-            <div>
-                <h1 class="text-lg font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-200 to-white">
-                    SYNAPSE <span class="text-emerald-500 text-xs px-2 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 font-mono">'26</span>
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 h-16 sm:h-20 flex items-center justify-between gap-2">
+        
+        <!-- LOGO -->
+        <div class="flex items-center space-x-2 shrink-0 cursor-pointer" onclick="showSection('events')">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center font-black text-slate-950 text-lg sm:text-xl shadow-lg shadow-emerald-500/20">S</div>
+            <div class="hidden xs:block">
+                <h1 class="text-base sm:text-lg font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-200 to-white">
+                    SYNAPSE <span class="text-emerald-500 text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 font-mono">'26</span>
                 </h1>
-                <p class="text-[10px] text-slate-400 font-medium">Maulana Azad Medical College</p>
             </div>
         </div>
 
-        <div class="flex items-center space-x-2">
-            <button onclick="showSection('results')" class="bg-slate-900 hover:bg-slate-800 text-slate-200 px-3 py-2 rounded-xl border border-slate-700 text-xs font-medium">
+        <!-- HEADER BUTTONS ROW (SCROLLABLE ON MOBILE) -->
+        <div class="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto no-scrollbar py-1 max-w-[75vw] sm:max-w-none">
+            <button onclick="showSection('results')" class="shrink-0 bg-slate-900 hover:bg-slate-800 text-slate-200 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border border-slate-700 text-xs font-medium whitespace-nowrap">
                 <i class="fa-solid fa-trophy text-emerald-400 mr-1"></i> Live Scores
             </button>
-            <button onclick="openMyPasses()" class="bg-slate-900 hover:bg-slate-800 text-slate-200 px-3 py-2 rounded-xl border border-slate-700 text-xs font-medium">
-                <i class="fa-solid fa-qrcode text-emerald-400 mr-1"></i> My Passes (<span id="passCount">0</span>)
+            <button onclick="openMyPasses()" class="shrink-0 bg-slate-900 hover:bg-slate-800 text-slate-200 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border border-slate-700 text-xs font-medium whitespace-nowrap">
+                <i class="fa-solid fa-qrcode text-emerald-400 mr-1"></i> Passes (<span id="passCount">0</span>)
             </button>
-            <div id="verifyStatusBadge"></div>
-            <div id="scannerBtnContainer" class="hidden">
-                <button onclick="openQRScannerModal()" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 px-3 py-2 rounded-xl text-xs font-bold">
+            <div id="verifyStatusBadge" class="shrink-0"></div>
+            <div id="scannerBtnContainer" class="hidden shrink-0">
+                <button onclick="openQRScannerModal()" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-bold whitespace-nowrap">
                     <i class="fa-solid fa-camera mr-1"></i> Scan QR
                 </button>
             </div>
-            <div id="authContainer">
-                <button onclick="openModal('authModal')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold px-3.5 py-2 rounded-xl text-xs shadow-lg">
+            <div id="authContainer" class="shrink-0">
+                <button onclick="openModal('authModal')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs shadow-lg whitespace-nowrap">
                     <i class="fa-solid fa-google mr-1"></i> Login
                 </button>
             </div>
         </div>
+
     </div>
 </header>
 
@@ -618,7 +625,7 @@ function updateAuthUI() {
 
     if (!currentUser) {
         container.innerHTML = `
-            <button onclick="openModal('authModal')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold px-3.5 py-2 rounded-xl text-xs shadow-lg">
+            <button onclick="openModal('authModal')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs shadow-lg whitespace-nowrap">
                 <i class="fa-solid fa-google mr-1"></i> Login
             </button>`;
         if (scannerBtnContainer) scannerBtnContainer.classList.add("hidden");
@@ -632,26 +639,26 @@ function updateAuthUI() {
 
     // Verified MAMC / LNH Status UI
     if (currentUser.isVerifiedInternal) {
-        verifyStatusBadge.innerHTML = `<span class="bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 font-bold text-[10px] px-2.5 py-1.5 rounded-xl"><i class="fa-solid fa-user-check mr-1"></i> MAMC/LNH Internal (Free Passes Active)</span>`;
+        verifyStatusBadge.innerHTML = `<span class="bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 font-bold text-[10px] px-2.5 py-1.5 rounded-xl whitespace-nowrap"><i class="fa-solid fa-user-check mr-1"></i> MAMC Free Passes Active</span>`;
     } else {
         const myReq = verificationRequests.find(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
         if (myReq && myReq.status === 'pending') {
-            verifyStatusBadge.innerHTML = `<span class="bg-amber-500/10 border border-amber-500/40 text-amber-300 font-bold text-[10px] px-2.5 py-1.5 rounded-xl"><i class="fa-solid fa-hourglass-half mr-1"></i> MAMC Verification Pending</span>`;
+            verifyStatusBadge.innerHTML = `<span class="bg-amber-500/10 border border-amber-500/40 text-amber-300 font-bold text-[10px] px-2.5 py-1.5 rounded-xl whitespace-nowrap"><i class="fa-solid fa-hourglass-half mr-1"></i> Verification Pending</span>`;
         } else {
-            verifyStatusBadge.innerHTML = `<button onclick="openModal('verificationModal')" class="bg-slate-900 hover:bg-slate-800 border border-teal-500/40 text-teal-300 text-xs font-bold px-2.5 py-1.5 rounded-xl"><i class="fa-solid fa-id-card mr-1"></i> MAMC/LNH Free Pass Verification</button>`;
+            verifyStatusBadge.innerHTML = `<button onclick="openModal('verificationModal')" class="bg-slate-900 hover:bg-slate-800 border border-teal-500/40 text-teal-300 text-xs font-bold px-2.5 py-1.5 rounded-xl whitespace-nowrap"><i class="fa-solid fa-id-card mr-1"></i> Free Pass Verification</button>`;
         }
     }
 
     const adminBtn = currentUser.isAdmin ? `
-        <button onclick="openAdminDashboard()" class="bg-slate-900 border border-emerald-500/50 hover:bg-slate-800 text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs">
+        <button onclick="openAdminDashboard()" class="shrink-0 bg-slate-900 border border-emerald-500/50 hover:bg-slate-800 text-emerald-400 font-bold px-3 py-1.5 sm:py-2 rounded-xl text-xs whitespace-nowrap">
             <i class="fa-solid fa-crown mr-1"></i> Admin Panel
         </button>` : "";
 
     container.innerHTML = `
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-1.5 shrink-0">
             ${adminBtn}
-            <span class="text-xs text-slate-200 font-semibold px-2.5 py-1.5 bg-slate-900 rounded-xl border border-slate-800 truncate max-w-[120px]">${currentUser.name}</span>
-            <button onclick="handleSignOut()" class="text-slate-400 hover:text-red-400 text-xs px-2 py-1"><i class="fa-solid fa-right-from-bracket"></i></button>
+            <span class="text-xs text-slate-200 font-semibold px-2 py-1.5 bg-slate-900 rounded-xl border border-slate-800 truncate max-w-[90px] sm:max-w-[120px]">${currentUser.name}</span>
+            <button onclick="handleSignOut()" class="text-slate-400 hover:text-red-400 text-xs px-1.5 py-1"><i class="fa-solid fa-right-from-bracket"></i></button>
         </div>`;
 }
 
@@ -744,7 +751,9 @@ function renderResultsPublic() {
     }
 
     noResults.classList.add("hidden");
-    container.innerHTML = activeEvents.map(e => renderSportCardModular(e)).join("");
+    if (typeof renderSportCardModular === "function") {
+        container.innerHTML = activeEvents.map(e => renderSportCardModular(e)).join("");
+    }
 }
 
 function openRegistrationModal(id) {
@@ -1019,16 +1028,19 @@ function displayTicketModalWithQrById(id) {
     if (pass) displayTicketModalWithQr(pass);
 }
 
-/* ADMIN PANEL CONTROLS */
+/* SAFE ADMIN PANEL CONTROLS */
 function openAdminDashboard() {
     if (!currentUser || !currentUser.isAdmin) return alert("Admin rights required.");
-    document.getElementById("adminUserEmailText").innerText = `Logged in as: ${currentUser.email}`;
     
-    renderAdminEventsList();
-    renderAdminVerificationsList();
-    renderAdminResultsList();
-    renderAdminRegsList();
-    renderCommitteeList();
+    const emailEl = document.getElementById("adminUserEmailText");
+    if (emailEl) emailEl.innerText = `Logged in as: ${currentUser.email}`;
+    
+    // Safely execute tab renders to prevent script errors from blocking modal open
+    try { renderAdminEventsList(); } catch(e) { console.error(e); }
+    try { renderAdminVerificationsList(); } catch(e) { console.error(e); }
+    try { renderAdminResultsList(); } catch(e) { console.error(e); }
+    try { renderAdminRegsList(); } catch(e) { console.error(e); }
+    try { renderCommitteeList(); } catch(e) { console.error(e); }
 
     openModal("adminModal");
 }
@@ -1048,6 +1060,7 @@ function switchAdminTab(tabName) {
 /* RENDER ADMIN MAMC / LNH VERIFICATION REQUESTS */
 function renderAdminVerificationsList() {
     const list = document.getElementById("adminVerificationsList");
+    if (!list) return;
     const pendings = verificationRequests.filter(r => r.status === "pending");
 
     if (pendings.length === 0) {
@@ -1115,6 +1128,7 @@ async function rejectVerification(email) {
 
 function renderAdminEventsList() {
     const list = document.getElementById("adminEventsList");
+    if (!list) return;
     list.innerHTML = events.map(e => `
         <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex justify-between items-center">
             <div>
@@ -1211,12 +1225,15 @@ async function deleteEvent(id) {
 
 function renderAdminResultsList() {
     const list = document.getElementById("adminResultsList");
-    list.innerHTML = events.map(e => renderSportEditorModular(e)).join("");
+    if (!list) return;
+    if (typeof renderSportEditorModular === "function") {
+        list.innerHTML = events.map(e => renderSportEditorModular(e)).join("");
+    }
 }
 
 async function saveSportScore(eventId, sportType) {
     const e = events.find(item => item.id === eventId);
-    if (!e || !SportsRegistry[sportType]) return;
+    if (!e || typeof SportsRegistry === "undefined" || !SportsRegistry[sportType]) return;
 
     e.results = SportsRegistry[sportType].extractData(eventId);
 
@@ -1242,6 +1259,7 @@ async function saveGeneralScore(eventId) {
 
 function renderAdminRegsList() {
     const list = document.getElementById("adminRegsList");
+    if (!list) return;
     if (registrations.length === 0) {
         list.innerHTML = `<div class="p-4 text-center text-slate-500">No registrations recorded yet.</div>`;
     } else {
@@ -1262,6 +1280,7 @@ function renderAdminRegsList() {
 
 function renderCommitteeList() {
     const list = document.getElementById("committeeAdminsList");
+    if (!list) return;
     list.innerHTML = committeeAdmins.map(email => `
         <div class="bg-slate-900/80 border border-slate-800 p-2.5 rounded-xl flex justify-between items-center">
             <span class="font-mono text-slate-200">${email}</span>

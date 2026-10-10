@@ -103,7 +103,7 @@
 <footer class="border-t border-slate-900 bg-slate-950 py-5 px-4 text-center text-xs text-slate-500">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
         <p>&copy; 2026 SYNAPSE Fest Committee, MAMC.</p>
-        <span id="supabaseStatus" class="text-slate-400 font-mono">Initializing App...</span>
+        <span id="supabaseStatus" class="text-amber-400 font-mono animate-pulse">Initializing Auth...</span>
     </div>
 </footer>
 
@@ -204,10 +204,13 @@
 <script>
 const SUPER_ADMIN = "dr.ankitraj8558@gmail.com";
 const SUPABASE_URL = "https://ccsgewccyyexfgrmflig.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2dld2NjeXlleGZncm1mbGlnIiwiaWF0IjoxNzkwNzg4NDAxLCJleHAiOjIxMDYzNjQ0MDB9.8yolMynIAGtN41qsUCxLASpx_rszxDMUoskBvQJvQGo";
+
+// 🛑 🛑 🛑 CRITICAL FIX: PASTE YOUR REAL SUPABASE 'anon' KEY BELOW 🛑 🛑 🛑
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2dld2NjeXlleGZncm1mbGlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3ODg0MDEsImV4cCI6MjEwNjM2NDQwMX0.8yolMynIAGtN41qsUCxLASpx_rszxDMUoskBvQJvQGo"; 
 
 let supabaseClient = null;
 let currentUser = null;
+let isInitialized = false;
 
 let events = [
     { id: "ev-1", title: "Nerve-Rupture DJ Night", category: "Flagship", venue: "MAMC Central Grounds", price: 499, capacity: 2000, date: "Oct 15, 7:00 PM", desc: "Headline international DJs with full laser production." },
@@ -216,26 +219,10 @@ let events = [
     { id: "ev-4", title: "Valorant Masters Arena", category: "E-Sports", venue: "IT Block LAN Hub", price: 150, capacity: 64, date: "Oct 13, 2:00 PM", desc: "5v5 competitive LAN tournament." }
 ];
 
-let registrations = JSON.parse(localStorage.getItem("synapse_regs_v5") || "[]");
+let registrations = JSON.parse(localStorage.getItem("synapse_regs_v6") || "[]");
 
-window.addEventListener("DOMContentLoaded", async () => {
-    // 1. Initialize Supabase first
+window.addEventListener("DOMContentLoaded", () => {
     initSupabase();
-
-    if (supabaseClient) {
-        // 2. Await session retrieval so URL hash tokens are fully processed BEFORE database calls
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session) {
-            handleUserSession(session);
-        }
-        
-        // 3. Now that Auth is resolved, fetch data securely
-        await fetchDatabaseData();
-    }
-
-    // 4. Render UI
-    renderEvents();
-    updatePassBadge();
 });
 
 function setSupabaseStatus(msg, ok = true) {
@@ -247,20 +234,42 @@ function setSupabaseStatus(msg, ok = true) {
 }
 
 function initSupabase() {
-    if (!window.supabase) {
-        setSupabaseStatus("Auth Library Missing", false);
+    if (!window.supabase || SUPABASE_ANON_KEY === "YOUR_ACTUAL_ANON_KEY_HERE") {
+        setSupabaseStatus("Waiting for Valid API Key", false);
+        renderEvents();
         return;
     }
     
-    // Setting detectSessionInUrl: true allows Supabase to automatically read the token and clear the URL correctly.
+    // Properly initialize SDK to parse Google Token from the URL Hash automatically
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
-    setSupabaseStatus("Supabase Connected ✓", true);
 
+    // Supabase fires this event automatically on load: 
+    // It will fire 'INITIAL_SESSION' (if already logged in) OR 'SIGNED_IN' (if it just parsed the Google hash)
     supabaseClient.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-            handleUserSession(session);
+        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            if (session) {
+                handleUserSession(session);
+                // Clean the huge hash off the URL bar once successfully processed
+                if (window.location.hash.includes("access_token")) {
+                    window.history.replaceState(null, "", window.location.pathname);
+                }
+            } else {
+                currentUser = null;
+                updateAuthUI();
+            }
+            
+            // Only fetch database data AFTER auth state is fully resolved
+            if (!isInitialized) {
+                isInitialized = true;
+                setSupabaseStatus("Connected to Supabase ✓", true);
+                fetchDatabaseData().then(() => {
+                    renderEvents();
+                    updatePassBadge();
+                });
+            }
+            
         } else if (event === 'SIGNED_OUT') {
             currentUser = null;
             updateAuthUI();
@@ -307,19 +316,17 @@ async function fetchDatabaseData() {
                 if (!combined.some(c => c.id === local.id)) combined.push(local);
             });
             registrations = combined;
-            localStorage.setItem("synapse_regs_v5", JSON.stringify(registrations));
+            localStorage.setItem("synapse_regs_v6", JSON.stringify(registrations));
         }
     } catch (e) {
-        console.log("Database sync failed, relying on local state.");
+        console.log("Database sync failed, falling back to local.");
     }
 }
 
 async function handleGoogleSignIn() {
-    if (!supabaseClient) return alert("Supabase auth is unavailable.");
+    if (!supabaseClient) return alert("Please add your real Supabase Anon Key to the code first.");
     
-    // We send the clean URL (without hashes) for Google to redirect back to.
     const cleanRedirectUrl = window.location.origin + window.location.pathname;
-    
     await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo: cleanRedirectUrl }
@@ -420,7 +427,7 @@ async function handleRegisterSubmit(e) {
     };
 
     registrations.unshift(pass);
-    localStorage.setItem("synapse_regs_v5", JSON.stringify(registrations));
+    localStorage.setItem("synapse_regs_v6", JSON.stringify(registrations));
 
     if (supabaseClient) {
         supabaseClient.from("registrations").insert([{

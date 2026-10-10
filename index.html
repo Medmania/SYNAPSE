@@ -21,13 +21,13 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         body { font-family: 'Inter', sans-serif; }
         .glass-panel { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .glow-emerald { box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.3); }
+        .tab-btn.active { background: #10b981; color: #020617; font-weight: 700; }
     </style>
 </head>
 
@@ -74,7 +74,7 @@
         <p class="mt-3 text-xs sm:text-sm text-slate-400">Login with Google → Select Event → Instant Official Pass</p>
         
         <div class="mt-6 max-w-xl mx-auto flex gap-2">
-            <input type="text" id="searchInput" oninput="renderEvents()" placeholder="Search events or venues..." class="w-full px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+            <input type="text" id="searchInput" oninput="renderEvents()" placeholder="Search events, venues, or categories..." class="w-full px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
         </div>
     </div>
 </section>
@@ -91,10 +91,11 @@
     <!-- RESULTS SECTION -->
     <div id="resultsSection" class="hidden">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-trophy text-emerald-400"></i> Live Results & Standings</h2>
+            <h2 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-trophy text-emerald-400"></i> Live Results & Winner Standings</h2>
             <button onclick="showSection('events')" class="text-xs bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-xl hover:bg-slate-800">← Back to Events</button>
         </div>
-        <div id="resultsContainer" class="space-y-4"></div>
+        <div id="resultsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        <div id="noResultsText" class="hidden text-center py-12 text-slate-500 text-sm">No results or scores published yet. Check back during fest events!</div>
     </div>
 
 </main>
@@ -103,7 +104,7 @@
 <footer class="border-t border-slate-900 bg-slate-950 py-5 px-4 text-center text-xs text-slate-500">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
         <p>&copy; 2026 SYNAPSE Fest Committee, MAMC.</p>
-        <span id="supabaseStatus" class="text-amber-400 font-mono animate-pulse">Initializing Auth...</span>
+        <span id="supabaseStatus" class="text-emerald-400 font-mono">Connected to Supabase ✓</span>
     </div>
 </footer>
 
@@ -181,22 +182,114 @@
     </div>
 </div>
 
-<!-- ADMIN DASHBOARD MODAL -->
+<!-- ADMIN CONTROL CENTER MODAL -->
 <div id="adminModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
-    <div class="glass-panel w-full max-w-4xl rounded-3xl p-6 relative border border-slate-800 max-h-[90vh] flex flex-col">
+    <div class="glass-panel w-full max-w-4xl rounded-3xl p-6 relative border border-slate-800 max-h-[92vh] flex flex-col">
         <div class="flex justify-between items-center pb-4 border-b border-slate-800 mb-4">
-            <h2 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-crown text-emerald-400"></i> Admin Control Center</h2>
-            <button onclick="closeModal('adminModal')" class="text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div>
+                <h2 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-crown text-emerald-400"></i> Fest Admin Dashboard</h2>
+                <p id="adminUserEmailText" class="text-xs text-slate-400"></p>
+            </div>
+            <button onclick="closeModal('adminModal')" class="text-slate-400 hover:text-slate-200"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
-            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800"><p class="text-[11px] text-slate-400">Total Events</p><p id="adminEventCount" class="text-xl font-black text-slate-100 mt-0.5">0</p></div>
-            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800"><p class="text-[11px] text-slate-400">Total Registrations</p><p id="adminRegCount" class="text-xl font-black text-emerald-400 mt-0.5">0</p></div>
-            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800"><p class="text-[11px] text-slate-400">Role</p><p class="text-xl font-black text-teal-300 mt-0.5">Super Admin</p></div>
+        <!-- DASHBOARD NAVIGATION TABS -->
+        <div class="flex flex-wrap gap-2 mb-4 border-b border-slate-800 pb-3">
+            <button onclick="switchAdminTab('eventsTab')" class="tab-btn active px-3.5 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300" data-tab="eventsTab">Manage Events</button>
+            <button onclick="switchAdminTab('resultsTab')" class="tab-btn px-3.5 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300" data-tab="resultsTab">Scores & Winners</button>
+            <button onclick="switchAdminTab('regsTab')" class="tab-btn px-3.5 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300" data-tab="regsTab">Attendee Registrations</button>
+            <button onclick="switchAdminTab('committeeTab')" class="tab-btn px-3.5 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300" data-tab="committeeTab">Committee Rights</button>
         </div>
 
-        <h3 class="text-sm font-bold text-slate-300 mb-2">Attendee Registrations</h3>
-        <div id="adminRegsList" class="overflow-y-auto flex-grow space-y-2 text-xs border border-slate-800 rounded-xl p-2 bg-slate-900/50"></div>
+        <!-- TAB 1: MANAGE EVENTS -->
+        <div id="adminEventsTab" class="admin-tab-content overflow-y-auto flex-grow space-y-4 pr-1">
+            <div class="flex justify-between items-center bg-slate-900/60 p-3 rounded-2xl border border-slate-800">
+                <span class="text-xs text-slate-300 font-semibold">Fest Events List</span>
+                <button onclick="openEventEditorModal()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-xl">
+                    <i class="fa-solid fa-plus mr-1"></i> Add Event
+                </button>
+            </div>
+            <div id="adminEventsList" class="space-y-3"></div>
+        </div>
+
+        <!-- TAB 2: UPDATE SCORES & WINNERS -->
+        <div id="adminResultsTab" class="admin-tab-content hidden overflow-y-auto flex-grow space-y-4 pr-1">
+            <p class="text-xs text-slate-400">Select an event below to update its live standings or announce official winners.</p>
+            <div id="adminResultsList" class="space-y-4"></div>
+        </div>
+
+        <!-- TAB 3: REGISTRATIONS & EXPORT -->
+        <div id="adminRegsTab" class="admin-tab-content hidden overflow-y-auto flex-grow space-y-3 pr-1">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs text-slate-400">All registered attendee passes</span>
+                <button onclick="exportRegsCSV()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs px-3 py-1.5 rounded-xl">
+                    <i class="fa-solid fa-file-csv mr-1 text-emerald-400"></i> Download CSV
+                </button>
+            </div>
+            <div id="adminRegsList" class="space-y-2 text-xs border border-slate-800 rounded-xl p-2 bg-slate-900/50"></div>
+        </div>
+
+        <!-- TAB 4: COMMITTEE RIGHTS -->
+        <div id="adminCommitteeTab" class="admin-tab-content hidden overflow-y-auto flex-grow space-y-4 pr-1">
+            <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-3">
+                <h4 class="text-xs font-bold text-slate-200">Grant Committee Access</h4>
+                <p class="text-[11px] text-slate-400">Enter your organizing committee member's Google Email. They will be granted full dashboard rights to edit events, scores, and manage passes.</p>
+                <form onsubmit="handleAddCommitteeAdmin(event)" class="flex gap-2">
+                    <input type="email" id="newAdminEmail" required placeholder="committee.member@gmail.com" class="flex-grow bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500">
+                    <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl">Grant Access</button>
+                </form>
+            </div>
+
+            <h4 class="text-xs font-bold text-slate-300 mt-4">Authorized Committee Members</h4>
+            <div id="committeeAdminsList" class="space-y-2 text-xs"></div>
+        </div>
+    </div>
+</div>
+
+<!-- EVENT CREATOR / EDITOR MODAL -->
+<div id="eventEditorModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-sm">
+    <div class="glass-panel w-full max-w-lg rounded-2xl p-6 relative border border-slate-800 max-h-[90vh] overflow-y-auto">
+        <button onclick="closeModal('eventEditorModal')" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <h3 id="eventEditorTitle" class="text-lg font-bold text-slate-100 mb-4">Add New Event</h3>
+
+        <form onsubmit="handleSaveEvent(event)" class="space-y-3">
+            <input type="hidden" id="editEventId">
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">Event Title</label>
+                <input type="text" id="editTitle" required placeholder="e.g. Choreonite Dance Battle" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Category</label>
+                    <select id="editCategory" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
+                        <option value="Flagship">Flagship</option>
+                        <option value="Cultural">Cultural</option>
+                        <option value="Sports">Sports</option>
+                        <option value="E-Sports">E-Sports</option>
+                        <option value="Fun">Fun</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Price (₹ - 0 for Free)</label>
+                    <input type="number" id="editPrice" required min="0" value="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Venue</label>
+                    <input type="text" id="editVenue" required placeholder="Main Auditorium" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Date & Time</label>
+                    <input type="text" id="editDate" required placeholder="Oct 14, 5:00 PM" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">Description</label>
+                <textarea id="editDesc" rows="3" placeholder="Event rules, timings, guidelines..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100"></textarea>
+            </div>
+            <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 rounded-xl text-xs mt-2">Save Event</button>
+        </form>
     </div>
 </div>
 
@@ -204,22 +297,22 @@
 <script>
 const SUPER_ADMIN = "dr.ankitraj8558@gmail.com";
 const SUPABASE_URL = "https://ccsgewccyyexfgrmflig.supabase.co";
-
-// 🛑 🛑 🛑 CRITICAL FIX: PASTE YOUR REAL SUPABASE 'anon' KEY BELOW 🛑 🛑 🛑
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2dld2NjeXlleGZncm1mbGlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3ODg0MDEsImV4cCI6MjEwNjM2NDQwMX0.8yolMynIAGtN41qsUCxLASpx_rszxDMUoskBvQJvQGo"; 
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2dld2NjeXlleGZncm1mbGlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3ODg0MDEsImV4cCI6MjEwNjM2NDQwMX0.8yolMynIAGtN41qsUCxLASpx_rszxDMUoskBvQJvQGo";
 
 let supabaseClient = null;
 let currentUser = null;
 let isInitialized = false;
 
+let committeeAdmins = [SUPER_ADMIN.toLowerCase()];
+
 let events = [
-    { id: "ev-1", title: "Nerve-Rupture DJ Night", category: "Flagship", venue: "MAMC Central Grounds", price: 499, capacity: 2000, date: "Oct 15, 7:00 PM", desc: "Headline international DJs with full laser production." },
-    { id: "ev-2", title: "Choreonite Dance Battle", category: "Cultural", venue: "Main Auditorium", price: 199, capacity: 500, date: "Oct 14, 5:00 PM", desc: "Inter-college group dance competition." },
-    { id: "ev-3", title: "Pulse Football Championship", category: "Sports", venue: "MAMC Sports Complex", price: 0, capacity: 0, date: "Oct 13, 9:00 AM", desc: "11-a-side knockout medical college football league." },
-    { id: "ev-4", title: "Valorant Masters Arena", category: "E-Sports", venue: "IT Block LAN Hub", price: 150, capacity: 64, date: "Oct 13, 2:00 PM", desc: "5v5 competitive LAN tournament." }
+    { id: "ev-1", title: "Nerve-Rupture DJ Night", category: "Flagship", venue: "MAMC Central Grounds", price: 499, capacity: 2000, date: "Oct 15, 7:00 PM", desc: "Headline international DJs with full laser production.", results: { winner: "", runnerUp: "", secondRunnerUp: "", notes: "" } },
+    { id: "ev-2", title: "Choreonite Dance Battle", category: "Cultural", venue: "Main Auditorium", price: 199, capacity: 500, date: "Oct 14, 5:00 PM", desc: "Inter-college group dance competition.", results: { winner: "", runnerUp: "", secondRunnerUp: "", notes: "" } },
+    { id: "ev-3", title: "Pulse Football Championship", category: "Sports", venue: "MAMC Sports Complex", price: 0, capacity: 0, date: "Oct 13, 9:00 AM", desc: "11-a-side knockout medical college football league.", results: { winner: "", runnerUp: "", secondRunnerUp: "", notes: "" } },
+    { id: "ev-4", title: "Valorant Masters Arena", category: "E-Sports", venue: "IT Block LAN Hub", price: 150, capacity: 64, date: "Oct 13, 2:00 PM", desc: "5v5 competitive LAN tournament.", results: { winner: "", runnerUp: "", secondRunnerUp: "", notes: "" } }
 ];
 
-let registrations = JSON.parse(localStorage.getItem("synapse_regs_v6") || "[]");
+let registrations = JSON.parse(localStorage.getItem("synapse_regs_v7") || "[]");
 
 window.addEventListener("DOMContentLoaded", () => {
     initSupabase();
@@ -234,24 +327,20 @@ function setSupabaseStatus(msg, ok = true) {
 }
 
 function initSupabase() {
-    if (!window.supabase || SUPABASE_ANON_KEY === "YOUR_ACTUAL_ANON_KEY_HERE") {
-        setSupabaseStatus("Waiting for Valid API Key", false);
+    if (!window.supabase) {
+        setSupabaseStatus("Auth Library Missing", false);
         renderEvents();
         return;
     }
     
-    // Properly initialize SDK to parse Google Token from the URL Hash automatically
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
 
-    // Supabase fires this event automatically on load: 
-    // It will fire 'INITIAL_SESSION' (if already logged in) OR 'SIGNED_IN' (if it just parsed the Google hash)
     supabaseClient.auth.onAuthStateChange((event, session) => {
         if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
             if (session) {
                 handleUserSession(session);
-                // Clean the huge hash off the URL bar once successfully processed
                 if (window.location.hash.includes("access_token")) {
                     window.history.replaceState(null, "", window.location.pathname);
                 }
@@ -260,12 +349,12 @@ function initSupabase() {
                 updateAuthUI();
             }
             
-            // Only fetch database data AFTER auth state is fully resolved
             if (!isInitialized) {
                 isInitialized = true;
                 setSupabaseStatus("Connected to Supabase ✓", true);
                 fetchDatabaseData().then(() => {
                     renderEvents();
+                    renderResultsPublic();
                     updatePassBadge();
                 });
             }
@@ -282,25 +371,39 @@ function handleUserSession(session) {
     if (!session?.user?.email) return;
     const email = session.user.email.trim().toLowerCase();
     const name = session.user.user_metadata?.full_name || session.user.user_metadata?.name || email.split("@")[0];
-    const role = (email === SUPER_ADMIN.toLowerCase()) ? "Super Admin" : "User";
     
-    currentUser = { id: session.user.id, email, name, role };
+    const isAdmin = committeeAdmins.includes(email) || email === SUPER_ADMIN.toLowerCase();
+    const role = isAdmin ? "Admin / Committee" : "User";
+    
+    currentUser = { id: session.user.id, email, name, role, isAdmin };
     updateAuthUI();
     updatePassBadge();
 }
 
 async function fetchDatabaseData() {
     try {
-        const [evRes, regRes] = await Promise.all([
+        const [evRes, regRes, admRes] = await Promise.all([
             supabaseClient.from("events").select("*"),
-            supabaseClient.from("registrations").select("*")
+            supabaseClient.from("registrations").select("*"),
+            supabaseClient.from("admins").select("*")
         ]);
+
+        if (admRes.data) {
+            const fetchedAdmins = admRes.data.map(a => a.email.toLowerCase());
+            committeeAdmins = Array.from(new Set([SUPER_ADMIN.toLowerCase(), ...fetchedAdmins]));
+            if (currentUser) {
+                currentUser.isAdmin = committeeAdmins.includes(currentUser.email.toLowerCase());
+                currentUser.role = currentUser.isAdmin ? "Admin / Committee" : "User";
+                updateAuthUI();
+            }
+        }
 
         if (evRes.data && evRes.data.length > 0) {
             events = evRes.data.map(r => ({
                 id: r.id, title: r.title, category: r.category, venue: r.venue,
                 price: Number(r.price) || 0, capacity: Number(r.capacity) || 0,
-                date: r.date, desc: r.description || ""
+                date: r.date, desc: r.description || "",
+                results: r.results_json || { winner: "", runnerUp: "", secondRunnerUp: "", notes: "" }
             }));
         }
 
@@ -316,16 +419,15 @@ async function fetchDatabaseData() {
                 if (!combined.some(c => c.id === local.id)) combined.push(local);
             });
             registrations = combined;
-            localStorage.setItem("synapse_regs_v6", JSON.stringify(registrations));
+            localStorage.setItem("synapse_regs_v7", JSON.stringify(registrations));
         }
     } catch (e) {
-        console.log("Database sync failed, falling back to local.");
+        console.log("Database fetch failed, using local cache.");
     }
 }
 
 async function handleGoogleSignIn() {
-    if (!supabaseClient) return alert("Please add your real Supabase Anon Key to the code first.");
-    
+    if (!supabaseClient) return alert("Supabase client missing.");
     const cleanRedirectUrl = window.location.origin + window.location.pathname;
     await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
@@ -351,9 +453,9 @@ function updateAuthUI() {
         return;
     }
 
-    const adminBtn = (currentUser.role === "Super Admin") ? `
+    const adminBtn = currentUser.isAdmin ? `
         <button onclick="openAdminDashboard()" class="bg-slate-900 border border-emerald-500/50 hover:bg-slate-800 text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs">
-            <i class="fa-solid fa-crown mr-1"></i> Dashboard
+            <i class="fa-solid fa-crown mr-1"></i> Admin Panel
         </button>` : "";
 
     container.innerHTML = `
@@ -396,6 +498,34 @@ function renderEvents() {
     `).join("");
 }
 
+function renderResultsPublic() {
+    const container = document.getElementById("resultsContainer");
+    const noResults = document.getElementById("noResultsText");
+
+    const eventsWithResults = events.filter(e => e.results && (e.results.winner || e.results.runnerUp || e.results.notes));
+
+    if (eventsWithResults.length === 0) {
+        container.innerHTML = "";
+        noResults.classList.remove("hidden");
+        return;
+    }
+
+    noResults.classList.add("hidden");
+    container.innerHTML = eventsWithResults.map(e => `
+        <div class="glass-panel p-5 rounded-2xl border border-slate-800">
+            <span class="text-[10px] font-mono text-emerald-400 uppercase bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">${e.category}</span>
+            <h3 class="text-lg font-bold text-slate-100 mt-1">${e.title}</h3>
+            
+            <div class="mt-3 space-y-1.5 text-xs">
+                ${e.results.winner ? `<div class="flex items-center gap-2 text-amber-300 font-bold"><i class="fa-solid fa-trophy"></i> 🥇 1st Place: ${e.results.winner}</div>` : ''}
+                ${e.results.runnerUp ? `<div class="flex items-center gap-2 text-slate-300 font-semibold"><i class="fa-solid fa-medal"></i> 🥈 2nd Place: ${e.results.runnerUp}</div>` : ''}
+                ${e.results.secondRunnerUp ? `<div class="flex items-center gap-2 text-amber-600"><i class="fa-solid fa-award"></i> 🥉 3rd Place: ${e.results.secondRunnerUp}</div>` : ''}
+                ${e.results.notes ? `<p class="mt-2 text-slate-400 bg-slate-900 p-2.5 rounded-xl border border-slate-800/80">${e.results.notes}</p>` : ''}
+            </div>
+        </div>
+    `).join("");
+}
+
 function openRegistrationModal(id) {
     if (!currentUser) return openModal("authModal");
     const event = events.find(e => e.id === id);
@@ -427,7 +557,7 @@ async function handleRegisterSubmit(e) {
     };
 
     registrations.unshift(pass);
-    localStorage.setItem("synapse_regs_v6", JSON.stringify(registrations));
+    localStorage.setItem("synapse_regs_v7", JSON.stringify(registrations));
 
     if (supabaseClient) {
         supabaseClient.from("registrations").insert([{
@@ -491,11 +621,159 @@ function showPassDetailsById(id) {
     openModal("ticketModal");
 }
 
+/* ADMIN PANEL CONTROLS */
 function openAdminDashboard() {
-    if (!currentUser || currentUser.role !== "Super Admin") return alert("Admin access required.");
-    document.getElementById("adminEventCount").innerText = events.length;
-    document.getElementById("adminRegCount").innerText = registrations.length;
+    if (!currentUser || !currentUser.isAdmin) return alert("Admin rights required.");
+    document.getElementById("adminUserEmailText").innerText = `Logged in as: ${currentUser.email}`;
     
+    renderAdminEventsList();
+    renderAdminResultsList();
+    renderAdminRegsList();
+    renderCommitteeList();
+
+    openModal("adminModal");
+}
+
+function switchAdminTab(tabName) {
+    document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+    document.querySelectorAll(".admin-tab-content").forEach(el => el.classList.add("hidden"));
+    
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add("active");
+    if (tabName === "eventsTab") document.getElementById("adminEventsTab").classList.remove("hidden");
+    if (tabName === "resultsTab") document.getElementById("adminResultsTab").classList.remove("hidden");
+    if (tabName === "regsTab") document.getElementById("adminRegsTab").classList.remove("hidden");
+    if (tabName === "committeeTab") document.getElementById("adminCommitteeTab").classList.remove("hidden");
+}
+
+function renderAdminEventsList() {
+    const list = document.getElementById("adminEventsList");
+    list.innerHTML = events.map(e => `
+        <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex justify-between items-center">
+            <div>
+                <span class="text-[10px] font-bold text-emerald-400 uppercase">${e.category} • ${e.price === 0 ? 'FREE' : '₹' + e.price}</span>
+                <h4 class="font-bold text-slate-100 text-xs">${e.title}</h4>
+                <p class="text-[11px] text-slate-400">${e.venue} | ${e.date}</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="editEvent('${e.id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1 rounded-lg text-xs font-semibold"><i class="fa-solid fa-pen"></i></button>
+                <button onclick="deleteEvent('${e.id}')" class="bg-red-950/40 hover:bg-red-900 text-red-300 border border-red-800/50 px-2.5 py-1 rounded-lg text-xs font-semibold"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+    `).join("");
+}
+
+function openEventEditorModal(eventId = null) {
+    if (eventId) {
+        const e = events.find(item => item.id === eventId);
+        document.getElementById("eventEditorTitle").innerText = "Edit Event";
+        document.getElementById("editEventId").value = e.id;
+        document.getElementById("editTitle").value = e.title;
+        document.getElementById("editCategory").value = e.category;
+        document.getElementById("editPrice").value = e.price;
+        document.getElementById("editVenue").value = e.venue;
+        document.getElementById("editDate").value = e.date;
+        document.getElementById("editDesc").value = e.desc;
+    } else {
+        document.getElementById("eventEditorTitle").innerText = "Add New Event";
+        document.getElementById("editEventId").value = "";
+        document.getElementById("editTitle").value = "";
+        document.getElementById("editCategory").value = "Cultural";
+        document.getElementById("editPrice").value = 0;
+        document.getElementById("editVenue").value = "";
+        document.getElementById("editDate").value = "";
+        document.getElementById("editDesc").value = "";
+    }
+    openModal("eventEditorModal");
+}
+
+function editEvent(id) { openEventEditorModal(id); }
+
+async function handleSaveEvent(e) {
+    e.preventDefault();
+    const id = document.getElementById("editEventId").value || ("ev-" + Date.now());
+    
+    const newEvent = {
+        id,
+        title: document.getElementById("editTitle").value.trim(),
+        category: document.getElementById("editCategory").value,
+        price: Number(document.getElementById("editPrice").value) || 0,
+        venue: document.getElementById("editVenue").value.trim(),
+        date: document.getElementById("editDate").value.trim(),
+        desc: document.getElementById("editDesc").value.trim(),
+        results: { winner: "", runnerUp: "", secondRunnerUp: "", notes: "" }
+    };
+
+    const existingIdx = events.findIndex(item => item.id === id);
+    if (existingIdx >= 0) {
+        newEvent.results = events[existingIdx].results;
+        events[existingIdx] = newEvent;
+    } else {
+        events.unshift(newEvent);
+    }
+
+    if (supabaseClient) {
+        await supabaseClient.from("events").upsert([{
+            id: newEvent.id, title: newEvent.title, category: newEvent.category,
+            venue: newEvent.venue, price: newEvent.price, date: newEvent.date,
+            description: newEvent.desc, results_json: newEvent.results
+        }]);
+    }
+
+    renderEvents();
+    renderAdminEventsList();
+    closeModal("eventEditorModal");
+}
+
+async function deleteEvent(id) {
+    if (!confirm("Are you sure you want to delete this event?")) return;
+    events = events.filter(e => e.id !== id);
+    
+    if (supabaseClient) {
+        await supabaseClient.from("events").delete().eq("id", id);
+    }
+    renderEvents();
+    renderAdminEventsList();
+}
+
+function renderAdminResultsList() {
+    const list = document.getElementById("adminResultsList");
+    list.innerHTML = events.map(e => `
+        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl space-y-3">
+            <div class="flex justify-between items-center">
+                <h4 class="font-bold text-xs text-slate-100">${e.title}</h4>
+                <span class="text-[10px] text-emerald-400 font-mono font-semibold">${e.category}</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <input type="text" id="win-${e.id}" value="${e.results?.winner || ''}" placeholder="🥇 1st Winner" class="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-amber-300">
+                <input type="text" id="run-${e.id}" value="${e.results?.runnerUp || ''}" placeholder="🥈 2nd Winner" class="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300">
+                <input type="text" id="run2-${e.id}" value="${e.results?.secondRunnerUp || ''}" placeholder="🥉 3rd Winner" class="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-amber-600">
+            </div>
+            <input type="text" id="notes-${e.id}" value="${e.results?.notes || ''}" placeholder="Live score notes / Match update..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300">
+            <button onclick="saveEventResults('${e.id}')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-lg">Publish Results</button>
+        </div>
+    `).join("");
+}
+
+async function saveEventResults(eventId) {
+    const e = events.find(item => item.id === eventId);
+    if (!e) return;
+
+    e.results = {
+        winner: document.getElementById(`win-${eventId}`).value.trim(),
+        runnerUp: document.getElementById(`run-${eventId}`).value.trim(),
+        secondRunnerUp: document.getElementById(`run2-${eventId}`).value.trim(),
+        notes: document.getElementById(`notes-${eventId}`).value.trim()
+    };
+
+    if (supabaseClient) {
+        await supabaseClient.from("events").update({ results_json: e.results }).eq("id", eventId);
+    }
+
+    renderResultsPublic();
+    alert("Results published successfully!");
+}
+
+function renderAdminRegsList() {
     const list = document.getElementById("adminRegsList");
     if (registrations.length === 0) {
         list.innerHTML = `<div class="p-4 text-center text-slate-500">No registrations recorded yet.</div>`;
@@ -510,7 +788,58 @@ function openAdminDashboard() {
             </div>
         `).join("");
     }
-    openModal("adminModal");
+}
+
+function renderCommitteeList() {
+    const list = document.getElementById("committeeAdminsList");
+    list.innerHTML = committeeAdmins.map(email => `
+        <div class="bg-slate-900/80 border border-slate-800 p-2.5 rounded-xl flex justify-between items-center">
+            <span class="font-mono text-slate-200">${email}</span>
+            ${email.toLowerCase() === SUPER_ADMIN.toLowerCase() 
+                ? `<span class="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Super Admin</span>`
+                : `<button onclick="removeCommitteeAdmin('${email}')" class="text-red-400 hover:text-red-300 text-xs"><i class="fa-solid fa-trash"></i></button>`
+            }
+        </div>
+    `).join("");
+}
+
+async function handleAddCommitteeAdmin(e) {
+    e.preventDefault();
+    const email = document.getElementById("newAdminEmail").value.trim().toLowerCase();
+    if (!email) return;
+
+    if (!committeeAdmins.includes(email)) {
+        committeeAdmins.push(email);
+        if (supabaseClient) {
+            await supabaseClient.from("admins").insert([{ email, added_by: currentUser.email }]);
+        }
+    }
+    
+    document.getElementById("newAdminEmail").value = "";
+    renderCommitteeList();
+}
+
+async function removeCommitteeAdmin(email) {
+    if (!confirm(`Revoke committee rights from ${email}?`)) return;
+    committeeAdmins = committeeAdmins.filter(a => a !== email.toLowerCase());
+    if (supabaseClient) {
+        await supabaseClient.from("admins").delete().eq("email", email.toLowerCase());
+    }
+    renderCommitteeList();
+}
+
+function exportRegsCSV() {
+    if (registrations.length === 0) return alert("No registrations available to export.");
+    let csv = "Pass ID,Event,Attendee Name,Email,College,Phone,Venue,Date\n";
+    registrations.forEach(r => {
+        csv += `"${r.id}","${r.eventTitle}","${r.name}","${r.email}","${r.college}","${r.phone}","${r.venue}","${r.date}"\n`;
+    });
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "SYNAPSE_26_Registrations.csv";
+    a.click();
 }
 
 function showSection(name) {
@@ -520,7 +849,7 @@ function showSection(name) {
     } else {
         document.getElementById("eventsSection").classList.add("hidden");
         document.getElementById("resultsSection").classList.remove("hidden");
-        document.getElementById("resultsContainer").innerHTML = `<div class="glass-panel p-6 rounded-2xl text-slate-400 text-sm border border-slate-800">Results and rankings will be updated live during SYNAPSE '26.</div>`;
+        renderResultsPublic();
     }
 }
 

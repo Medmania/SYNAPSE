@@ -30,62 +30,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #020617;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #059669;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #10b981;
-        }
-
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .glow-emerald {
-            box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.3);
-        }
-
-        .tab-btn.active {
-            background: #10b981;
-            color: #020617;
-            font-weight: 700;
-        }
-
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #059669; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10b981; }
+        .glass-panel { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glow-emerald { box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.3); }
+        .tab-btn.active { background: #10b981; color: #020617; font-weight: 700; }
         @media print {
-            body * {
-                visibility: hidden;
-            }
-
-            #ticketCardContent,
-            #ticketCardContent * {
-                visibility: visible;
-            }
-
-            #ticketCardContent {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
+            body * { visibility: hidden; }
+            #ticketCardContent, #ticketCardContent * { visibility: visible; }
+            #ticketCardContent { position: absolute; left: 0; top: 0; width: 100%; }
         }
     </style>
 </head>
@@ -168,10 +126,10 @@
     </div>
 </section>
 
-<!-- MAIN -->
+<!-- MAIN CONTENT -->
 <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <!-- EVENTS -->
+    <!-- EVENTS SECTION -->
     <div id="eventsSection">
         <div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
         <div id="emptyState" class="hidden text-center py-16">
@@ -183,7 +141,7 @@
         </div>
     </div>
 
-    <!-- RESULTS -->
+    <!-- RESULTS SECTION -->
     <div id="resultsSection" class="hidden">
         <div class="flex items-center justify-between mb-6">
             <div>
@@ -205,7 +163,7 @@
         </div>
     </div>
 
-    <!-- SCHEDULE -->
+    <!-- SCHEDULE SECTION -->
     <div id="scheduleSection" class="hidden">
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-2xl font-black text-slate-100">
@@ -219,7 +177,7 @@
         <div id="scheduleList" class="space-y-3"></div>
     </div>
 
-    <!-- ANNOUNCEMENTS -->
+    <!-- ANNOUNCEMENTS SECTION -->
     <div id="announcementsSection" class="hidden">
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-2xl font-black text-slate-100">
@@ -257,7 +215,7 @@
                 Google Authentication
             </span>
             <span>•</span>
-            <span id="supabaseStatusText" class="text-slate-500">Initializing Authentication...</span>
+            <span id="supabaseStatusText" class="text-slate-500">Initializing...</span>
         </div>
     </div>
 </footer>
@@ -284,7 +242,7 @@
             </svg>
             <span>Continue with Google</span>
         </button>
-        <p class="text-[11px] text-slate-500 text-center mt-5">By continuing you agree to the fest terms. Admins are automatically detected by email.</p>
+        <p class="text-[11px] text-slate-500 text-center mt-5">By continuing you agree to the fest terms.</p>
     </div>
 </div>
 
@@ -307,7 +265,7 @@
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">Email (from Google)</label>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">Email</label>
                 <input type="email" id="regEmail" required readonly class="w-full bg-slate-900/70 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-400 cursor-not-allowed">
             </div>
 
@@ -322,7 +280,7 @@
                 </div>
             </div>
 
-            <button type="submit" id="regSubmitBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-3 rounded-xl transition shadow-lg shadow-emerald-500/20 text-sm mt-2">
+            <button type="submit" id="regSubmitBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-3 rounded-xl transition shadow-lg text-sm mt-2">
                 Confirm & Generate Pass
             </button>
         </form>
@@ -370,11 +328,6 @@
                     <div class="h-full w-1 bg-slate-900"></div>
                     <div class="h-full w-0.5 bg-slate-900"></div>
                     <div class="h-full w-2 bg-slate-900"></div>
-                    <div class="h-full w-1 bg-slate-900"></div>
-                    <div class="h-full w-3 bg-slate-900"></div>
-                    <div class="h-full w-0.5 bg-slate-900"></div>
-                    <div class="h-full w-2 bg-slate-900"></div>
-                    <div class="h-full w-1 bg-slate-900"></div>
                 </div>
                 <p id="passModalBarcodeCode" class="text-[10px] font-mono text-slate-900 tracking-widest font-bold"></p>
             </div>
@@ -434,7 +387,6 @@
         </div>
 
         <h4 class="text-sm font-bold text-slate-300 mb-2">Your registrations</h4>
-
         <div id="profilePassesList" class="overflow-y-auto space-y-3 flex-grow pr-1"></div>
 
         <div class="mt-4 flex gap-2">
@@ -475,7 +427,6 @@
             </div>
         </div>
 
-        <!-- STATS -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
             <div class="bg-slate-900/80 border border-slate-800/80 p-3 rounded-2xl">
                 <p class="text-[11px] text-slate-400">Events</p>
@@ -495,16 +446,13 @@
             </div>
         </div>
 
-        <!-- TABS -->
         <div class="flex flex-wrap gap-2 mb-4 border-b border-slate-800 pb-3">
             <button onclick="switchAdminTab('events')" class="tab-btn active px-3 py-1.5 rounded-lg text-xs bg-slate-800 text-slate-300" data-tab="events">Events</button>
             <button onclick="switchAdminTab('results')" class="tab-btn px-3 py-1.5 rounded-lg text-xs bg-slate-800 text-slate-300" data-tab="results">Results</button>
             <button onclick="switchAdminTab('regs')" class="tab-btn px-3 py-1.5 rounded-lg text-xs bg-slate-800 text-slate-300" data-tab="regs">Registrations</button>
             <button onclick="switchAdminTab('announce')" class="tab-btn px-3 py-1.5 rounded-lg text-xs bg-slate-800 text-slate-300" data-tab="announce">Announcements</button>
-            <button id="manageAdminsBtn" onclick="switchAdminTab('roles')" class="tab-btn hidden px-3 py-1.5 rounded-lg text-xs bg-slate-800 text-slate-300" data-tab="roles">Roles</button>
         </div>
 
-        <!-- TAB CONTENT -->
         <div class="flex-grow overflow-y-auto pr-1 space-y-4">
             <div id="adminTabEvents">
                 <div class="flex justify-between items-center mb-3">
@@ -531,13 +479,13 @@
             </div>
 
             <div id="adminTabResults" class="hidden">
-                <h3 class="text-sm font-bold text-slate-300 mb-3">Manage Results & Scoreboards</h3>
+                <h3 class="text-sm font-bold text-slate-300 mb-3">Manage Results</h3>
                 <div id="adminResultsList" class="space-y-4"></div>
             </div>
 
             <div id="adminTabRegs" class="hidden">
                 <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-sm font-bold text-slate-300">Attendee Registrations</h3>
+                    <h3 class="text-sm font-bold text-slate-300">Registrations</h3>
                     <button onclick="exportRegsCSV()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-700">
                         <i class="fa-solid fa-download mr-1"></i> Export CSV
                     </button>
@@ -567,121 +515,7 @@
                 </form>
                 <div id="adminAnnList" class="space-y-3"></div>
             </div>
-
-            <div id="adminTabRoles" class="hidden">
-                <h3 class="text-sm font-bold text-slate-300 mb-3">Super Admin – Role Management</h3>
-                <form onsubmit="handleGrantAdmin(event)" class="flex gap-2 mb-5">
-                    <input type="email" id="newAdminEmailInput" required placeholder="user@domain.com" class="flex-grow bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs">
-                    <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs whitespace-nowrap">Grant Sub-Admin</button>
-                </form>
-                <div id="adminRolesList" class="divide-y divide-slate-800 max-h-60 overflow-y-auto border border-slate-800/80 rounded-xl bg-slate-900/50 p-2"></div>
-            </div>
         </div>
-    </div>
-</div>
-
-<!-- EDIT EVENT MODAL -->
-<div id="editEventModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-sm">
-    <div class="glass-panel w-full max-w-lg rounded-2xl p-6 sm:p-8 relative shadow-2xl border border-slate-800 max-h-[90vh] overflow-y-auto">
-        <button onclick="closeModal('editEventModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
-            <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-
-        <h3 id="eventFormModalTitle" class="text-xl font-bold text-slate-100 mb-4">Edit Event</h3>
-
-        <form id="eventForm" onsubmit="handleEventFormSubmit(event)" class="space-y-4">
-            <input type="hidden" id="editEventId">
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">Event Title</label>
-                <input type="text" id="eventTitleInput" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm">
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Category</label>
-                    <select id="eventCategoryInput" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm">
-                        <option value="Flagship">Flagship</option>
-                        <option value="Cultural">Cultural</option>
-                        <option value="Sports">Sports</option>
-                        <option value="E-Sports">E-Sports</option>
-                        <option value="Fun">Fun</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Ticket Price (₹)</label>
-                    <input type="number" id="eventPriceInput" min="0" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Capacity (0 = unlimited)</label>
-                    <input type="number" id="eventCapacityInput" min="0" value="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Venue</label>
-                    <input type="text" id="eventVenueInput" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">Date & Time</label>
-                <input type="text" id="eventDateInput" required placeholder="e.g. Oct 14, 6:00 PM" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm">
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">Description</label>
-                <textarea id="eventDescInput" rows="3" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm"></textarea>
-            </div>
-
-            <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-2.5 rounded-xl text-sm">
-                Save Changes
-            </button>
-        </form>
-    </div>
-</div>
-
-<!-- RESULTS EDITOR MODAL -->
-<div id="resultsEditorModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-sm">
-    <div class="glass-panel w-full max-w-2xl rounded-2xl p-6 relative shadow-2xl border border-slate-800 max-h-[90vh] overflow-y-auto">
-        <button onclick="closeModal('resultsEditorModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
-            <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-
-        <h3 id="resultsEditorTitle" class="text-xl font-bold text-slate-100 mb-1">Edit Results</h3>
-        <p id="resultsEditorSub" class="text-xs text-slate-400 mb-4"></p>
-
-        <div class="mb-4">
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Result Type</label>
-            <select id="resultTypeSelect" onchange="changeResultType()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm">
-                <option value="leaderboard">Leaderboard / Ranking</option>
-                <option value="matches">Matches (Chess, TT, Football...)</option>
-                <option value="cricket">Cricket Scorecard</option>
-                <option value="custom">Custom / Notes only</option>
-            </select>
-        </div>
-
-        <div id="resultEntriesContainer" class="space-y-3 mb-4"></div>
-
-        <div class="flex flex-wrap gap-2 mb-4">
-            <button onclick="addResultEntry()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-700">
-                <i class="fa-solid fa-plus mr-1"></i> Add Entry
-            </button>
-            <label class="flex items-center gap-2 text-xs text-slate-300 ml-auto">
-                <input type="checkbox" id="resultPublishedCheck" class="rounded">
-                Publish publicly
-            </label>
-        </div>
-
-        <div class="mb-4">
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Notes / Prize Info</label>
-            <textarea id="resultNotes" rows="2" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm" placeholder="Prize pool, special mentions..."></textarea>
-        </div>
-
-        <button onclick="saveResults()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-2.5 rounded-xl text-sm">
-            Save & Sync Results
-        </button>
     </div>
 </div>
 
@@ -692,7 +526,7 @@
             <i class="fa-solid fa-xmark"></i>
         </button>
         <h3 class="text-xl font-bold mb-4">Our Sponsors</h3>
-        <p class="text-sm text-slate-400">Sponsor logos will appear here. Contact the fest committee to become a sponsor.</p>
+        <p class="text-sm text-slate-400">Sponsor details will be updated soon.</p>
     </div>
 </div>
 
@@ -710,15 +544,7 @@
             </div>
             <div>
                 <strong class="text-emerald-400">How do I get a pass?</strong><br>
-                Login → Click “Get Pass” on an event → Fill remaining details → Pass is generated.
-            </div>
-            <div>
-                <strong class="text-emerald-400">Can I see only my passes?</strong><br>
-                Yes. “My Passes” shows only the tickets registered with your Google account.
-            </div>
-            <div>
-                <strong class="text-emerald-400">Where are live scores?</strong><br>
-                Use the “Live Results” button in the header or bottom navigation.
+                Login → Click “Get Pass” → Fill details → Instant pass generated.
             </div>
         </div>
     </div>
@@ -730,113 +556,26 @@ const SUPER_ADMIN_EMAIL = "dr.ankitraj8558@gmail.com";
 const SUPABASE_URL = "https://ccsgewccyyexfgrmflig.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2dld2NjeXlleGZncm1mbGlnIiwiaWF0IjoxNzkwNzg4NDAxLCJleHAiOjIxMDYzNjQ0MDB9.8yolMynIAGtN41qsUCxLASpx_rszxDMUoskBvQJvQGo";
 
-const USE_SUPABASE_DATA = true;
-
 let supabaseClient = null;
 let currentUser = null;
 let currentCategory = "All";
-let currentResultEventId = null;
 
 let events = [
-    {
-        id: "ev-1",
-        title: "Nerve-Rupture DJ Night",
-        category: "Flagship",
-        venue: "MAMC Central Grounds",
-        price: 499,
-        capacity: 2000,
-        date: "Oct 15, 7:00 PM",
-        desc: "Headline international DJs with full laser production.",
-        results: { type: "leaderboard", entries: [], notes: "", published: false }
-    },
-    {
-        id: "ev-2",
-        title: "Choreonite Dance Battle",
-        category: "Cultural",
-        venue: "Main Auditorium",
-        price: 199,
-        capacity: 500,
-        date: "Oct 14, 5:00 PM",
-        desc: "Inter-college group dance competition. Cash prizes up to ₹1,00,000.",
-        results: { type: "leaderboard", entries: [], notes: "", published: false }
-    },
-    {
-        id: "ev-3",
-        title: "Pulse Football Championship",
-        category: "Sports",
-        venue: "MAMC Sports Complex",
-        price: 0,
-        capacity: 0,
-        date: "Oct 13, 9:00 AM",
-        desc: "11-a-side knockout medical college football league.",
-        results: { type: "matches", entries: [], notes: "", published: false }
-    },
-    {
-        id: "ev-4",
-        title: "Valorant Masters Arena",
-        category: "E-Sports",
-        venue: "IT Block LAN Hub",
-        price: 150,
-        capacity: 64,
-        date: "Oct 13, 2:00 PM",
-        desc: "5v5 competitive LAN tournament streamed live.",
-        results: { type: "leaderboard", entries: [], notes: "", published: false }
-    },
-    {
-        id: "ev-5",
-        title: "Fashionista Runway",
-        category: "Cultural",
-        venue: "Main Open Stage",
-        price: 250,
-        capacity: 300,
-        date: "Oct 15, 4:00 PM",
-        desc: "High fashion theme showcase with celebrity judges.",
-        results: { type: "leaderboard", entries: [], notes: "", published: false }
-    },
-    {
-        id: "ev-6",
-        title: "Cricket Premier League",
-        category: "Sports",
-        venue: "MAMC Cricket Ground",
-        price: 0,
-        capacity: 0,
-        date: "Oct 14, 8:00 AM",
-        desc: "Inter-college T20 style cricket tournament.",
-        results: { type: "cricket", entries: [], notes: "", published: false }
-    },
-    {
-        id: "ev-7",
-        title: "Chess Grandmasters",
-        category: "Sports",
-        venue: "Library Hall",
-        price: 50,
-        capacity: 64,
-        date: "Oct 13, 10:00 AM",
-        desc: "Swiss system chess tournament.",
-        results: { type: "matches", entries: [], notes: "", published: false }
-    }
-];
-
-let adminList = [
-    { email: "dr.ankitraj8558@gmail.com", role: "Super Admin" },
-    { email: "ankitgarg8558@gmail.com", role: "Sub-Admin" }
+    { id: "ev-1", title: "Nerve-Rupture DJ Night", category: "Flagship", venue: "MAMC Central Grounds", price: 499, capacity: 2000, date: "Oct 15, 7:00 PM", desc: "Headline international DJs with full laser production.", results: { published: false } },
+    { id: "ev-2", title: "Choreonite Dance Battle", category: "Cultural", venue: "Main Auditorium", price: 199, capacity: 500, date: "Oct 14, 5:00 PM", desc: "Inter-college group dance competition.", results: { published: false } },
+    { id: "ev-3", title: "Pulse Football Championship", category: "Sports", venue: "MAMC Sports Complex", price: 0, capacity: 0, date: "Oct 13, 9:00 AM", desc: "11-a-side knockout medical college football league.", results: { published: false } },
+    { id: "ev-4", title: "Valorant Masters Arena", category: "E-Sports", venue: "IT Block LAN Hub", price: 150, capacity: 64, date: "Oct 13, 2:00 PM", desc: "5v5 competitive LAN tournament.", results: { published: false } }
 ];
 
 let registrations = [];
 let announcements = [
-    {
-        id: 1,
-        title: "Welcome to SYNAPSE '26",
-        body: "Login with Google to register for events and get your passes!",
-        time: new Date().toLocaleString()
-    }
+    { id: 1, title: "Welcome to SYNAPSE '26", body: "Login with Google to register for events and get your passes!", time: new Date().toLocaleString() }
 ];
 
 window.addEventListener("DOMContentLoaded", async () => {
     initLocalStorage();
     initSupabase();
     await checkAuthSession();
-    await loadSharedDataFromSupabase();
 
     updateAuthUI();
     renderEvents();
@@ -848,12 +587,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 function escapeHtml(str) {
     if (!str) return "";
-    return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
 function openModal(id) {
@@ -867,177 +601,18 @@ function closeModal(id) {
 }
 
 function initLocalStorage() {
-    if (!localStorage.getItem("synapse_events_v3")) {
-        localStorage.setItem("synapse_events_v3", JSON.stringify(events));
-    } else {
-        try { events = JSON.parse(localStorage.getItem("synapse_events_v3")) || events; } catch (_) {}
-    }
-
-    if (!localStorage.getItem("synapse_admins_v3")) {
-        localStorage.setItem("synapse_admins_v3", JSON.stringify(adminList));
-    } else {
-        try { adminList = JSON.parse(localStorage.getItem("synapse_admins_v3")) || adminList; } catch (_) {}
-    }
-
-    if (!localStorage.getItem("synapse_regs_v3")) {
-        localStorage.setItem("synapse_regs_v3", JSON.stringify(registrations));
-    } else {
-        try { registrations = JSON.parse(localStorage.getItem("synapse_regs_v3")) || registrations; } catch (_) {}
-    }
-
-    if (!localStorage.getItem("synapse_ann_v3")) {
-        localStorage.setItem("synapse_ann_v3", JSON.stringify(announcements));
-    } else {
-        try { announcements = JSON.parse(localStorage.getItem("synapse_ann_v3")) || announcements; } catch (_) {}
-    }
-}
-
-function persistLocalCache() {
-    localStorage.setItem("synapse_events_v3", JSON.stringify(events));
-    localStorage.setItem("synapse_admins_v3", JSON.stringify(adminList));
-    localStorage.setItem("synapse_regs_v3", JSON.stringify(registrations));
-    localStorage.setItem("synapse_ann_v3", JSON.stringify(announcements));
-}
-
-async function loadSharedDataFromSupabase() {
-    if (!USE_SUPABASE_DATA || !supabaseClient) {
-        setSupabaseStatus("Local Cache Mode", false);
-        return;
-    }
-
     try {
-        const [evRes, regRes, annRes, admRes] = await Promise.all([
-            supabaseClient.from("events").select("*"),
-            supabaseClient.from("registrations").select("*"),
-            supabaseClient.from("announcements").select("*"),
-            supabaseClient.from("admins").select("*")
-        ]);
-
-        if (Array.isArray(evRes.data) && evRes.data.length > 0) {
-            events = evRes.data.map(row => ({
-                id: row.id,
-                title: row.title || row.name || "Event",
-                category: row.category || "General",
-                venue: row.venue || "MAMC",
-                price: Number(row.price || row.fee) || 0,
-                capacity: Number(row.capacity) || 0,
-                date: row.date || row.day || "TBA",
-                desc: row.description || row.desc || "",
-                results: row.results || { type: "leaderboard", entries: [], notes: "", published: false }
-            }));
-        }
-
-        if (Array.isArray(regRes.data)) {
-            registrations = regRes.data.map(row => ({
-                id: row.id,
-                eventId: row.event_id,
-                eventTitle: row.event_title || "Fest Event",
-                name: row.name || row.user_name || "",
-                email: row.email || "",
-                college: row.college || "",
-                phone: row.phone || "",
-                venue: row.venue || "",
-                date: row.date || "",
-                amount: Number(row.amount) || 0,
-                paymentStatus: row.payment_status || "CONFIRMED",
-                createdAt: row.created_at
-            }));
-        }
-
-        if (Array.isArray(annRes.data) && annRes.data.length > 0) {
-            announcements = annRes.data.map(row => ({
-                id: row.id,
-                title: row.title,
-                body: row.body,
-                time: row.time || row.created_at
-            }));
-        }
-
-        if (Array.isArray(admRes.data) && admRes.data.length > 0) {
-            adminList = admRes.data.map(row => ({
-                email: row.email,
-                role: row.role
-            }));
-        }
-
-        persistLocalCache();
-        setSupabaseStatus("Supabase Connected ✓", true);
-
-        if (currentUser) {
-            currentUser.role = determineRole(currentUser.email);
-            updateAuthUI();
-        }
-
-    } catch (error) {
-        console.warn("loadSharedDataFromSupabase notice:", error);
-        setSupabaseStatus("Supabase Connected ✓", true);
-    }
-}
-
-async function syncEventsToSupabase() {
-    if (!USE_SUPABASE_DATA || !supabaseClient || !currentUser) return;
-    try {
-        const rows = events.map(e => ({
-            id: e.id,
-            title: e.title,
-            category: e.category,
-            venue: e.venue,
-            price: e.price,
-            capacity: e.capacity,
-            date: e.date,
-            description: e.desc,
-            results: e.results || { type: "leaderboard", entries: [], notes: "", published: false }
-        }));
-        await supabaseClient.from("events").upsert(rows, { onConflict: "id" });
-    } catch (e) { console.error("syncEvents error:", e); }
-}
-
-async function syncRegistrationToSupabase(reg) {
-    if (!USE_SUPABASE_DATA || !supabaseClient) return;
-    try {
-        await supabaseClient.from("registrations").upsert({
-            id: reg.id,
-            event_id: reg.eventId,
-            event_title: reg.eventTitle,
-            name: reg.name,
-            email: reg.email,
-            college: reg.college,
-            phone: reg.phone,
-            venue: reg.venue,
-            date: reg.date,
-            amount: reg.amount,
-            payment_status: reg.paymentStatus,
-            created_at: reg.createdAt || new Date().toISOString()
-        }, { onConflict: "id" });
-    } catch (e) { console.error("syncRegistration error:", e); }
-}
-
-async function syncAnnouncementsToSupabase() {
-    if (!USE_SUPABASE_DATA || !supabaseClient || !currentUser) return;
-    try {
-        const rows = announcements.map(a => ({ id: a.id, title: a.title, body: a.body, time: a.time }));
-        await supabaseClient.from("announcements").upsert(rows, { onConflict: "id" });
-    } catch (e) { console.error("syncAnnouncements error:", e); }
-}
-
-async function syncAdminsToSupabase() {
-    if (!USE_SUPABASE_DATA || !supabaseClient || !currentUser) return;
-    try {
-        await supabaseClient.from("admins").upsert(adminList, { onConflict: "email" });
-    } catch (e) { console.error("syncAdmins error:", e); }
+        if (localStorage.getItem("synapse_events_v3")) events = JSON.parse(localStorage.getItem("synapse_events_v3")) || events;
+        if (localStorage.getItem("synapse_regs_v3")) registrations = JSON.parse(localStorage.getItem("synapse_regs_v3")) || registrations;
+        if (localStorage.getItem("synapse_ann_v3")) announcements = JSON.parse(localStorage.getItem("synapse_ann_v3")) || announcements;
+    } catch (e) {}
 }
 
 function saveState() {
-    persistLocalCache();
-    if (USE_SUPABASE_DATA && supabaseClient) {
-        syncEventsToSupabase();
-        syncAnnouncementsToSupabase();
-        syncAdminsToSupabase();
-    }
+    localStorage.setItem("synapse_events_v3", JSON.stringify(events));
+    localStorage.setItem("synapse_regs_v3", JSON.stringify(registrations));
+    localStorage.setItem("synapse_ann_v3", JSON.stringify(announcements));
     renderEvents();
-    if (currentUser && (currentUser.role === "Super Admin" || currentUser.role === "Sub-Admin")) {
-        renderAdminDashboard();
-    }
     renderResultsPublic();
     renderSchedule();
     renderAnnouncementsPublic();
@@ -1046,19 +621,14 @@ function saveState() {
 
 function initSupabase() {
     if (!window.supabase || typeof window.supabase.createClient !== "function") {
-        setSupabaseStatus("Authentication SDK Missing", false);
+        setSupabaseStatus("Auth Library Missing", false);
         return;
     }
     try {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-            auth: {
-                persistSession: true,
-                autoRefreshToken: true,
-                detectSessionInUrl: true,
-                storageKey: "synapse_auth_token"
-            }
+            auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
         });
-        setSupabaseStatus("Google Auth Initialized", true);
+        setSupabaseStatus("Auth Ready ✓", true);
 
         supabaseClient.auth.onAuthStateChange((event, session) => {
             if (["INITIAL_SESSION", "SIGNED_IN", "TOKEN_REFRESHED", "USER_UPDATED"].includes(event)) {
@@ -1072,7 +642,7 @@ function initSupabase() {
             }
         });
     } catch (error) {
-        setSupabaseStatus("Auth System Failure", false);
+        setSupabaseStatus("Auth Error", false);
     }
 }
 
@@ -1102,7 +672,8 @@ function setCurrentUserFromSession(session) {
     if (!email) { currentUser = null; updateAuthUI(); return; }
 
     const name = user.user_metadata?.full_name || user.user_metadata?.name || email.split("@")[0];
-    currentUser = { id: user.id, email, name, role: determineRole(email) };
+    const role = email === SUPER_ADMIN_EMAIL.toLowerCase() ? "Super Admin" : "User";
+    currentUser = { id: user.id, email, name, role };
 
     updateAuthUI();
     updateMyPassesBadge();
@@ -1112,43 +683,29 @@ async function checkAuthSession() {
     if (!supabaseClient) return;
     try {
         const { data } = await supabaseClient.auth.getSession();
-        if (data?.session) {
+        if (data && data.session) {
             setCurrentUserFromSession(data.session);
             cleanOAuthUrl();
         }
-    } catch (error) {
-        currentUser = null;
-        updateAuthUI();
-        updateMyPassesBadge();
-    }
+    } catch (error) {}
 }
 
 async function handleGoogleSignIn() {
     if (!supabaseClient) {
-        alert("Google authentication service is currently unavailable.");
+        alert("Google authentication service is unavailable.");
         return;
     }
     try {
         const redirectUrl = window.location.origin + window.location.pathname;
         const { data, error } = await supabaseClient.auth.signInWithOAuth({
             provider: "google",
-            options: {
-                redirectTo: redirectUrl,
-                queryParams: { prompt: "select_account" }
-            }
+            options: { redirectTo: redirectUrl }
         });
         if (error) throw error;
-        if (data?.url) window.location.href = data.url;
+        if (data && data.url) window.location.href = data.url;
     } catch (error) {
-        alert("Google Login Error: " + (error?.message || "Could not connect to service."));
+        alert("Login failed: " + (error?.message || ""));
     }
-}
-
-function determineRole(email) {
-    const clean = (email || "").trim().toLowerCase();
-    if (clean === SUPER_ADMIN_EMAIL.toLowerCase()) return "Super Admin";
-    const found = adminList.find(a => a.email.trim().toLowerCase() === clean);
-    return found ? found.role : "User";
 }
 
 async function handleSignOut() {
@@ -1177,7 +734,7 @@ function updateAuthUI() {
         return;
     }
 
-    const isAdmin = currentUser.role === "Super Admin" || currentUser.role === "Sub-Admin";
+    const isAdmin = currentUser.role === "Super Admin";
     const adminBtn = isAdmin ? `
         <button onclick="openAdminDashboard()" class="flex items-center space-x-1.5 bg-slate-900 border border-emerald-500/50 hover:bg-slate-800 text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs">
             <i class="fa-solid fa-crown"></i>
@@ -1203,20 +760,10 @@ function showSection(name) {
     ["eventsSection", "resultsSection", "scheduleSection", "announcementsSection"].forEach(id => {
         document.getElementById(id).classList.add("hidden");
     });
-
     if (name === "events") document.getElementById("eventsSection").classList.remove("hidden");
-    if (name === "results") {
-        document.getElementById("resultsSection").classList.remove("hidden");
-        renderResultsPublic();
-    }
-    if (name === "schedule") {
-        document.getElementById("scheduleSection").classList.remove("hidden");
-        renderSchedule();
-    }
-    if (name === "announcements") {
-        document.getElementById("announcementsSection").classList.remove("hidden");
-        renderAnnouncementsPublic();
-    }
+    if (name === "results") { document.getElementById("resultsSection").classList.remove("hidden"); renderResultsPublic(); }
+    if (name === "schedule") { document.getElementById("scheduleSection").classList.remove("hidden"); renderSchedule(); }
+    if (name === "announcements") { document.getElementById("announcementsSection").classList.remove("hidden"); renderAnnouncementsPublic(); }
 }
 
 function setCategory(cat) {
@@ -1316,108 +863,29 @@ function renderResultsPublic() {
     }
 
     empty.classList.add("hidden");
-    container.innerHTML = published.map(event => {
-        const result = event.results;
-        let body = "";
-
-        if (result.type === "leaderboard") {
-            body = `
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs">
-                        <thead>
-                            <tr class="text-slate-400 border-b border-slate-800">
-                                <th class="p-2 text-left">Rank</th>
-                                <th class="p-2 text-left">Name / Team</th>
-                                <th class="p-2 text-left">Score</th>
-                                <th class="p-2 text-left">Prize</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${(result.entries || []).map(entry => `
-                                <tr class="border-b border-slate-800/50">
-                                    <td class="p-2 font-bold text-emerald-400">#${escapeHtml(entry.rank || "")}</td>
-                                    <td class="p-2">${escapeHtml(entry.name || "")}</td>
-                                    <td class="p-2">${escapeHtml(entry.score || "")}</td>
-                                    <td class="p-2 text-amber-300">${escapeHtml(entry.prize || "")}</td>
-                                </tr>
-                            `).join("")}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-        } else if (result.type === "matches") {
-            body = `
-                <div class="space-y-2">
-                    ${(result.entries || []).map(match => `
-                        <div class="bg-slate-900/60 rounded-xl p-3 text-xs flex flex-wrap items-center justify-between gap-2">
-                            <span class="font-semibold">${escapeHtml(match.p1 || "")} <span class="text-slate-500">vs</span> ${escapeHtml(match.p2 || "")}</span>
-                            <span class="font-mono text-emerald-400">${escapeHtml(match.score || "")}</span>
-                            <span class="text-amber-300">${match.winner ? "Winner: " + escapeHtml(match.winner) : ""}</span>
-                            <span class="text-slate-500">${escapeHtml(match.round || "")}</span>
-                        </div>
-                    `).join("")}
-                </div>
-            `;
-        } else if (result.type === "cricket") {
-            body = `
-                <div class="space-y-2">
-                    ${(result.entries || []).map(cricket => `
-                        <div class="bg-slate-900/60 rounded-xl p-3 text-xs">
-                            <div class="font-bold text-slate-200 mb-1">${escapeHtml(cricket.team || "")}</div>
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-slate-400">
-                                <span>Runs: <b class="text-emerald-400">${cricket.runs || 0}</b></span>
-                                <span>Wickets: <b>${cricket.wickets || 0}</b></span>
-                                <span>Overs: <b>${escapeHtml(cricket.overs || "")}</b></span>
-                                <span>4s/6s: <b>${cricket.fours \vert{}\vert{} 0}/${cricket.sixes || 0}</b></span>
-                            </div>
-                            ${cricket.topScorer ? `<div class="mt-1 text-amber-300">Top: ${escapeHtml(cricket.topScorer)}</div>` : ""}
-                        </div>
-                    `).join("")}
-                </div>
-            `;
-        } else {
-            body = `<p class="text-sm text-slate-300 whitespace-pre-wrap">${escapeHtml(result.notes || "Results will be updated soon.")}</p>`;
-        }
-
-        return `
-            <div class="glass-panel rounded-2xl p-5 border border-slate-800">
-                <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                    <div>
-                        <span class="text-[10px] uppercase font-bold text-emerald-400">${escapeHtml(event.category)}</span>
-                        <h3 class="text-lg font-bold text-slate-100">${escapeHtml(event.title)}</h3>
-                    </div>
-                    <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">LIVE</span>
-                </div>
-                ${body}
-                ${result.notes && result.type !== "custom" ? `<p class="mt-3 text-xs text-slate-400 border-t border-slate-800 pt-2">${escapeHtml(result.notes)}</p>` : ""}
-            </div>
-        `;
-    }).join("");
+    container.innerHTML = published.map(event => `
+        <div class="glass-panel rounded-2xl p-5 border border-slate-800">
+            <h3 class="text-lg font-bold text-slate-100">${escapeHtml(event.title)}</h3>
+            <p class="text-xs text-slate-400 mt-1">Results published for this event.</p>
+        </div>
+    `).join("");
 }
 
 function renderSchedule() {
     const list = document.getElementById("scheduleList");
-    const sorted = [...events].sort((a, b) => (a.date || "").localeCompare(b.date || ""));
-    list.innerHTML = sorted.map(event => `
+    list.innerHTML = events.map(event => `
         <div class="glass-panel rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
             <div>
                 <div class="text-xs text-emerald-400 font-mono">${escapeHtml(event.date)}</div>
                 <div class="font-bold text-slate-100">${escapeHtml(event.title)}</div>
-                <div class="text-xs text-slate-400">${escapeHtml(event.venue)} • ${escapeHtml(event.category)}</div>
+                <div class="text-xs text-slate-400">${escapeHtml(event.venue)}</div>
             </div>
-            <span class="text-sm font-bold ${event.price === 0 ? "text-emerald-400" : "text-slate-200"}">
-                ${event.price === 0 ? "FREE" : "₹" + event.price}
-            </span>
         </div>
     `).join("");
 }
 
 function renderAnnouncementsPublic() {
     const list = document.getElementById("announcementsList");
-    if (!announcements.length) {
-        list.innerHTML = `<p class="text-slate-500 text-sm text-center py-8">No announcements yet.</p>`;
-        return;
-    }
     list.innerHTML = announcements.slice().reverse().map(a => `
         <div class="glass-panel rounded-xl p-4">
             <div class="text-xs text-slate-500 mb-1">${escapeHtml(a.time)}</div>
@@ -1435,44 +903,30 @@ function openRegistrationModal(eventId) {
     const event = events.find(item => item.id === eventId);
     if (!event) return;
 
-    const regsCount = registrations.filter(r => r.eventId === event.id).length;
-    if (event.capacity > 0 && regsCount >= event.capacity) {
-        alert("This event is sold out.");
-        return;
-    }
-
     document.getElementById("regEventId").value = event.id;
     document.getElementById("regEventTitle").innerText = event.title;
     document.getElementById("regEventSub").innerText = `${event.venue} • ${event.price === 0 ? "Free" : "₹" + event.price}`;
     document.getElementById("regName").value = currentUser.name || "";
     document.getElementById("regEmail").value = currentUser.email || "";
 
-    const submitButton = document.getElementById("regSubmitBtn");
-    submitButton.disabled = false;
-    submitButton.innerText = event.price > 0 ? `Confirm & Generate Pass (₹${event.price})` : "Confirm & Generate Pass";
-
     openModal("registerModal");
 }
 
-async function handleRegistrationSubmit(e) {
+function handleRegistrationSubmit(e) {
     e.preventDefault();
     const eventId = document.getElementById("regEventId").value;
     const event = events.find(item => item.id === eventId);
     if (!event) return;
-
-    const name = document.getElementById("regName").value.trim();
-    const college = document.getElementById("regCollege").value.trim();
-    const phone = document.getElementById("regPhone").value.trim();
 
     const passId = "SYN26-" + Math.random().toString(36).substring(2, 8).toUpperCase();
     const regRecord = {
         id: passId,
         eventId: event.id,
         eventTitle: event.title,
-        name,
+        name: document.getElementById("regName").value.trim(),
         email: currentUser.email,
-        college,
-        phone,
+        college: document.getElementById("regCollege").value.trim(),
+        phone: document.getElementById("regPhone").value.trim(),
         venue: event.venue,
         date: event.date,
         amount: event.price,
@@ -1481,9 +935,7 @@ async function handleRegistrationSubmit(e) {
     };
 
     registrations.unshift(regRecord);
-    await syncRegistrationToSupabase(regRecord);
     saveState();
-
     closeModal("registerModal");
     showPassDetails(regRecord);
 }
@@ -1502,45 +954,34 @@ function showPassDetails(reg) {
 function updateMyPassesBadge() {
     const badge = document.getElementById("passBadgeCount");
     if (!badge) return;
-    if (!currentUser) {
-        badge.innerText = "0";
-        return;
-    }
-    const myRegs = registrations.filter(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
-    badge.innerText = myRegs.length;
+    if (!currentUser) { badge.innerText = "0"; return; }
+    const count = registrations.filter(r => r.email.toLowerCase() === currentUser.email.toLowerCase()).length;
+    badge.innerText = count;
 }
 
 function openMyPasses() {
-    const list = document.getElementById("myPassesList");
-    const sub = document.getElementById("myPassesSubtitle");
-
     if (!currentUser) {
-        sub.innerText = "Please login with Google to view your passes.";
-        list.innerHTML = `<div class="text-center py-8 text-slate-500 text-sm">You are not logged in.</div>`;
-        openModal("myPassesModal");
+        openModal("authModal");
         return;
     }
-
-    sub.innerText = `Logged in as ${currentUser.email}`;
     const myRegs = registrations.filter(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
+    const list = document.getElementById("myPassesList");
 
     if (myRegs.length === 0) {
-        list.innerHTML = `<div class="text-center py-8 text-slate-500 text-sm">No passes found. Register for events to get passes!</div>`;
+        list.innerHTML = `<div class="text-center py-8 text-slate-500 text-sm">No passes found yet.</div>`;
     } else {
         list.innerHTML = myRegs.map(reg => `
             <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
                 <div>
                     <span class="text-[10px] font-mono text-emerald-400 font-bold">${escapeHtml(reg.id)}</span>
                     <h4 class="font-bold text-slate-100 text-sm">${escapeHtml(reg.eventTitle)}</h4>
-                    <p class="text-xs text-slate-400">${escapeHtml(reg.venue)} • ${escapeHtml(reg.date)}</p>
                 </div>
-                <button onclick="closeModal('myPassesModal'); showPassDetailsById('${reg.id}')" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-lg text-xs font-bold">
+                <button onclick="closeModal('myPassesModal'); showPassDetailsById('${reg.id}')" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-lg text-xs font-bold">
                     View
                 </button>
             </div>
         `).join("");
     }
-
     openModal("myPassesModal");
 }
 
@@ -1558,379 +999,41 @@ function openUserProfile() {
     const myRegs = registrations.filter(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
     document.getElementById("profilePassCount").innerText = myRegs.length;
 
-    const list = document.getElementById("profilePassesList");
-    if (myRegs.length === 0) {
-        list.innerHTML = `<p class="text-xs text-slate-500">No active registrations.</p>`;
-    } else {
-        list.innerHTML = myRegs.map(reg => `
-            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-2.5 text-xs flex justify-between items-center">
-                <div>
-                    <p class="font-semibold text-slate-200">${escapeHtml(reg.eventTitle)}</p>
-                    <p class="text-[10px] text-slate-500">${escapeHtml(reg.id)}</p>
-                </div>
-                <span class="text-[10px] text-emerald-400 font-mono">${escapeHtml(reg.paymentStatus)}</span>
-            </div>
-        `).join("");
-    }
-
     openModal("userProfileModal");
 }
 
 function openAdminDashboard() {
-    if (!currentUser || (currentUser.role !== "Super Admin" && currentUser.role !== "Sub-Admin")) {
-        alert("Access denied. Admin account required.");
+    if (!currentUser || currentUser.role !== "Super Admin") {
+        alert("Admin access required.");
         return;
     }
-
     document.getElementById("adminUserEmailText").innerText = currentUser.email;
-    document.getElementById("roleBadge").innerText = currentUser.role;
-
-    const manageBtn = document.getElementById("manageAdminsBtn");
-    if (currentUser.role === "Super Admin") {
-        manageBtn.classList.remove("hidden");
-    } else {
-        manageBtn.classList.add("hidden");
-    }
-
-    renderAdminDashboard();
-    openModal("adminDashboardModal");
-}
-
-function renderAdminDashboard() {
     document.getElementById("statTotalEvents").innerText = events.length;
     document.getElementById("statTotalRegs").innerText = registrations.length;
 
-    const revenue = registrations.reduce((sum, r) => sum + (r.amount || 0), 0);
-    document.getElementById("statTotalRevenue").innerText = "₹" + revenue.toLocaleString("en-IN");
-
-    const pubCount = events.filter(e => e.results && e.results.published).length;
-    document.getElementById("statPublishedResults").innerText = pubCount;
-
-    renderAdminEventsTable();
-    renderAdminResultsList();
-    renderAdminRegsTable();
-    renderAdminAnnouncements();
-    renderAdminRoles();
+    openModal("adminDashboardModal");
 }
 
 function switchAdminTab(tabName) {
-    document.querySelectorAll("#adminDashboardModal .tab-btn").forEach(btn => {
-        if (btn.dataset.tab === tabName) btn.classList.add("active");
-        else btn.classList.remove("active");
-    });
-
-    ["adminTabEvents", "adminTabResults", "adminTabRegs", "adminTabAnnounce", "adminTabRoles"].forEach(id => {
+    ["adminTabEvents", "adminTabResults", "adminTabRegs", "adminTabAnnounce"].forEach(id => {
         document.getElementById(id).classList.add("hidden");
     });
-
     if (tabName === "events") document.getElementById("adminTabEvents").classList.remove("hidden");
     if (tabName === "results") document.getElementById("adminTabResults").classList.remove("hidden");
     if (tabName === "regs") document.getElementById("adminTabRegs").classList.remove("hidden");
     if (tabName === "announce") document.getElementById("adminTabAnnounce").classList.remove("hidden");
-    if (tabName === "roles") document.getElementById("adminTabRoles").classList.remove("hidden");
 }
 
-function renderAdminEventsTable() {
-    const tbody = document.getElementById("adminEventsTableBody");
-    tbody.innerHTML = events.map(event => `
-        <tr>
-            <td class="p-3 font-semibold text-slate-100">${escapeHtml(event.title)}</td>
-            <td class="p-3">${escapeHtml(event.category)}</td>
-            <td class="p-3">${event.price === 0 ? "FREE" : "₹" + event.price}</td>
-            <td class="p-3">${event.capacity || "Unlimited"}</td>
-            <td class="p-3">${escapeHtml(event.date)}</td>
-            <td class="p-3 text-right space-x-2">
-                <button onclick="openEditEventModal('${event.id}')" class="text-emerald-400 hover:text-emerald-300"><i class="fa-solid fa-pen"></i></button>
-                <button onclick="deleteEvent('${event.id}')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
-            </td>
-        </tr>
-    `).join("");
-}
-
-function openAddEventModal() {
-    document.getElementById("eventFormModalTitle").innerText = "Add New Event";
-    document.getElementById("editEventId").value = "";
-    document.getElementById("eventTitleInput").value = "";
-    document.getElementById("eventCategoryInput").value = "Flagship";
-    document.getElementById("eventPriceInput").value = "0";
-    document.getElementById("eventCapacityInput").value = "0";
-    document.getElementById("eventVenueInput").value = "";
-    document.getElementById("eventDateInput").value = "";
-    document.getElementById("eventDescInput").value = "";
-
-    openModal("editEventModal");
-}
-
-function openEditEventModal(id) {
-    const event = events.find(e => e.id === id);
-    if (!event) return;
-
-    document.getElementById("eventFormModalTitle").innerText = "Edit Event";
-    document.getElementById("editEventId").value = event.id;
-    document.getElementById("eventTitleInput").value = event.title;
-    document.getElementById("eventCategoryInput").value = event.category;
-    document.getElementById("eventPriceInput").value = event.price;
-    document.getElementById("eventCapacityInput").value = event.capacity;
-    document.getElementById("eventVenueInput").value = event.venue;
-    document.getElementById("eventDateInput").value = event.date;
-    document.getElementById("eventDescInput").value = event.desc;
-
-    openModal("editEventModal");
-}
-
-function handleEventFormSubmit(e) {
+function handleAddAnnouncement(e) {
     e.preventDefault();
-    const id = document.getElementById("editEventId").value;
-    const title = document.getElementById("eventTitleInput").value.trim();
-    const category = document.getElementById("eventCategoryInput").value;
-    const price = Number(document.getElementById("eventPriceInput").value) || 0;
-    const capacity = Number(document.getElementById("eventCapacityInput").value) || 0;
-    const venue = document.getElementById("eventVenueInput").value.trim();
-    const date = document.getElementById("eventDateInput").value.trim();
-    const desc = document.getElementById("eventDescInput").value.trim();
-
-    if (id) {
-        const event = events.find(e => e.id === id);
-        if (event) {
-            event.title = title;
-            event.category = category;
-            event.price = price;
-            event.capacity = capacity;
-            event.venue = venue;
-            event.date = date;
-            event.desc = desc;
-        }
-    } else {
-        const newEvent = {
-            id: "ev-" + Date.now(),
-            title, category, price, capacity, venue, date, desc,
-            results: { type: "leaderboard", entries: [], notes: "", published: false }
-        };
-        events.push(newEvent);
-    }
-
-    saveState();
-    closeModal("editEventModal");
-}
-
-function deleteEvent(id) {
-    if (!confirm("Are you sure you want to delete this event?")) return;
-    events = events.filter(e => e.id !== id);
-    saveState();
-}
-
-function renderAdminResultsList() {
-    const list = document.getElementById("adminResultsList");
-    list.innerHTML = events.map(event => `
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
-            <div>
-                <h4 class="font-bold text-slate-100 text-sm">${escapeHtml(event.title)}</h4>
-                <p class="text-xs text-slate-400">Type: ${event.results?.type || "leaderboard"} | Published: ${event.results?.published ? "YES" : "NO"}</p>
-            </div>
-            <button onclick="openResultsEditor('${event.id}')" class="bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 px-3 py-1.5 rounded-lg text-xs font-bold border border-emerald-500/30">
-                Edit Results
-            </button>
-        </div>
-    `).join("");
-}
-
-function openResultsEditor(eventId) {
-    currentResultEventId = eventId;
-    const event = events.find(e => e.id === eventId);
-    if (!event) return;
-
-    document.getElementById("resultsEditorTitle").innerText = `Results: ${event.title}`;
-    document.getElementById("resultsEditorSub").innerText = `Category: ${event.category}`;
-    document.getElementById("resultTypeSelect").value = event.results?.type || "leaderboard";
-    document.getElementById("resultPublishedCheck").checked = Boolean(event.results?.published);
-    document.getElementById("resultNotes").value = event.results?.notes || "";
-
-    renderResultEntriesForms(event.results);
-    openModal("resultsEditorModal");
-}
-
-function changeResultType() {
-    const event = events.find(e => e.id === currentResultEventId);
-    if (!event) return;
-
-    const newType = document.getElementById("resultTypeSelect").value;
-    if (!event.results) event.results = { entries: [] };
-    event.results.type = newType;
-    renderResultEntriesForms(event.results);
-}
-
-function renderResultEntriesForms(results) {
-    const container = document.getElementById("resultEntriesContainer");
-    const type = results?.type || "leaderboard";
-    const entries = results?.entries || [];
-
-    if (type === "leaderboard") {
-        container.innerHTML = entries.map((entry, i) => `
-            <div class="grid grid-cols-4 gap-2 bg-slate-900 p-2 rounded-lg text-xs">
-                <input type="text" placeholder="Rank" value="${escapeHtml(entry.rank || "")}" onchange="updateResultEntryField(${i}, 'rank', this.value)" class="bg-slate-800 border border-slate-700 rounded px-2 py-1">
-                <input type="text" placeholder="Name/Team" value="${escapeHtml(entry.name || "")}" onchange="updateResultEntryField(${i}, 'name', this.value)" class="bg-slate-800 border border-slate-700 rounded px-2 py-1">
-                <input type="text" placeholder="Score" value="${escapeHtml(entry.score || "")}" onchange="updateResultEntryField(${i}, 'score', this.value)" class="bg-slate-800 border border-slate-700 rounded px-2 py-1">
-                <div class="flex gap-1">
-                    <input type="text" placeholder="Prize" value="${escapeHtml(entry.prize || "")}" onchange="updateResultEntryField(${i}, 'prize', this.value)" class="bg-slate-800 border border-slate-700 rounded px-2 py-1 w-full">
-                    <button onclick="removeResultEntry(${i})" class="text-red-400 px-1"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-            </div>
-        `).join("");
-    } else if (type === "matches") {
-        container.innerHTML = entries.map((entry, i) => `
-            <div class="grid grid-cols-4 gap-2 bg-slate-900 p-2 rounded-lg text-xs">
-                <input type="text" placeholder="Player 1" value="${escapeHtml(entry.p1 || "")}" onchange="updateResultEntryField(${i}, 'p1', this.value)" class="bg-slate-800 border border-slate-700 rounded px-2 py-1">
-                <input type="text" placeholder="Player 2" value="${escapeHtml(entry.p2 || "")}" onchange="updateResultEntryField(${i}, 'p2', this.value)" class="bg-slate-800 border border-slate-700 rounded px-2 py-1">
-                <input type="text" placeholder="Score" value="${escapeHtml(entry.score || "")}" onchange="updateResultEntryField(${i}, 'score', this.value)" class="bg-slate-800 border border-slate-700 rounded px-2 py-1">
-                <div class="flex gap-1">
-                    <input type="text" placeholder="Winner" value="${escapeHtml(entry.winner || "")}" onchange="updateResultEntryField(${i}, 'winner', this.value)" class="bg-slate-800 border border-slate-700 rounded px-2 py-1 w-full">
-                    <button onclick="removeResultEntry(${i})" class="text-red-400 px-1"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-            </div>
-        `).join("");
-    } else {
-        container.innerHTML = `<p class="text-xs text-slate-500">Custom entries configured via notes field below.</p>`;
-    }
-}
-
-function updateResultEntryField(index, field, value) {
-    const event = events.find(e => e.id === currentResultEventId);
-    if (event && event.results && event.results.entries[index]) {
-        event.results.entries[index][field] = value;
-    }
-}
-
-function addResultEntry() {
-    const event = events.find(e => e.id === currentResultEventId);
-    if (!event) return;
-    if (!event.results) event.results = { type: "leaderboard", entries: [], notes: "", published: false };
-    if (!event.results.entries) event.results.entries = [];
-
-    event.results.entries.push({});
-    renderResultEntriesForms(event.results);
-}
-
-function removeResultEntry(index) {
-    const event = events.find(e => e.id === currentResultEventId);
-    if (event && event.results && event.results.entries) {
-        event.results.entries.splice(index, 1);
-        renderResultEntriesForms(event.results);
-    }
-}
-
-function saveResults() {
-    const event = events.find(e => e.id === currentResultEventId);
-    if (!event) return;
-
-    if (!event.results) event.results = {};
-    event.results.type = document.getElementById("resultTypeSelect").value;
-    event.results.published = document.getElementById("resultPublishedCheck").checked;
-    event.results.notes = document.getElementById("resultNotes").value.trim();
-
-    saveState();
-    closeModal("resultsEditorModal");
-}
-
-function renderAdminRegsTable() {
-    const tbody = document.getElementById("adminRegsTableBody");
-    tbody.innerHTML = registrations.map(reg => `
-        <tr>
-            <td class="p-3 font-mono text-emerald-400 font-bold">${escapeHtml(reg.id)}</td>
-            <td class="p-3">${escapeHtml(reg.name)}<br><span class="text-[10px] text-slate-500">${escapeHtml(reg.email)}</span></td>
-            <td class="p-3">${escapeHtml(reg.eventTitle)}</td>
-            <td class="p-3">${escapeHtml(reg.college)}</td>
-            <td class="p-3">${escapeHtml(reg.phone)}</td>
-        </tr>
-    `).join("");
-}
-
-function exportRegsCSV() {
-    if (registrations.length === 0) {
-        alert("No registrations to export.");
-        return;
-    }
-    const headers = ["Pass ID", "Event Title", "Name", "Email", "College", "Phone", "Amount", "Status", "Created At"];
-    const rows = registrations.map(r => [
-        r.id, r.eventTitle, r.name, r.email, r.college, r.phone, r.amount, r.paymentStatus, r.createdAt
-    ]);
-
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.map(x => `"${x}"`).join(","))].join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `synapse_registrations_${Date.now()}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
-function renderAdminAnnouncements() {
-    const list = document.getElementById("adminAnnList");
-    list.innerHTML = announcements.map(a => `
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs flex justify-between items-center">
-            <div>
-                <span class="text-[10px] text-slate-500">${escapeHtml(a.time)}</span>
-                <h5 class="font-bold text-slate-200">${escapeHtml(a.title)}</h5>
-                <p class="text-slate-400">${escapeHtml(a.body)}</p>
-            </div>
-            <button onclick="deleteAnnouncement(${a.id})" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash"></i></button>
-        </div>
-    `).join("");
-}
-
-async function handleAddAnnouncement(e) {
-    e.preventDefault();
-    const title = document.getElementById("annTitle").value.trim();
-    const body = document.getElementById("annBody").value.trim();
-
-    const newAnn = {
+    announcements.push({
         id: Date.now(),
-        title,
-        body,
+        title: document.getElementById("annTitle").value.trim(),
+        body: document.getElementById("annBody").value.trim(),
         time: new Date().toLocaleString()
-    };
-
-    announcements.push(newAnn);
+    });
     document.getElementById("annTitle").value = "";
     document.getElementById("annBody").value = "";
-
-    saveState();
-}
-
-function deleteAnnouncement(id) {
-    announcements = announcements.filter(a => a.id !== id);
-    saveState();
-}
-
-function renderAdminRoles() {
-    const list = document.getElementById("adminRolesList");
-    list.innerHTML = adminList.map(a => `
-        <div class="flex items-center justify-between p-2 text-xs">
-            <div>
-                <span class="font-semibold text-slate-200">${escapeHtml(a.email)}</span>
-                <span class="ml-2 text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">${escapeHtml(a.role)}</span>
-            </div>
-            ${a.email.toLowerCase() !== SUPER_ADMIN_EMAIL.toLowerCase() ? `
-                <button onclick="removeAdminRole('${a.email}')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
-            ` : ""}
-        </div>
-    `).join("");
-}
-
-function handleGrantAdmin(e) {
-    e.preventDefault();
-    const email = document.getElementById("newAdminEmailInput").value.trim().toLowerCase();
-    if (!email) return;
-
-    if (!adminList.some(a => a.email.toLowerCase() === email)) {
-        adminList.push({ email, role: "Sub-Admin" });
-        document.getElementById("newAdminEmailInput").value = "";
-        saveState();
-    }
-}
-
-function removeAdminRole(email) {
-    adminList = adminList.filter(a => a.email.toLowerCase() !== email.toLowerCase());
     saveState();
 }
 </script>

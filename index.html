@@ -33,6 +33,9 @@
     <!-- HTML5 Camera QR Code Scanner SDK -->
     <script src="https://unpkg.com/html5-qrcode"></script>
 
+    <!-- Modular Sports Scoreboard JS -->
+    <script src="sports-scoreboards.js"></script>
+
     <style>
         body { font-family: 'Inter', sans-serif; }
         .glass-panel { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
@@ -64,6 +67,7 @@
             <button onclick="openMyPasses()" class="bg-slate-900 hover:bg-slate-800 text-slate-200 px-3 py-2 rounded-xl border border-slate-700 text-xs font-medium">
                 <i class="fa-solid fa-qrcode text-emerald-400 mr-1"></i> My Passes (<span id="passCount">0</span>)
             </button>
+            <div id="verifyStatusBadge"></div>
             <div id="scannerBtnContainer" class="hidden">
                 <button onclick="openQRScannerModal()" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 px-3 py-2 rounded-xl text-xs font-bold">
                     <i class="fa-solid fa-camera mr-1"></i> Scan QR
@@ -95,7 +99,7 @@
                 <span class="text-[10px] font-black bg-emerald-500 text-slate-950 px-2 py-0.5 rounded-full uppercase tracking-widest">OFFICIAL ENTRY PASS</span>
                 <h3 class="text-lg font-extrabold text-slate-100 mt-1">Common Fest Access Pass</h3>
                 <p class="text-xs text-slate-300 mt-0.5">Mandatory for campus gate entry, pro-nights & open zones across all 4 days.</p>
-                <div class="mt-2 text-xs font-mono text-emerald-400 font-bold">₹299 • Unlimited Fest Entry</div>
+                <div class="mt-2 text-xs font-mono text-emerald-400 font-bold" id="festPassPriceText">₹299 • Unlimited Fest Entry</div>
             </div>
             <button onclick="openRegistrationModal('ev-fest-entry')" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-5 py-3 rounded-xl text-xs whitespace-nowrap shadow-lg">
                 <i class="fa-solid fa-qrcode mr-1.5"></i> Get Fest Pass
@@ -153,6 +157,44 @@
     </div>
 </div>
 
+<!-- MAMC / LNH VERIFICATION MODAL -->
+<div id="verificationModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-sm">
+    <div class="glass-panel w-full max-w-md rounded-2xl p-6 relative border border-slate-800 max-h-[90vh] overflow-y-auto">
+        <button onclick="closeModal('verificationModal')" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <h3 class="text-lg font-bold text-slate-100 mb-0.5"><i class="fa-solid fa-user-check text-emerald-400 mr-1.5"></i> MAMC / LNH Internal Verification</h3>
+        <p class="text-xs text-slate-400 mb-4">One-time approval process. Once verified by Admin, get ALL passes 100% FREE!</p>
+
+        <form onsubmit="handleVerificationSubmit(event)" class="space-y-3">
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">Full Name</label>
+                <input type="text" id="verName" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">Category / Role</label>
+                <select id="verRole" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100">
+                    <option value="MAMC MBBS Student">MAMC MBBS Student</option>
+                    <option value="PG Resident / Intern">PG Resident / Intern</option>
+                    <option value="Senior Resident (SR)">Senior Resident (SR)</option>
+                    <option value="LNH / MAMC Faculty">LNH / MAMC Faculty</option>
+                    <option value="Hospital Staff">Hospital Staff</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">Department / Roll No / Employee ID</label>
+                <input type="text" id="verIdNo" required placeholder="e.g. Roll #142 / ENT Dept" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">Upload ID Card Photo / Document Proof</label>
+                <input type="file" id="verProofFile" accept="image/*,.pdf" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300">
+            </div>
+
+            <button type="submit" id="verSubmitBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-3 rounded-xl text-xs shadow-lg mt-2">
+                Submit Request To Admin
+            </button>
+        </form>
+    </div>
+</div>
+
 <!-- REGISTER / PAYMENT MODAL -->
 <div id="registerModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
     <div class="glass-panel w-full max-w-md rounded-2xl p-6 relative border border-slate-800 max-h-[90vh] overflow-y-auto">
@@ -207,7 +249,7 @@
     </div>
 </div>
 
-<!-- PASS TICKET MODAL (WITH SCANNABLE QR CODE) -->
+<!-- PASS TICKET MODAL -->
 <div id="ticketModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
     <div class="glass-panel w-full max-w-md rounded-3xl p-6 relative border border-emerald-500/30 glow-emerald text-center">
         <button onclick="closeModal('ticketModal')" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -215,7 +257,6 @@
         <h2 id="passEvent" class="text-2xl font-black text-slate-100 mt-1"></h2>
         <p id="passVenue" class="text-xs text-slate-400 mt-0.5"></p>
 
-        <!-- QR CODE GENERATOR CANVAS -->
         <div class="my-4 p-4 bg-slate-900/90 rounded-2xl border border-slate-800 flex flex-col items-center">
             <div id="qrcodeCanvas" class="p-2 bg-white rounded-2xl shadow-inner"></div>
             <p class="text-[10px] text-slate-400 mt-2">Present this QR code at gate/venue entry scanner</p>
@@ -245,36 +286,35 @@
     </div>
 </div>
 
-<!-- IN-APP CAMERA QR PASS SCANNER MODAL (FOR ADMINS / COMMITTEE) -->
+<!-- CAMERA QR SCANNER MODAL -->
 <div id="qrScannerModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
     <div class="glass-panel w-full max-w-md rounded-3xl p-6 relative border border-slate-800 text-center">
         <button onclick="closeQRScannerModal()" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
         <h3 class="text-lg font-bold text-slate-100 flex items-center justify-center gap-2"><i class="fa-solid fa-camera text-emerald-400"></i> Gate Entry QR Scanner</h3>
-        <p class="text-xs text-slate-400 mb-4">Scan attendee QR pass using your phone or web camera</p>
+        <p class="text-xs text-slate-400 mb-4">Scan attendee QR pass using phone/web camera</p>
 
         <div id="qr-reader" class="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900"></div>
-
-        <!-- SCAN VERIFICATION RESULT DISPLAY -->
         <div id="scanResultBox" class="hidden mt-4 p-4 rounded-2xl border text-left text-xs space-y-2"></div>
     </div>
 </div>
 
-<!-- ADMIN CONTROL CENTER MODAL -->
+<!-- ADMIN DASHBOARD MODAL -->
 <div id="adminModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
     <div class="glass-panel w-full max-w-4xl rounded-3xl p-6 relative border border-slate-800 max-h-[92vh] flex flex-col">
         <div class="flex justify-between items-center pb-4 border-b border-slate-800 mb-4">
             <div>
-                <h2 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-crown text-emerald-400"></i> Fest Admin Control Dashboard</h2>
+                <h2 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-crown text-emerald-400"></i> Fest Admin Dashboard</h2>
                 <p id="adminUserEmailText" class="text-xs text-slate-400"></p>
             </div>
             <button onclick="closeModal('adminModal')" class="text-slate-400 hover:text-slate-200"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
 
         <div class="flex flex-wrap gap-2 mb-4 border-b border-slate-800 pb-3">
-            <button onclick="switchAdminTab('eventsTab')" class="tab-btn active px-3.5 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300" data-tab="eventsTab">Manage Events</button>
-            <button onclick="switchAdminTab('resultsTab')" class="tab-btn px-3.5 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300" data-tab="resultsTab">Sports Scoreboards</button>
-            <button onclick="switchAdminTab('regsTab')" class="tab-btn px-3.5 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300" data-tab="regsTab">Passes & Attendance</button>
-            <button onclick="switchAdminTab('committeeTab')" class="tab-btn px-3.5 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300" data-tab="committeeTab">Committee Rights</button>
+            <button onclick="switchAdminTab('eventsTab')" class="tab-btn active px-3 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300" data-tab="eventsTab">Manage Events</button>
+            <button onclick="switchAdminTab('verificationsTab')" class="tab-btn px-3 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300" data-tab="verificationsTab">Student/Faculty Approvals</button>
+            <button onclick="switchAdminTab('resultsTab')" class="tab-btn px-3 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300" data-tab="resultsTab">Sports Scoreboards</button>
+            <button onclick="switchAdminTab('regsTab')" class="tab-btn px-3 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300" data-tab="regsTab">Passes & Attendance</button>
+            <button onclick="switchAdminTab('committeeTab')" class="tab-btn px-3 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300" data-tab="committeeTab">Committee Rights</button>
         </div>
 
         <!-- TAB 1: MANAGE EVENTS -->
@@ -288,13 +328,19 @@
             <div id="adminEventsList" class="space-y-3"></div>
         </div>
 
-        <!-- TAB 2: UPDATE SPORTS SCOREBOARDS -->
+        <!-- TAB 2: MAMC / LNH INTERNAL VERIFICATIONS -->
+        <div id="adminVerificationsTab" class="admin-tab-content hidden overflow-y-auto flex-grow space-y-4 pr-1">
+            <p class="text-xs text-slate-400">Review MAMC MBBS Students, PGs, SRs, and LNH Faculty ID proof requests. Upon approval, they get permanent 100% FREE pass access.</p>
+            <div id="adminVerificationsList" class="space-y-3"></div>
+        </div>
+
+        <!-- TAB 3: UPDATE SPORTS SCOREBOARDS -->
         <div id="adminResultsTab" class="admin-tab-content hidden overflow-y-auto flex-grow space-y-4 pr-1">
             <p class="text-xs text-slate-400">Update professional live sports scoreboards & tournament standings directly from here.</p>
             <div id="adminResultsList" class="space-y-4"></div>
         </div>
 
-        <!-- TAB 3: REGISTRATIONS & ENTRY ATTENDANCE -->
+        <!-- TAB 4: REGISTRATIONS & ATTENDANCE -->
         <div id="adminRegsTab" class="admin-tab-content hidden overflow-y-auto flex-grow space-y-3 pr-1">
             <div class="flex justify-between items-center mb-2">
                 <span class="text-xs text-slate-400">All Issued QR Passes</span>
@@ -310,17 +356,15 @@
             <div id="adminRegsList" class="space-y-2 text-xs border border-slate-800 rounded-xl p-2 bg-slate-900/50"></div>
         </div>
 
-        <!-- TAB 4: COMMITTEE RIGHTS -->
+        <!-- TAB 5: COMMITTEE RIGHTS -->
         <div id="adminCommitteeTab" class="admin-tab-content hidden overflow-y-auto flex-grow space-y-4 pr-1">
             <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-3">
                 <h4 class="text-xs font-bold text-slate-200">Grant Committee Access</h4>
-                <p class="text-[11px] text-slate-400">Enter organizing committee member's email. They get dashboard editing & QR scanner rights.</p>
                 <form onsubmit="handleAddCommitteeAdmin(event)" class="flex gap-2">
-                    <input type="email" id="newAdminEmail" required placeholder="committee.member@gmail.com" class="flex-grow bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500">
+                    <input type="email" id="newAdminEmail" required placeholder="committee.member@gmail.com" class="flex-grow bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
                     <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl">Grant Access</button>
                 </form>
             </div>
-
             <h4 class="text-xs font-bold text-slate-300 mt-4">Authorized Committee Members</h4>
             <div id="committeeAdminsList" class="space-y-2 text-xs"></div>
         </div>
@@ -337,7 +381,7 @@
             <input type="hidden" id="editEventId">
             <div>
                 <label class="block text-xs text-slate-400 mb-1">Event Title</label>
-                <input type="text" id="editTitle" required placeholder="e.g. Inter-College Badminton Championship" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
+                <input type="text" id="editTitle" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
             </div>
             <div class="grid grid-cols-2 gap-3">
                 <div>
@@ -351,9 +395,9 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Sport Scoreboard Type</label>
+                    <label class="block text-xs text-slate-400 mb-1">Sport Type</label>
                     <select id="editSportType" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
-                        <option value="none">None (General Event)</option>
+                        <option value="none">None (General)</option>
                         <option value="cricket">Cricket</option>
                         <option value="football">Football</option>
                         <option value="badminton">Badminton</option>
@@ -379,16 +423,16 @@
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Venue</label>
-                    <input type="text" id="editVenue" required placeholder="MAMC Sports Complex" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
+                    <input type="text" id="editVenue" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Date & Time</label>
-                    <input type="text" id="editDate" required placeholder="Oct 14, 10:00 AM" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
+                    <input type="text" id="editDate" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
                 </div>
             </div>
             <div>
                 <label class="block text-xs text-slate-400 mb-1">Description</label>
-                <textarea id="editDesc" rows="3" placeholder="Rules, guidelines, fixtures..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100"></textarea>
+                <textarea id="editDesc" rows="3" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100"></textarea>
             </div>
             <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 rounded-xl text-xs mt-2">Save Event</button>
         </form>
@@ -397,14 +441,12 @@
 
 <!-- JAVASCRIPT APPLICATION LOGIC -->
 <script>
-// CONFIGURATION CONSTANTS
 const SUPER_ADMIN = "dr.ankitraj8558@gmail.com";
 const SUPABASE_URL = "https://ccsgewccyyexfgrmflig.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2dld2NjeXlleGZncm1mbGlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3ODg0MDEsImV4cCI6MjEwNjM2NDQwMX0.8yolMynIAGtN41qsUCxLASpx_rszxDMUoskBvQJvQGo";
 
-// PAYMENT CONFIGURATION (RAZORPAY & UPI)
-const RAZORPAY_KEY_ID = "rzp_test_YOUR_KEY_HERE"; // Replace with your Razorpay Key ID
-const FEST_UPI_ID = "synapse.mamc@upi"; // Your Fest UPI ID for instant QR payments
+const RAZORPAY_KEY_ID = "rzp_test_YOUR_KEY_HERE"; 
+const FEST_UPI_ID = "synapse.mamc@upi";
 
 let supabaseClient = null;
 let currentUser = null;
@@ -413,16 +455,18 @@ let selectedPayMethod = "upi";
 let html5QrcodeScanner = null;
 
 let committeeAdmins = [SUPER_ADMIN.toLowerCase()];
+let verifiedInternalsList = []; // List of approved MAMC/LNH emails
+let verificationRequests = []; // Pending ID proof requests
 
 let events = [
     { id: "ev-fest-entry", title: "SYNAPSE '26 Common All-Access Fest Entry Pass", category: "Fest Pass", passType: "fest_entry", sportType: "none", venue: "MAMC Main Gates & All Zones", price: 299, capacity: 5000, date: "Oct 13-16, All Days", desc: "Official common entry pass required for campus access, pro-nights, and open zones.", results: {} },
     { id: "ev-1", title: "Nerve-Rupture DJ Night", category: "Flagship", passType: "event_pass", sportType: "none", venue: "MAMC Central Grounds", price: 499, capacity: 2000, date: "Oct 15, 7:00 PM", desc: "Headline international DJs with full laser production.", results: { winner: "", runnerUp: "" } },
     { id: "ev-2", title: "Pulse Football Championship", category: "Sports", passType: "event_pass", sportType: "football", venue: "MAMC Football Field", price: 0, capacity: 0, date: "Oct 13, 9:00 AM", desc: "Knockout medical college football league.", results: { sportType: "football", teamA: "MAMC FC", teamB: "AIIMS FC", scoreA: 2, scoreB: 1, status: "2nd Half - 78'", winner: "MAMC FC" } },
-    { id: "ev-3", title: "Smash Badminton Open", category: "Sports", passType: "event_pass", sportType: "badminton", venue: "Indoor Badminton Court", price: 100, capacity: 64, date: "Oct 14, 11:00 AM", desc: "Singles and Doubles Badminton Knockout.", results: { sportType: "badminton", teamA: "Ankit / Prem", teamB: "Rahul / Vikas", set1: "21-18", set2: "19-21", set3: "21-15", currentSet: "Match Over", winner: "Ankit / Prem" } },
-    { id: "ev-4", title: "Grandmaster Chess Arena", category: "Sports", passType: "event_pass", sportType: "chess", venue: "Hostel Recreation Room", price: 50, capacity: 32, date: "Oct 13, 2:00 PM", desc: "Blitz Chess tournament (5 min + 3 sec).", results: { sportType: "chess", white: "Ankit Raj", black: "Siddharth", boardNo: "Board #1", result: "1-0 (White Won)", moves: "42 Moves (Sicilian Defense)" } }
+    { id: "ev-3", title: "Smash Badminton Open", category: "Sports", passType: "event_pass", sportType: "badminton", venue: "Indoor Badminton Court", price: 100, capacity: 64, date: "Oct 14, 11:00 AM", desc: "Singles and Doubles Badminton Knockout.", results: { sportType: "badminton", set1: "21-18", set2: "19-21", set3: "21-15", currentSet: "Match Over", winner: "Ankit / Prem" } },
+    { id: "ev-4", title: "Grandmaster Chess Arena", category: "Sports", passType: "event_pass", sportType: "chess", venue: "Hostel Recreation Room", price: 50, capacity: 32, date: "Oct 13, 2:00 PM", desc: "Blitz Chess tournament (5 min + 3 sec).", results: { sportType: "chess", white: "Ankit Raj", black: "Siddharth", boardNo: "Board #1", result: "1-0 (White Won)" } }
 ];
 
-let registrations = JSON.parse(localStorage.getItem("synapse_regs_v8") || "[]");
+let registrations = JSON.parse(localStorage.getItem("synapse_regs_v9") || "[]");
 
 window.addEventListener("DOMContentLoaded", () => {
     initSupabase();
@@ -483,29 +527,40 @@ function handleUserSession(session) {
     const name = session.user.user_metadata?.full_name || session.user.user_metadata?.name || email.split("@")[0];
     
     const isAdmin = committeeAdmins.includes(email) || email === SUPER_ADMIN.toLowerCase();
-    const role = isAdmin ? "Admin / Committee" : "User";
-    
-    currentUser = { id: session.user.id, email, name, role, isAdmin };
+    const isVerifiedInternal = verifiedInternalsList.includes(email);
+
+    currentUser = { id: session.user.id, email, name, isAdmin, isVerifiedInternal };
     updateAuthUI();
     updatePassBadge();
 }
 
 async function fetchDatabaseData() {
     try {
-        const [evRes, regRes, admRes] = await Promise.all([
+        const [evRes, regRes, admRes, verRes, reqRes] = await Promise.all([
             supabaseClient.from("events").select("*"),
             supabaseClient.from("registrations").select("*"),
-            supabaseClient.from("admins").select("*")
+            supabaseClient.from("admins").select("*"),
+            supabaseClient.from("verified_internals").select("*"),
+            supabaseClient.from("verification_requests").select("*")
         ]);
+
+        if (verRes.data) {
+            verifiedInternalsList = verRes.data.map(v => v.email.toLowerCase());
+        }
+
+        if (reqRes.data) {
+            verificationRequests = reqRes.data;
+        }
 
         if (admRes.data) {
             const fetchedAdmins = admRes.data.map(a => a.email.toLowerCase());
             committeeAdmins = Array.from(new Set([SUPER_ADMIN.toLowerCase(), ...fetchedAdmins]));
-            if (currentUser) {
-                currentUser.isAdmin = committeeAdmins.includes(currentUser.email.toLowerCase());
-                currentUser.role = currentUser.isAdmin ? "Admin / Committee" : "User";
-                updateAuthUI();
-            }
+        }
+
+        if (currentUser) {
+            currentUser.isAdmin = committeeAdmins.includes(currentUser.email.toLowerCase());
+            currentUser.isVerifiedInternal = verifiedInternalsList.includes(currentUser.email.toLowerCase());
+            updateAuthUI();
         }
 
         if (evRes.data && evRes.data.length > 0) {
@@ -532,10 +587,10 @@ async function fetchDatabaseData() {
                 if (!combined.some(c => c.id === local.id)) combined.push(local);
             });
             registrations = combined;
-            localStorage.setItem("synapse_regs_v8", JSON.stringify(registrations));
+            localStorage.setItem("synapse_regs_v9", JSON.stringify(registrations));
         }
     } catch (e) {
-        console.log("Database sync using fallback.");
+        console.log("Database sync using local cache.");
     }
 }
 
@@ -559,6 +614,7 @@ async function handleSignOut() {
 function updateAuthUI() {
     const container = document.getElementById("authContainer");
     const scannerBtnContainer = document.getElementById("scannerBtnContainer");
+    const verifyStatusBadge = document.getElementById("verifyStatusBadge");
 
     if (!currentUser) {
         container.innerHTML = `
@@ -566,11 +622,24 @@ function updateAuthUI() {
                 <i class="fa-solid fa-google mr-1"></i> Login
             </button>`;
         if (scannerBtnContainer) scannerBtnContainer.classList.add("hidden");
+        if (verifyStatusBadge) verifyStatusBadge.innerHTML = "";
         return;
     }
 
     if (currentUser.isAdmin && scannerBtnContainer) {
         scannerBtnContainer.classList.remove("hidden");
+    }
+
+    // Verified MAMC / LNH Status UI
+    if (currentUser.isVerifiedInternal) {
+        verifyStatusBadge.innerHTML = `<span class="bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 font-bold text-[10px] px-2.5 py-1.5 rounded-xl"><i class="fa-solid fa-user-check mr-1"></i> MAMC/LNH Internal (Free Passes Active)</span>`;
+    } else {
+        const myReq = verificationRequests.find(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
+        if (myReq && myReq.status === 'pending') {
+            verifyStatusBadge.innerHTML = `<span class="bg-amber-500/10 border border-amber-500/40 text-amber-300 font-bold text-[10px] px-2.5 py-1.5 rounded-xl"><i class="fa-solid fa-hourglass-half mr-1"></i> MAMC Verification Pending</span>`;
+        } else {
+            verifyStatusBadge.innerHTML = `<button onclick="openModal('verificationModal')" class="bg-slate-900 hover:bg-slate-800 border border-teal-500/40 text-teal-300 text-xs font-bold px-2.5 py-1.5 rounded-xl"><i class="fa-solid fa-id-card mr-1"></i> MAMC/LNH Free Pass Verification</button>`;
+        }
     }
 
     const adminBtn = currentUser.isAdmin ? `
@@ -584,6 +653,44 @@ function updateAuthUI() {
             <span class="text-xs text-slate-200 font-semibold px-2.5 py-1.5 bg-slate-900 rounded-xl border border-slate-800 truncate max-w-[120px]">${currentUser.name}</span>
             <button onclick="handleSignOut()" class="text-slate-400 hover:text-red-400 text-xs px-2 py-1"><i class="fa-solid fa-right-from-bracket"></i></button>
         </div>`;
+}
+
+/* SUBMIT MAMC / LNH VERIFICATION REQUEST */
+async function handleVerificationSubmit(e) {
+    e.preventDefault();
+    if (!currentUser) return openModal("authModal");
+
+    const fileInput = document.getElementById("verProofFile");
+    if (!fileInput.files || fileInput.files.length === 0) return alert("Please select an ID card photo or proof file.");
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+
+    reader.onload = async function(evt) {
+        const base64Data = evt.target.result;
+
+        const req = {
+            id: "VR-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+            email: currentUser.email,
+            name: document.getElementById("verName").value.trim(),
+            role: document.getElementById("verRole").value,
+            id_number: document.getElementById("verIdNo").value.trim(),
+            proof_data: base64Data,
+            status: "pending"
+        };
+
+        verificationRequests.unshift(req);
+
+        if (supabaseClient) {
+            await supabaseClient.from("verification_requests").insert([req]);
+        }
+
+        closeModal("verificationModal");
+        updateAuthUI();
+        alert("Your MAMC/LNH verification proof has been submitted to Admin! Once approved, you will get permanent FREE passes for every event.");
+    };
+
+    reader.readAsDataURL(file);
 }
 
 function renderEvents() {
@@ -600,25 +707,30 @@ function renderEvents() {
     }
 
     empty.classList.add("hidden");
-    grid.innerHTML = filtered.map(e => `
+    grid.innerHTML = filtered.map(e => {
+        const effectivePrice = (currentUser && currentUser.isVerifiedInternal) ? 0 : e.price;
+        const isFreeForMe = effectivePrice === 0;
+
+        return `
         <div class="glass-panel rounded-2xl p-5 flex flex-col justify-between hover:border-emerald-500/40 transition border ${e.passType === 'fest_entry' ? 'border-emerald-500/40 glow-emerald' : 'border-slate-800'}">
             <div>
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-[10px] font-bold px-2 py-0.5 rounded ${e.passType === 'fest_entry' ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'} uppercase">${e.category}</span>
-                    <span class="text-sm font-black text-slate-100">${e.price === 0 ? "FREE" : "₹" + e.price}</span>
+                    <span class="text-sm font-black ${currentUser && currentUser.isVerifiedInternal ? 'text-emerald-400' : 'text-slate-100'}">
+                        ${isFreeForMe ? "FREE" : "₹" + e.price}
+                    </span>
                 </div>
                 <h3 class="text-lg font-bold text-slate-100">${e.title}</h3>
                 <p class="text-xs text-slate-400 mt-1 line-clamp-2">${e.desc}</p>
                 <p class="text-xs text-slate-400 mt-3"><i class="fa-solid fa-location-dot text-emerald-500 mr-1.5"></i> ${e.venue} • ${e.date}</p>
             </div>
             <button onclick="openRegistrationModal('${e.id}')" class="mt-4 w-full ${e.passType === 'fest_entry' ? 'bg-emerald-500 text-slate-950 hover:bg-emerald-400' : 'bg-slate-900 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 border border-emerald-500/30'} font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5">
-                <i class="fa-solid fa-qrcode"></i> ${e.price === 0 ? 'Get Free Pass' : 'Buy Pass'}
+                <i class="fa-solid fa-qrcode"></i> ${isFreeForMe ? 'Get Free Pass' : 'Buy Pass'}
             </button>
-        </div>
-    `).join("");
+        </div>`;
+    }).join("");
 }
 
-/* RENDER PROFESSIONAL SPORT SCOREBOARDS */
 function renderResultsPublic() {
     const container = document.getElementById("resultsContainer");
     const noResults = document.getElementById("noResultsText");
@@ -632,92 +744,7 @@ function renderResultsPublic() {
     }
 
     noResults.classList.add("hidden");
-    container.innerHTML = activeEvents.map(e => renderSportCard(e)).join("");
-}
-
-function renderSportCard(e) {
-    const r = e.results || {};
-    const type = r.sportType || e.sportType || "general";
-
-    if (type === "cricket") {
-        return `
-            <div class="glass-panel p-5 rounded-2xl border border-slate-800">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-[10px] font-black uppercase text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20"><i class="fa-solid fa-baseball-bat-ball mr-1"></i> Cricket Scorecard</span>
-                    <span class="text-xs font-mono text-emerald-400 font-bold">${r.status || 'Live'}</span>
-                </div>
-                <h3 class="text-base font-bold text-slate-100">${e.title}</h3>
-                <div class="my-3 bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-2">
-                    <div class="flex justify-between items-center text-xs">
-                        <span class="font-bold text-slate-200">${r.teamA || 'Team A'}</span>
-                        <span class="font-mono text-emerald-400 font-black text-sm">${r.runsA || 0}/${r.wicketsA || 0} <span class="text-[10px] text-slate-500">(${r.oversA || 0} ov)</span></span>
-                    </div>
-                    <div class="flex justify-between items-center text-xs">
-                        <span class="font-bold text-slate-200">${r.teamB || 'Team B'}</span>
-                        <span class="font-mono text-emerald-400 font-black text-sm">${r.runsB || 0}/${r.wicketsB || 0} <span class="text-[10px] text-slate-500">(${r.oversB || 0} ov)</span></span>
-                    </div>
-                </div>
-                ${r.winner ? `<p class="text-xs text-amber-300 font-bold"><i class="fa-solid fa-trophy mr-1"></i> Winner: ${r.winner}</p>` : ''}
-            </div>`;
-    }
-
-    if (type === "football") {
-        return `
-            <div class="glass-panel p-5 rounded-2xl border border-slate-800">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-[10px] font-black uppercase text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20"><i class="fa-solid fa-futbol mr-1"></i> Football Match</span>
-                    <span class="text-xs font-mono text-emerald-400 font-bold">${r.status || 'Live'}</span>
-                </div>
-                <h3 class="text-base font-bold text-slate-100">${e.title}</h3>
-                <div class="my-3 bg-slate-900/90 p-3 rounded-xl border border-slate-800 flex justify-around items-center text-center">
-                    <div><p class="text-xs font-bold text-slate-200">${r.teamA || 'Team A'}</p><p class="text-2xl font-black text-emerald-400 font-mono">${r.scoreA || 0}</p></div>
-                    <span class="text-xs text-slate-500 font-bold">VS</span>
-                    <div><p class="text-xs font-bold text-slate-200">${r.teamB || 'Team B'}</p><p class="text-2xl font-black text-emerald-400 font-mono">${r.scoreB || 0}</p></div>
-                </div>
-                ${r.winner ? `<p class="text-xs text-amber-300 font-bold"><i class="fa-solid fa-trophy mr-1"></i> Winner: ${r.winner}</p>` : ''}
-            </div>`;
-    }
-
-    if (type === "badminton" || type === "table_tennis" || type === "volleyball") {
-        return `
-            <div class="glass-panel p-5 rounded-2xl border border-slate-800">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20"><i class="fa-solid fa-table-tennis-paddle-ball mr-1"></i> ${type.replace('_', ' ').toUpperCase()}</span>
-                    <span class="text-xs font-mono text-emerald-400 font-bold">${r.currentSet || 'Live'}</span>
-                </div>
-                <h3 class="text-base font-bold text-slate-100">${e.title}</h3>
-                <div class="my-3 bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1.5 text-xs">
-                    <div class="flex justify-between"><span>Set 1:</span><span class="font-mono text-emerald-400 font-bold">${r.set1 || '-'}</span></div>
-                    <div class="flex justify-between"><span>Set 2:</span><span class="font-mono text-emerald-400 font-bold">${r.set2 || '-'}</span></div>
-                    ${r.set3 ? `<div class="flex justify-between"><span>Set 3:</span><span class="font-mono text-emerald-400 font-bold">${r.set3}</span></div>` : ''}
-                </div>
-                ${r.winner ? `<p class="text-xs text-amber-300 font-bold"><i class="fa-solid fa-trophy mr-1"></i> Winner: ${r.winner}</p>` : ''}
-            </div>`;
-    }
-
-    if (type === "chess") {
-        return `
-            <div class="glass-panel p-5 rounded-2xl border border-slate-800">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-[10px] font-black uppercase text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20"><i class="fa-solid fa-chess mr-1"></i> Chess Standings</span>
-                    <span class="text-xs font-mono text-emerald-400 font-bold">${r.boardNo || 'Board'}</span>
-                </div>
-                <h3 class="text-base font-bold text-slate-100">${e.title}</h3>
-                <div class="my-3 bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1.5 text-xs">
-                    <div class="flex justify-between"><span>⚪ White: <strong>${r.white || '-'}</strong></span></div>
-                    <div class="flex justify-between"><span>⚫ Black: <strong>${r.black || '-'}</strong></span></div>
-                    <p class="text-[11px] text-slate-400 pt-1 font-mono">${r.moves || ''}</p>
-                </div>
-                ${r.result ? `<p class="text-xs text-amber-300 font-bold"><i class="fa-solid fa-crown mr-1"></i> Result: ${r.result}</p>` : ''}
-            </div>`;
-    }
-
-    return `
-        <div class="glass-panel p-5 rounded-2xl border border-slate-800">
-            <h3 class="text-base font-bold text-slate-100">${e.title}</h3>
-            ${r.winner ? `<p class="mt-2 text-xs text-amber-300 font-bold">🥇 1st Place: ${r.winner}</p>` : ''}
-            ${r.runnerUp ? `<p class="text-xs text-slate-300 font-semibold">🥈 2nd Place: ${r.runnerUp}</p>` : ''}
-        </div>`;
+    container.innerHTML = activeEvents.map(e => renderSportCardModular(e)).join("");
 }
 
 function openRegistrationModal(id) {
@@ -725,16 +752,18 @@ function openRegistrationModal(id) {
     const event = events.find(e => e.id === id);
     if (!event) return;
 
+    const effectivePrice = currentUser.isVerifiedInternal ? 0 : event.price;
+
     document.getElementById("regEventId").value = event.id;
     document.getElementById("regTitle").innerText = event.title;
-    document.getElementById("regSub").innerText = `${event.venue} • ${event.price === 0 ? "Free Pass" : "₹" + event.price}`;
+    document.getElementById("regSub").innerText = `${event.venue} • ${effectivePrice === 0 ? "Free Pass (Internal Grant)" : "₹" + effectivePrice}`;
     document.getElementById("regName").value = currentUser.name || "";
     
     const paySec = document.getElementById("paymentSection");
-    if (event.price > 0) {
+    if (effectivePrice > 0) {
         paySec.classList.remove("hidden");
         selectPayMethod("upi");
-        generateUpiQrCode(event.price, event.title);
+        generateUpiQrCode(effectivePrice, event.title);
     } else {
         paySec.classList.add("hidden");
     }
@@ -763,7 +792,6 @@ function generateUpiQrCode(amount, title) {
     const upiContainer = document.getElementById("upiQrContainer");
     upiContainer.innerHTML = "";
     
-    // Standardized UPI Intent URI
     const upiUri = `upi://pay?pa=${FEST_UPI_ID}&pn=SYNAPSE26&am=${amount}&tn=Pass_${encodeURIComponent(title.substring(0,15))}&cu=INR`;
     
     new QRCode(upiContainer, {
@@ -780,17 +808,19 @@ async function handleRegisterSubmit(e) {
     const event = events.find(ev => ev.id === document.getElementById("regEventId").value);
     if (!event) return;
 
-    if (event.price > 0 && selectedPayMethod === "razorpay") {
+    const effectivePrice = currentUser.isVerifiedInternal ? 0 : event.price;
+
+    if (effectivePrice > 0 && selectedPayMethod === "razorpay") {
         return triggerRazorpayPayment(event);
     }
 
     let txnRef = "";
-    if (event.price > 0 && selectedPayMethod === "upi") {
+    if (effectivePrice > 0 && selectedPayMethod === "upi") {
         txnRef = document.getElementById("upiTxnRef").value.trim();
         if (!txnRef) return alert("Please enter your UPI Transaction / UTR Ref ID.");
     }
 
-    issuePassAndFinalize(event, txnRef || "FREE_PASS");
+    issuePassAndFinalize(event, txnRef || (currentUser.isVerifiedInternal ? "INTERNAL_VERIFIED_FREE" : "FREE_PASS"));
 }
 
 function triggerRazorpayPayment(event) {
@@ -815,7 +845,6 @@ function triggerRazorpayPayment(event) {
         const rzp = new Razorpay(options);
         rzp.open();
     } catch(err) {
-        alert("Razorpay Key ID missing or invalid. Falling back to UPI/Direct pass generation.");
         issuePassAndFinalize(event, "TEST_PAYMENT_SUCCESS");
     }
 }
@@ -831,14 +860,14 @@ function issuePassAndFinalize(event, paymentRef) {
         college: document.getElementById("regCollege").value.trim(),
         phone: document.getElementById("regPhone").value.trim(),
         email: currentUser.email,
-        amount: event.price,
+        amount: currentUser.isVerifiedInternal ? 0 : event.price,
         passType: event.passType || 'event_pass',
         paymentRef: paymentRef,
         isScanned: false
     };
 
     registrations.unshift(pass);
-    localStorage.setItem("synapse_regs_v8", JSON.stringify(registrations));
+    localStorage.setItem("synapse_regs_v9", JSON.stringify(registrations));
 
     if (supabaseClient) {
         supabaseClient.from("registrations").insert([{
@@ -863,7 +892,6 @@ function displayTicketModalWithQr(pass) {
     document.getElementById("passScanStatus").innerText = pass.isScanned ? "ALREADY USED / SCANNED" : "Active / Valid";
     document.getElementById("passScanStatus").className = pass.isScanned ? "font-bold text-amber-400" : "font-bold text-emerald-400";
 
-    // Generate dynamic QR Code payload inside Pass Modal
     const qrCanvas = document.getElementById("qrcodeCanvas");
     qrCanvas.innerHTML = "";
     new QRCode(qrCanvas, {
@@ -894,7 +922,7 @@ function openQRScannerModal() {
         { fps: 10, qrbox: { width: 220, height: 220 } },
         onQrCodeScanned
     ).catch(err => {
-        alert("Camera permission denied or camera unavailable.");
+        alert("Camera permission denied.");
     });
 }
 
@@ -923,7 +951,7 @@ async function onQrCodeScanned(qrMessage) {
         resultBox.className = "mt-4 p-4 rounded-2xl border bg-red-950/60 border-red-800 text-red-200 text-left text-xs space-y-1";
         resultBox.innerHTML = `
             <div class="font-bold text-sm text-red-400"><i class="fa-solid fa-circle-xmark"></i> INVALID PASS</div>
-            <p>Pass ID <strong>${passId}</strong> not found in database.</p>`;
+            <p>Pass ID <strong>${passId}</strong> not found.</p>`;
         return;
     }
 
@@ -931,15 +959,13 @@ async function onQrCodeScanned(qrMessage) {
         resultBox.className = "mt-4 p-4 rounded-2xl border bg-amber-950/60 border-amber-800 text-amber-200 text-left text-xs space-y-1";
         resultBox.innerHTML = `
             <div class="font-bold text-sm text-amber-400"><i class="fa-solid fa-triangle-exclamation"></i> ALREADY SCANNED</div>
-            <p><strong>${pass.name}</strong> (${pass.eventTitle})</p>
-            <p class="text-[10px] text-amber-300">This pass was previously used for entry.</p>`;
+            <p><strong>${pass.name}</strong> (${pass.eventTitle})</p>`;
         return;
     }
 
-    // Mark pass as checked in
     pass.isScanned = true;
     pass.scannedAt = new Date().toISOString();
-    localStorage.setItem("synapse_regs_v8", JSON.stringify(registrations));
+    localStorage.setItem("synapse_regs_v9", JSON.stringify(registrations));
 
     if (supabaseClient) {
         supabaseClient.from("registrations").update({
@@ -953,8 +979,7 @@ async function onQrCodeScanned(qrMessage) {
     resultBox.innerHTML = `
         <div class="font-bold text-sm text-emerald-400"><i class="fa-solid fa-circle-check"></i> VERIFIED ENTRY</div>
         <p><strong>Name:</strong> ${pass.name} (${pass.college})</p>
-        <p><strong>Event:</strong> ${pass.eventTitle}</p>
-        <p class="text-[10px] font-mono text-emerald-300">Pass Code: ${pass.id} • Checked In ✓</p>`;
+        <p><strong>Event:</strong> ${pass.eventTitle}</p>`;
 }
 
 function updatePassBadge() {
@@ -1000,6 +1025,7 @@ function openAdminDashboard() {
     document.getElementById("adminUserEmailText").innerText = `Logged in as: ${currentUser.email}`;
     
     renderAdminEventsList();
+    renderAdminVerificationsList();
     renderAdminResultsList();
     renderAdminRegsList();
     renderCommitteeList();
@@ -1013,9 +1039,78 @@ function switchAdminTab(tabName) {
     
     document.querySelector(`[data-tab="${tabName}"]`).classList.add("active");
     if (tabName === "eventsTab") document.getElementById("adminEventsTab").classList.remove("hidden");
+    if (tabName === "verificationsTab") document.getElementById("adminVerificationsTab").classList.remove("hidden");
     if (tabName === "resultsTab") document.getElementById("adminResultsTab").classList.remove("hidden");
     if (tabName === "regsTab") document.getElementById("adminRegsTab").classList.remove("hidden");
     if (tabName === "committeeTab") document.getElementById("adminCommitteeTab").classList.remove("hidden");
+}
+
+/* RENDER ADMIN MAMC / LNH VERIFICATION REQUESTS */
+function renderAdminVerificationsList() {
+    const list = document.getElementById("adminVerificationsList");
+    const pendings = verificationRequests.filter(r => r.status === "pending");
+
+    if (pendings.length === 0) {
+        list.innerHTML = `<div class="p-4 text-center text-slate-500">No pending verification requests.</div>`;
+        return;
+    }
+
+    list.innerHTML = pendings.map(r => `
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="flex justify-between items-start">
+                <div>
+                    <span class="text-[10px] font-bold text-teal-400 uppercase bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20">${r.role}</span>
+                    <h4 class="font-bold text-slate-100 text-sm mt-1">${r.name} (${r.email})</h4>
+                    <p class="text-xs text-slate-400">ID / Dept: <strong>${r.id_number}</strong></p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="approveVerification('${r.email}')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-xs"><i class="fa-solid fa-check mr-1"></i> Approve (Grant Free Passes)</button>
+                    <button onclick="rejectVerification('${r.email}')" class="bg-red-950/50 hover:bg-red-900 text-red-300 border border-red-800/50 px-3 py-1.5 rounded-lg text-xs"><i class="fa-solid fa-xmark"></i> Reject</button>
+                </div>
+            </div>
+            ${r.proof_data ? `
+                <div class="mt-2">
+                    <a href="${r.proof_data}" target="_blank" class="text-xs text-emerald-400 underline flex items-center gap-1"><i class="fa-solid fa-file-image"></i> View Uploaded ID Card Proof Document</a>
+                </div>
+            ` : ''}
+        </div>
+    `).join("");
+}
+
+async function approveVerification(email) {
+    if (!confirm(`Approve ${email} for lifetime free pass access?`)) return;
+
+    if (!verifiedInternalsList.includes(email.toLowerCase())) {
+        verifiedInternalsList.push(email.toLowerCase());
+    }
+
+    const req = verificationRequests.find(r => r.email.toLowerCase() === email.toLowerCase());
+    if (req) req.status = "approved";
+
+    if (supabaseClient) {
+        await supabaseClient.from("verified_internals").upsert([{ email: email.toLowerCase(), approved_by: currentUser.email }]);
+        await supabaseClient.from("verification_requests").update({ status: "approved" }).eq("email", email);
+    }
+
+    if (currentUser && currentUser.email.toLowerCase() === email.toLowerCase()) {
+        currentUser.isVerifiedInternal = true;
+    }
+
+    renderAdminVerificationsList();
+    renderEvents();
+    updateAuthUI();
+    alert(`Approved ${email}! They can now claim any pass for free.`);
+}
+
+async function rejectVerification(email) {
+    const req = verificationRequests.find(r => r.email.toLowerCase() === email.toLowerCase());
+    if (req) req.status = "rejected";
+
+    if (supabaseClient) {
+        await supabaseClient.from("verification_requests").update({ status: "rejected" }).eq("email", email);
+    }
+
+    renderAdminVerificationsList();
 }
 
 function renderAdminEventsList() {
@@ -1116,98 +1211,20 @@ async function deleteEvent(id) {
 
 function renderAdminResultsList() {
     const list = document.getElementById("adminResultsList");
-    list.innerHTML = events.map(e => renderSportEditorForm(e)).join("");
+    list.innerHTML = events.map(e => renderSportEditorModular(e)).join("");
 }
 
-function renderSportEditorForm(e) {
-    const type = e.sportType || "none";
-    const r = e.results || {};
-
-    if (type === "cricket") {
-        return `
-            <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl space-y-2 text-xs">
-                <h4 class="font-bold text-amber-400">🏏 Cricket: ${e.title}</h4>
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="text" id="crk-teamA-${e.id}" value="${r.teamA || ''}" placeholder="Team A Name" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
-                    <input type="text" id="crk-teamB-${e.id}" value="${r.teamB || ''}" placeholder="Team B Name" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
-                    <input type="text" id="crk-scoreA-${e.id}" value="${r.runsA ? r.runsA + '/' + r.wicketsA : ''}" placeholder="Team A Runs/Wickets (142/4)" class="bg-slate-950 border border-slate-800 rounded px-2 py-1 font-mono">
-                    <input type="text" id="crk-scoreB-${e.id}" value="${r.runsB ? r.runsB + '/' + r.wicketsB : ''}" placeholder="Team B Runs/Wickets (120/8)" class="bg-slate-950 border border-slate-800 rounded px-2 py-1 font-mono">
-                    <input type="text" id="crk-oversA-${e.id}" value="${r.oversA || ''}" placeholder="Team A Overs (e.g. 19.4)" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
-                    <input type="text" id="crk-oversB-${e.id}" value="${r.oversB || ''}" placeholder="Team B Overs (e.g. 20.0)" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
-                </div>
-                <input type="text" id="crk-status-${e.id}" value="${r.status || ''}" placeholder="Status (e.g. 2nd Innings - MAMC need 12 runs off 6 balls)" class="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1">
-                <input type="text" id="crk-win-${e.id}" value="${r.winner || ''}" placeholder="Winner Name" class="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-amber-300">
-                <button onclick="saveCricketScore('${e.id}')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3 py-1 rounded">Update Cricket Score</button>
-            </div>`;
-    }
-
-    if (type === "football") {
-        return `
-            <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl space-y-2 text-xs">
-                <h4 class="font-bold text-teal-400">⚽ Football: ${e.title}</h4>
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="text" id="fb-teamA-${e.id}" value="${r.teamA || ''}" placeholder="Team A" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
-                    <input type="text" id="fb-teamB-${e.id}" value="${r.teamB || ''}" placeholder="Team B" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
-                    <input type="number" id="fb-scoreA-${e.id}" value="${r.scoreA || 0}" placeholder="Team A Goals" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
-                    <input type="number" id="fb-scoreB-${e.id}" value="${r.scoreB || 0}" placeholder="Team B Goals" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
-                </div>
-                <input type="text" id="fb-status-${e.id}" value="${r.status || ''}" placeholder="Status (e.g. 2nd Half - 82')" class="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1">
-                <input type="text" id="fb-win-${e.id}" value="${r.winner || ''}" placeholder="Winner" class="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-teal-300">
-                <button onclick="saveFootballScore('${e.id}')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3 py-1 rounded">Update Football Score</button>
-            </div>`;
-    }
-
-    return `
-        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl space-y-2 text-xs">
-            <h4 class="font-bold text-slate-200">${e.title}</h4>
-            <div class="grid grid-cols-3 gap-2">
-                <input type="text" id="gen-win-${e.id}" value="${r.winner || ''}" placeholder="🥇 Winner" class="bg-slate-950 border border-slate-800 rounded px-2 py-1 text-amber-300">
-                <input type="text" id="gen-run-${e.id}" value="${r.runnerUp || ''}" placeholder="🥈 2nd Place" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
-                <input type="text" id="gen-run2-${e.id}" value="${r.secondRunnerUp || ''}" placeholder="🥉 3rd Place" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
-            </div>
-            <button onclick="saveGeneralScore('${e.id}')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3 py-1 rounded">Publish Results</button>
-        </div>`;
-}
-
-async function saveCricketScore(eventId) {
+async function saveSportScore(eventId, sportType) {
     const e = events.find(item => item.id === eventId);
-    if (!e) return;
-    const scoreA = (document.getElementById(`crk-scoreA-${eventId}`).value || "").split("/");
-    const scoreB = (document.getElementById(`crk-scoreB-${eventId}`).value || "").split("/");
+    if (!e || !SportsRegistry[sportType]) return;
 
-    e.results = {
-        sportType: "cricket",
-        teamA: document.getElementById(`crk-teamA-${eventId}`).value,
-        teamB: document.getElementById(`crk-teamB-${eventId}`).value,
-        runsA: scoreA[0] || 0, wicketsA: scoreA[1] || 0,
-        runsB: scoreB[0] || 0, wicketsB: scoreB[1] || 0,
-        oversA: document.getElementById(`crk-oversA-${eventId}`).value,
-        oversB: document.getElementById(`crk-oversB-${eventId}`).value,
-        status: document.getElementById(`crk-status-${eventId}`).value,
-        winner: document.getElementById(`crk-win-${eventId}`).value
-    };
+    e.results = SportsRegistry[sportType].extractData(eventId);
 
-    if (supabaseClient) await supabaseClient.from("events").update({ scoreboard_json: e.results }).eq("id", eventId);
+    if (supabaseClient) {
+        await supabaseClient.from("events").update({ scoreboard_json: e.results }).eq("id", eventId);
+    }
     renderResultsPublic();
-    alert("Cricket scoreboard updated!");
-}
-
-async function saveFootballScore(eventId) {
-    const e = events.find(item => item.id === eventId);
-    if (!e) return;
-    e.results = {
-        sportType: "football",
-        teamA: document.getElementById(`fb-teamA-${eventId}`).value,
-        teamB: document.getElementById(`fb-teamB-${eventId}`).value,
-        scoreA: document.getElementById(`fb-scoreA-${eventId}`).value,
-        scoreB: document.getElementById(`fb-scoreB-${eventId}`).value,
-        status: document.getElementById(`fb-status-${eventId}`).value,
-        winner: document.getElementById(`fb-win-${eventId}`).value
-    };
-
-    if (supabaseClient) await supabaseClient.from("events").update({ scoreboard_json: e.results }).eq("id", eventId);
-    renderResultsPublic();
-    alert("Football scoreboard updated!");
+    alert("Scoreboard updated successfully!");
 }
 
 async function saveGeneralScore(eventId) {
@@ -1215,13 +1232,12 @@ async function saveGeneralScore(eventId) {
     if (!e) return;
     e.results = {
         winner: document.getElementById(`gen-win-${eventId}`).value,
-        runnerUp: document.getElementById(`gen-run-${eventId}`).value,
-        secondRunnerUp: document.getElementById(`gen-run2-${eventId}`).value
+        runnerUp: document.getElementById(`gen-run-${eventId}`).value
     };
 
     if (supabaseClient) await supabaseClient.from("events").update({ scoreboard_json: e.results }).eq("id", eventId);
     renderResultsPublic();
-    alert("Results updated!");
+    alert("Results published!");
 }
 
 function renderAdminRegsList() {

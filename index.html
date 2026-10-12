@@ -743,7 +743,8 @@ const SportsRegistry = {
                 ${r.winner ? `<p class="text-amber-300 font-bold pt-1 border-t border-slate-800"><i class="fa-solid fa-trophy mr-1"></i> Winner: ${r.winner}</p>` : ''}
             </div>`;
         },
-        renderForm: (e, r) => `
+        renderForm: (e, r) => {
+            return `
             <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-xl space-y-2 text-xs">
                 <h5 class="font-bold text-amber-400"><i class="fa-solid fa-baseball-bat-ball"></i> Live Cricket Scorecard Form</h5>
                 <div class="grid grid-cols-3 gap-1.5">

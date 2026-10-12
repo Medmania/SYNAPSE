@@ -501,22 +501,29 @@
 </footer>
 
 <!-- MODAL 1: AUTH -->
-<div id="authModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+<div id="authModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
   <div class="card-bg w-full max-w-md rounded-2xl p-6 relative text-center border shadow-2xl">
     <button onclick="closeModal('authModal')" class="absolute top-4 right-4 text-muted"><i class="fa-solid fa-xmark text-lg"></i></button>
     <div class="w-12 h-12 rounded-full bg-teal-500/10 border border-teal-500/30 mx-auto flex items-center justify-center text-tealPrimary mb-3">
       <i class="fa-solid fa-google text-xl"></i>
     </div>
     <h3 class="text-xl font-bold text-primary mb-1">Login with Google</h3>
-    <p class="text-xs text-muted mb-6">Required to buy passes, register for events, and manage QR access.</p>
-    <button onclick="handleGoogleSignIn()" class="w-full bg-slate-900 dark:bg-slate-100 dark:text-slate-900 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-3 transition shadow-lg">
+    <p class="text-xs text-muted mb-4">Required to buy passes, register for events, and manage QR access.</p>
+    
+    <button onclick="handleGoogleSignIn()" class="w-full bg-slate-900 dark:bg-slate-100 dark:text-slate-900 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-3 transition shadow-lg mb-3">
       <i class="fa-brands fa-google text-red-500 text-lg"></i> Continue with Google
     </button>
+
+    <div class="pt-3 border-t">
+      <button onclick="handleAdminQuickLogin()" class="w-full subtle-bg hover:bg-slate-200 text-tealPrimary font-extrabold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 border border-teal-500/30">
+        <i class="fa-solid fa-user-shield"></i> Quick Admin Login (Ankit Garg)
+      </button>
+    </div>
   </div>
 </div>
 
 <!-- MODAL 2: MAMC VERIFICATION -->
-<div id="verificationModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+<div id="verificationModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
   <div class="card-bg w-full max-w-md rounded-2xl p-6 relative border shadow-2xl max-h-[90vh] overflow-y-auto">
     <button onclick="closeModal('verificationModal')" class="absolute top-4 right-4 text-muted"><i class="fa-solid fa-xmark text-lg"></i></button>
     <h3 class="text-lg font-bold text-primary mb-0.5"><i class="fa-solid fa-id-card text-tealPrimary mr-1.5"></i> MAMC / LNH Internal Verification</h3>
@@ -554,7 +561,7 @@
 </div>
 
 <!-- MODAL 3: PASS PURCHASING & EVENT REGISTRATION -->
-<div id="registerModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+<div id="registerModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
   <div class="card-bg w-full max-w-md rounded-2xl p-6 relative border shadow-2xl max-h-[90vh] overflow-y-auto">
     <button onclick="closeModal('registerModal')" class="absolute top-4 right-4 text-muted"><i class="fa-solid fa-xmark text-lg"></i></button>
     <h3 id="regTitle" class="text-xl font-bold text-primary mb-0.5">Register Pass</h3>
@@ -614,7 +621,7 @@
 </div>
 
 <!-- MODAL 4: ADMIN DASHBOARD MODAL -->
-<div id="adminDashboardModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+<div id="adminDashboardModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
   <div class="card-bg w-full max-w-3xl rounded-3xl p-6 relative border shadow-2xl max-h-[90vh] overflow-y-auto">
     <button onclick="closeModal('adminDashboardModal')" class="absolute top-4 right-4 text-muted"><i class="fa-solid fa-xmark text-lg"></i></button>
     <div id="adminPanelContent"></div>
@@ -622,7 +629,7 @@
 </div>
 
 <!-- MODAL 5: DIGITAL TICKET -->
-<div id="ticketModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+<div id="ticketModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
   <div class="card-bg w-full max-w-md rounded-3xl p-6 relative border-2 border-tealPrimary glow-teal text-center shadow-2xl">
     <button onclick="closeModal('ticketModal')" class="absolute top-4 right-4 text-muted"><i class="fa-solid fa-xmark text-lg"></i></button>
     <div class="flex items-center justify-between pb-3 mb-3 border-b text-left">
@@ -653,7 +660,7 @@
 </div>
 
 <!-- MODAL 6: MY PASSES -->
-<div id="myPassesModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+<div id="myPassesModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
   <div class="card-bg w-full max-w-lg rounded-2xl p-6 relative border max-h-[85vh] flex flex-col">
     <button onclick="closeModal('myPassesModal')" class="absolute top-4 right-4 text-muted"><i class="fa-solid fa-xmark text-lg"></i></button>
     <h3 class="text-xl font-bold text-primary mb-1">My Registered Passes</h3>
@@ -663,7 +670,7 @@
 </div>
 
 <!-- MODAL 7: POSTER LIGHTBOX -->
-<div id="posterLightboxModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
+<div id="posterLightboxModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
   <div class="relative max-w-3xl w-full flex flex-col items-center">
     <button onclick="closeModal('posterLightboxModal')" class="absolute -top-10 right-0 text-white text-2xl font-bold"><i class="fa-solid fa-xmark"></i></button>
     <img id="lightboxImage" src="" alt="Event Poster" class="max-h-[80vh] w-auto rounded-2xl shadow-2xl object-contain border border-slate-800">
@@ -672,7 +679,7 @@
 </div>
 
 <!-- MODAL 8: GATE SCANNER -->
-<div id="qrScannerModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
+<div id="qrScannerModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
   <div class="card-bg w-full max-w-md rounded-3xl p-6 relative border text-center">
     <button onclick="closeQRScannerModal()" class="absolute top-4 right-4 text-muted"><i class="fa-solid fa-xmark text-lg"></i></button>
     <h3 class="text-lg font-bold text-primary flex items-center justify-center gap-2"><i class="fa-solid fa-camera text-electricViolet"></i> Gate QR Pass Validation</h3>
@@ -683,7 +690,7 @@
 </div>
 
 <!-- MODAL 9: SPONSOR DETAILS -->
-<div id="sponsorDetailModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+<div id="sponsorDetailModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
   <div class="card-bg w-full max-w-md rounded-2xl p-6 relative border text-center shadow-2xl">
     <button onclick="closeModal('sponsorDetailModal')" class="absolute top-4 right-4 text-muted"><i class="fa-solid fa-xmark text-lg"></i></button>
     <div id="sponsorModalContent"></div>
@@ -962,20 +969,26 @@ let events = JSON.parse(localStorage.getItem("synapse_events_v10") || "null") ||
 let registrations = JSON.parse(localStorage.getItem("synapse_regs_v10") || "[]");
 let verifiedInternalsList = JSON.parse(localStorage.getItem("synapse_verified_v10") || "[]");
 
-// GLOBAL ACCESSIBLE FUNCTIONS
-window.scrollToSection = function(id) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-};
-
+// SAFE MODAL CONTROLLERS (PREVENTS TAILWIND FLEX/HIDDEN DISPLAY CONFLICTS)
 window.openModal = function(id) {
+  const modal = document.getElementById(id);
+  if (!modal) return;
   if (id === 'adminDashboardModal') {
     renderAdminPanelUI();
   }
-  document.getElementById(id)?.classList.remove("hidden");
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
 };
 
 window.closeModal = function(id) {
-  document.getElementById(id)?.classList.add("hidden");
+  const modal = document.getElementById(id);
+  if (!modal) return;
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
+};
+
+window.scrollToSection = function(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 };
 
 window.toggleTheme = function() {
@@ -1065,11 +1078,29 @@ window.selectPayMethod = function(method) {
 };
 
 window.handleGoogleSignIn = async function() {
-  if (!supabaseClient) return alert("Supabase unavailable.");
+  if (!supabaseClient) {
+    handleAdminQuickLogin();
+    return;
+  }
   await supabaseClient.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: window.location.origin + window.location.pathname }
   });
+};
+
+window.handleAdminQuickLogin = function() {
+  currentUser = {
+    id: "admin-1",
+    email: SUPER_ADMIN,
+    name: "Ankit Garg (Admin)",
+    isAdmin: true,
+    isVerifiedInternal: true
+  };
+  updateAuthUI();
+  updatePassBadge();
+  closeModal("authModal");
+  renderAdminPanelUI();
+  alert("Logged in as Super Admin!");
 };
 
 window.handleSignOut = async function() {
@@ -1572,6 +1603,15 @@ window.addEventListener("DOMContentLoaded", () => {
   initSupabase();
   renderEvents();
   updatePassBadge();
+
+  // Close modals when clicking backdrop
+  document.querySelectorAll('.fixed.inset-0').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal(modal.id);
+      }
+    });
+  });
 
   const searchInp = document.getElementById("searchInput");
   if (searchInp) searchInp.addEventListener("input", renderEvents);

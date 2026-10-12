@@ -191,8 +191,115 @@
       <p class="text-xs sm:text-sm text-muted mt-1">Select your <strong>Pass Tier</strong> for entry privileges, then register for individual <strong>Competitions</strong> inside.</p>
     </div>
 
-    <!-- DYNAMIC PASSES GRID -->
-    <div id="passesGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4"></div>
+    <!-- FULL RICH PASS CARDS RESTORED IN HTML -->
+    <div id="passesGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      
+      <!-- PLATINUM PASS -->
+      <div class="card-bg rounded-2xl p-5 border-2 border-festGold flex flex-col justify-between glow-gold relative overflow-hidden">
+        <span class="absolute -right-8 top-4 bg-festGold text-slate-950 text-[9px] font-black uppercase px-8 py-0.5 transform rotate-45 shadow">VIP ACCESS</span>
+        <div>
+          <div class="w-10 h-10 rounded-xl bg-festGold/10 border border-festGold/40 text-festGold flex items-center justify-center text-lg font-black mb-3">
+            <i class="fa-solid fa-crown"></i>
+          </div>
+          <h3 class="text-lg font-black text-primary">PLATINUM</h3>
+          <p class="text-[11px] text-muted mt-0.5">All-Access Premium VIP</p>
+          <div class="mt-3 text-2xl font-black text-primary">₹1,499</div>
+          <ul class="mt-4 space-y-2 text-xs text-muted">
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> Campus Gate Entry (All 4 Days)</li>
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> All Competitions Included</li>
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> All Pro-Nights Covered</li>
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> VIP Front-Pit Viewing</li>
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> Fast-Track Priority Lane</li>
+          </ul>
+        </div>
+        <button onclick="selectPassTier('pass-platinum')" class="mt-6 w-full bg-festGold hover:bg-yellow-500 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs shadow-md transition">
+          Get Platinum VIP
+        </button>
+      </div>
+
+      <!-- DIAMOND PASS -->
+      <div class="card-bg rounded-2xl p-5 border border-tealPrimary/40 flex flex-col justify-between relative">
+        <div>
+          <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 text-tealPrimary flex items-center justify-center text-lg font-black mb-3">
+            <i class="fa-solid fa-gem"></i>
+          </div>
+          <h3 class="text-lg font-black text-primary">DIAMOND</h3>
+          <p class="text-[11px] text-muted mt-0.5">Full Fest (Excl. Star Nights)</p>
+          <div class="mt-3 text-2xl font-black text-primary">₹499</div>
+          <ul class="mt-4 space-y-2 text-xs text-muted">
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> Campus Gate Entry (All 4 Days)</li>
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> Register for All Competitions</li>
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> Sports, Cultural & E-Sports</li>
+            <li class="flex items-center gap-1.5 text-slate-400"><i class="fa-solid fa-circle-xmark text-red-400"></i> No Pro-Night Concert Access</li>
+          </ul>
+        </div>
+        <button onclick="selectPassTier('pass-diamond')" class="mt-6 w-full bg-tealPrimary hover:bg-teal-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-md transition">
+          Get Diamond Pass
+        </button>
+      </div>
+
+      <!-- STAR NIGHT PASS -->
+      <div class="card-bg rounded-2xl p-5 border border-electricViolet/40 flex flex-col justify-between">
+        <div>
+          <div class="w-10 h-10 rounded-xl bg-electricViolet/10 border border-electricViolet/30 text-electricViolet flex items-center justify-center text-lg font-black mb-3">
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <h3 class="text-lg font-black text-primary">STAR NIGHT</h3>
+          <p class="text-[11px] text-muted mt-0.5">Pro-Night Concert Pass</p>
+          <div class="mt-3 text-2xl font-black text-primary">₹799</div>
+          <ul class="mt-4 space-y-2 text-xs text-muted">
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> Entry to Central Grounds Concert</li>
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> Headline DJ & Artist Acts</li>
+            <li class="flex items-center gap-1.5 text-slate-400"><i class="fa-solid fa-circle-xmark text-red-400"></i> Daytime Competitions Excluded</li>
+          </ul>
+        </div>
+        <button onclick="selectPassTier('pass-starnight')" class="mt-6 w-full bg-electricViolet hover:bg-violet-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-md transition">
+          Get Concert Pass
+        </button>
+      </div>
+
+      <!-- GATE BR PASS -->
+      <div class="card-bg rounded-2xl p-5 border border-emeraldAccent/40 flex flex-col justify-between relative">
+        <span class="absolute top-3 right-3 bg-emerald-500/10 text-emeraldAccent border border-emerald-500/30 text-[9px] font-black px-2 py-0.5 rounded-full">BR PASS</span>
+        <div>
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emeraldAccent flex items-center justify-center text-lg font-black mb-3">
+            <i class="fa-solid fa-id-badge"></i>
+          </div>
+          <h3 class="text-lg font-black text-primary">GATE / BR PASS</h3>
+          <p class="text-[11px] text-muted mt-0.5">Basic Campus Credentials</p>
+          <div class="mt-3 text-2xl font-black text-primary">₹199 <span class="text-xs text-emeraldAccent font-semibold">(MAMC FREE)</span></div>
+          <ul class="mt-4 space-y-2 text-xs text-muted">
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> Campus Gate Clearance</li>
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> Food Stalls & Open Zones</li>
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> Free for Verified MAMC Interns</li>
+          </ul>
+        </div>
+        <button onclick="selectPassTier('pass-gatebr')" class="mt-6 w-full bg-slate-900 dark:bg-slate-100 dark:text-slate-900 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-md transition">
+          Claim BR Pass
+        </button>
+      </div>
+
+      <!-- SQUAD PASS -->
+      <div class="card-bg rounded-2xl p-5 border border-festOrange/40 flex flex-col justify-between">
+        <div>
+          <div class="w-10 h-10 rounded-xl bg-festOrange/10 border border-festOrange/30 text-festOrange flex items-center justify-center text-lg font-black mb-3">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <h3 class="text-lg font-black text-primary">SQUAD PASS</h3>
+          <p class="text-[11px] text-muted mt-0.5">Coordinated Team Entry</p>
+          <div class="mt-3 text-2xl font-black text-primary">₹1,999 <span class="text-xs text-muted">/ Team</span></div>
+          <ul class="mt-4 space-y-2 text-xs text-muted">
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> Single Registration for 5-11 Players</li>
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> Captain Managed Roster</li>
+            <li class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emeraldAccent"></i> Individual QR Passes Generated</li>
+          </ul>
+        </div>
+        <button onclick="selectPassTier('pass-squad')" class="mt-6 w-full bg-festOrange hover:bg-orange-600 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-md transition">
+          Register Team Squad
+        </button>
+      </div>
+
+    </div>
 
     <!-- PASS COMPARISON MATRIX -->
     <div class="card-bg rounded-2xl p-5 border overflow-x-auto">
@@ -277,15 +384,109 @@
       <p class="text-xs sm:text-sm text-muted mt-1">Empowering medical youth culture & sports at Maulana Azad Medical College.</p>
     </div>
 
-    <!-- DYNAMIC SPONSORS CONTAINER -->
-    <div id="sponsorsGrid" class="space-y-6"></div>
+    <div id="sponsorsGrid" class="space-y-6">
+      <!-- TITLE SPONSORS -->
+      <div>
+        <h4 class="text-xs font-extrabold text-festOrange uppercase tracking-wider mb-3 flex items-center gap-1.5">
+          <i class="fa-solid fa-crown text-festGold"></i> Title & Co-Presenting Partners
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div onclick="openSponsorModal('canara')" class="card-bg p-5 rounded-2xl border border-teal-500/30 flex items-center gap-4 cursor-pointer hover:border-tealPrimary transition">
+            <div class="w-14 h-14 rounded-xl bg-teal-500/10 border border-teal-500/30 text-tealPrimary flex items-center justify-center text-2xl font-black shrink-0">
+              <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <div>
+              <span class="text-[10px] font-bold bg-teal-500/10 text-tealPrimary px-2 py-0.5 rounded uppercase">Title Partner</span>
+              <h4 class="text-base font-extrabold text-primary mt-0.5">Canara Bank</h4>
+              <p class="text-xs text-muted">Exclusive Banking & Edu-Loan Partner</p>
+            </div>
+          </div>
+
+          <div onclick="openSponsorModal('redbull')" class="card-bg p-5 rounded-2xl border border-red-500/30 flex items-center gap-4 cursor-pointer hover:border-red-500 transition">
+            <div class="w-14 h-14 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 flex items-center justify-center text-2xl font-black shrink-0">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div>
+              <span class="text-[10px] font-bold bg-red-500/10 text-red-500 px-2 py-0.5 rounded uppercase">Energy Partner</span>
+              <h4 class="text-base font-extrabold text-primary mt-0.5">Red Bull India</h4>
+              <p class="text-xs text-muted">Official Pro-Night & E-Sports Energy Drink</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ASSOCIATE SPONSORS -->
+      <div>
+        <h4 class="text-xs font-extrabold text-muted uppercase tracking-wider mb-3">Associate & Category Partners</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div onclick="openSponsorModal('dominos')" class="card-bg p-3.5 rounded-xl border flex items-center gap-3 cursor-pointer hover:border-tealPrimary transition">
+            <i class="fa-solid fa-pizza-slice text-red-500 text-xl"></i>
+            <div>
+              <h5 class="text-xs font-extrabold text-primary">Domino's Pizza</h5>
+              <p class="text-[10px] text-muted">Food Zone Partner</p>
+            </div>
+          </div>
+
+          <div onclick="openSponsorModal('swiggy')" class="card-bg p-3.5 rounded-xl border flex items-center gap-3 cursor-pointer hover:border-tealPrimary transition">
+            <i class="fa-solid fa-burger text-orange-500 text-xl"></i>
+            <div>
+              <h5 class="text-xs font-extrabold text-primary">Swiggy Dineout</h5>
+              <p class="text-[10px] text-muted">Dining Deals</p>
+            </div>
+          </div>
+
+          <div onclick="openSponsorModal('marrow')" class="card-bg p-3.5 rounded-xl border flex items-center gap-3 cursor-pointer hover:border-tealPrimary transition">
+            <i class="fa-solid fa-stethoscope text-purple-500 text-xl"></i>
+            <div>
+              <h5 class="text-xs font-extrabold text-primary">Marrow Edition 8</h5>
+              <p class="text-[10px] text-muted">Academic Sponsor</p>
+            </div>
+          </div>
+
+          <div onclick="openSponsorModal('prepladder')" class="card-bg p-3.5 rounded-xl border flex items-center gap-3 cursor-pointer hover:border-tealPrimary transition">
+            <i class="fa-solid fa-book-medical text-tealPrimary text-xl"></i>
+            <div>
+              <h5 class="text-xs font-extrabold text-primary">Prepladder</h5>
+              <p class="text-[10px] text-muted">Quiz Partner</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- FEST PERKS & COUPONS -->
     <div id="perks" class="pt-6 border-t">
       <h3 class="text-base font-extrabold text-primary mb-3 flex items-center gap-2">
         <i class="fa-solid fa-ticket text-festGold"></i> Exclusive Attendee Fest Perks & Coupons
       </h3>
-      <div id="perksGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+      <div id="perksGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="card-bg p-4 rounded-2xl border space-y-2">
+          <span class="text-[10px] font-bold bg-red-500/10 text-red-500 px-2 py-0.5 rounded">DOMINO'S FOOD ZONE</span>
+          <h4 class="text-sm font-extrabold text-primary">Flat 30% Off Food Stalls</h4>
+          <p class="text-xs text-muted">Show your digital SYNAPSE QR pass at the Domino's MAMC ground stall.</p>
+          <div class="font-mono text-xs font-bold text-tealPrimary bg-teal-500/10 p-2 rounded-lg text-center border border-teal-500/20">
+            CODE: SYNAPSE30
+          </div>
+        </div>
+
+        <div class="card-bg p-4 rounded-2xl border space-y-2">
+          <span class="text-[10px] font-bold bg-purple-500/10 text-purple-500 px-2 py-0.5 rounded">MARROW ACADEMIC</span>
+          <h4 class="text-sm font-extrabold text-primary">Free 1-Month Plan C Extension</h4>
+          <p class="text-xs text-muted">Applicable for all registered medical delegates & MBBS interns.</p>
+          <div class="font-mono text-xs font-bold text-purple-500 bg-purple-500/10 p-2 rounded-lg text-center border border-purple-500/20">
+            CODE: MAMCFEST26
+          </div>
+        </div>
+
+        <div class="card-bg p-4 rounded-2xl border space-y-2">
+          <span class="text-[10px] font-bold bg-red-500/10 text-red-500 px-2 py-0.5 rounded">RED BULL ZONE</span>
+          <h4 class="text-sm font-extrabold text-primary">Free Energy Can at Gaming Arena</h4>
+          <p class="text-xs text-muted">Valid for all E-Sports & FIFA tournament participants.</p>
+          <div class="font-mono text-xs font-bold text-red-500 bg-red-500/10 p-2 rounded-lg text-center border border-red-500/20">
+            FREE AT REFRESHMENT DESK
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -412,7 +613,7 @@
   </div>
 </div>
 
-<!-- MODAL 4: ADMIN DASHBOARD MODAL (EVENTS, SPONSORS & PASSES) -->
+<!-- MODAL 4: ADMIN DASHBOARD MODAL -->
 <div id="adminDashboardModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
   <div class="card-bg w-full max-w-2xl rounded-3xl p-6 relative border shadow-2xl max-h-[90vh] overflow-y-auto">
     <button onclick="closeModal('adminDashboardModal')" class="absolute top-4 right-4 text-muted"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -489,8 +690,519 @@
   </div>
 </div>
 
-<!-- MAIN ES MODULE ENTRY POINT -->
-<script type="module" src="js/app.js"></script>
+<!-- COMPATIBLE JAVASCRIPT APPLICATION SCRIPT -->
+<script>
+const SUPER_ADMIN = "ankitgarg8558@gmail.com";
+const SUPABASE_URL = "https://ccsgewccyyexfgrmflig.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2dld2NjeXlleGZncm1mbGlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3ODg0MDEsImV4cCI6MjEwNjM2NDQwMX0.8yolMynIAGtN41qsUCxLASpx_rszxDMUoskBvQJvQGo";
+
+let supabaseClient = null;
+let currentUser = null;
+let selectedPayMethod = "upi";
+let html5QrcodeScanner = null;
+let activeCategoryFilter = "all";
+
+// PASS TYPES DEFINITION
+const PASS_TYPES = [
+  { id: "pass-platinum", title: "PLATINUM VIP ALL-ACCESS PASS", price: 1499, tier: "Platinum", desc: "All 4 Pro-Nights, Unlimited Competitions, Front Pit VIP" },
+  { id: "pass-diamond", title: "DIAMOND COMPETITION PASS", price: 499, tier: "Diamond", desc: "Full Fest Daytime & Competition Access (Excl Star Nights)" },
+  { id: "pass-starnight", title: "STAR NIGHT CONCERT PASS", price: 799, tier: "Star Night", desc: "Access to Star Night Concert Zone on Central Grounds" },
+  { id: "pass-gatebr", title: "GATE BR PASS (CAMPUS CLEARANCE)", price: 199, tier: "BR Pass", desc: "Mandatory Campus Entry & Food Zone Clearance (MAMC Free)" },
+  { id: "pass-squad", title: "SQUAD / TEAM PASS", price: 1999, tier: "Squad", desc: "Single Coordinated Pass for 5 to 11 Team Members" }
+];
+
+// INITIAL EVENTS CATALOGUE
+let events = JSON.parse(localStorage.getItem("synapse_events_v10") || "null") || [
+  { 
+    id: "ev-1", 
+    title: "Nerve-Rupture Pro DJ Night", 
+    category: "Flagship", 
+    venue: "MAMC Central Grounds", 
+    price: 799, 
+    date: "Oct 15, 7:00 PM", 
+    desc: "International headline DJs with 360-degree laser & pyro production.",
+    posterUrl: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80",
+    brochureUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" 
+  },
+  { 
+    id: "ev-2", 
+    title: "Pulse Inter-Medical Football League", 
+    category: "Sports", 
+    venue: "MAMC Football Field", 
+    price: 0, 
+    date: "Oct 13, 9:00 AM", 
+    desc: "11-a-side knockout football tournament across medical colleges.",
+    posterUrl: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=600&q=80",
+    brochureUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" 
+  },
+  { 
+    id: "ev-3", 
+    title: "Choreonite Group Dance Battle", 
+    category: "Cultural", 
+    venue: "MAMC Main Auditorium", 
+    price: 299, 
+    date: "Oct 14, 5:00 PM", 
+    desc: "Western and thematic group dance competition.",
+    posterUrl: "https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&w=600&q=80",
+    brochureUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" 
+  },
+  { 
+    id: "ev-4", 
+    title: "Valorant Masters LAN Arena", 
+    category: "E-Sports", 
+    venue: "IT Block LAN Hub", 
+    price: 250, 
+    date: "Oct 14, 11:00 AM", 
+    desc: "5v5 competitive LAN tournament on high-refresh setups.",
+    posterUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80",
+    brochureUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" 
+  }
+];
+
+let registrations = JSON.parse(localStorage.getItem("synapse_regs_v10") || "[]");
+let verifiedInternalsList = JSON.parse(localStorage.getItem("synapse_verified_v10") || "[]");
+
+// GLOBAL ACCESSIBLE FUNCTIONS
+window.scrollToSection = function(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+};
+
+window.openModal = function(id) {
+  document.getElementById(id)?.classList.remove("hidden");
+};
+
+window.closeModal = function(id) {
+  document.getElementById(id)?.classList.add("hidden");
+};
+
+window.toggleTheme = function() {
+  const html = document.documentElement;
+  const icon = document.getElementById("themeIcon");
+  if (html.classList.contains("dark")) {
+    html.classList.remove("dark");
+    html.classList.add("light");
+    html.setAttribute("data-theme", "light");
+    if (icon) icon.className = "fa-solid fa-moon";
+  } else {
+    html.classList.remove("light");
+    html.classList.add("dark");
+    html.setAttribute("data-theme", "dark");
+    if (icon) icon.className = "fa-solid fa-sun";
+  }
+};
+
+window.filterCategory = function(cat) {
+  activeCategoryFilter = cat;
+  document.querySelectorAll(".cat-chip").forEach(btn => btn.classList.remove("active"));
+  if (window.event && window.event.target) window.event.target.classList.add("active");
+  renderEvents();
+};
+
+window.selectPassTier = function(passId) {
+  if (!currentUser) return openModal("authModal");
+  const pass = PASS_TYPES.find(p => p.id === passId);
+  if (!pass) return;
+  openRegistrationModal(pass.id, 'pass');
+};
+
+window.openRegistrationModal = function(itemId, type) {
+  if (!currentUser) return openModal("authModal");
+
+  const item = type === 'pass' 
+    ? PASS_TYPES.find(p => p.id === itemId)
+    : events.find(e => e.id === itemId);
+
+  if (!item) return;
+
+  let effectivePrice = item.price;
+  if (currentUser.isVerifiedInternal && (item.id === 'pass-gatebr' || item.price === 0)) {
+    effectivePrice = 0;
+  }
+
+  document.getElementById("regItemId").value = item.id;
+  document.getElementById("regType").value = type;
+  document.getElementById("regTitle").innerText = item.title;
+  document.getElementById("regSub").innerText = `Price: ${effectivePrice === 0 ? "FREE (Granted)" : "₹" + effectivePrice}`;
+  document.getElementById("regName").value = currentUser.name || "";
+  
+  const squadSec = document.getElementById("squadSection");
+  if (item.id === 'pass-squad') {
+    squadSec.classList.remove("hidden");
+  } else {
+    squadSec.classList.add("hidden");
+  }
+
+  const paySec = document.getElementById("paymentSection");
+  if (effectivePrice > 0) {
+    paySec.classList.remove("hidden");
+    selectPayMethod("upi");
+    generateUpiQrCode(effectivePrice, item.title);
+  } else {
+    paySec.classList.add("hidden");
+  }
+
+  openModal("registerModal");
+};
+
+window.selectPayMethod = function(method) {
+  selectedPayMethod = method;
+  const upiBtn = document.getElementById("payMethodUpiBtn");
+  const rzpBtn = document.getElementById("payMethodRzpBtn");
+  const upiBox = document.getElementById("upiQrBox");
+
+  if (method === "upi") {
+    if (upiBtn) upiBtn.className = "card-bg border-2 border-tealPrimary p-2.5 rounded-xl text-left text-xs font-semibold text-primary";
+    if (rzpBtn) rzpBtn.className = "card-bg border p-2.5 rounded-xl text-left text-xs font-semibold text-muted";
+    if (upiBox) upiBox.classList.remove("hidden");
+  } else {
+    if (rzpBtn) rzpBtn.className = "card-bg border-2 border-tealPrimary p-2.5 rounded-xl text-left text-xs font-semibold text-primary";
+    if (upiBtn) upiBtn.className = "card-bg border p-2.5 rounded-xl text-left text-xs font-semibold text-muted";
+    if (upiBox) upiBox.classList.add("hidden");
+  }
+};
+
+window.handleGoogleSignIn = async function() {
+  if (!supabaseClient) return alert("Supabase unavailable.");
+  await supabaseClient.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.origin + window.location.pathname }
+  });
+};
+
+window.handleSignOut = async function() {
+  if (supabaseClient) await supabaseClient.auth.signOut();
+  currentUser = null;
+  updateAuthUI();
+};
+
+window.handleRegisterSubmit = function(e) {
+  e.preventDefault();
+  const type = document.getElementById("regType").value;
+  const itemId = document.getElementById("regItemId").value;
+  const item = type === 'pass' ? PASS_TYPES.find(p => p.id === itemId) : events.find(ev => ev.id === itemId);
+  if (!item) return;
+
+  let effectivePrice = item.price;
+  if (currentUser.isVerifiedInternal && (item.id === 'pass-gatebr' || item.price === 0)) effectivePrice = 0;
+
+  let paymentRef = "FREE_GRANT";
+  if (effectivePrice > 0) {
+    if (selectedPayMethod === "upi") {
+      paymentRef = document.getElementById("upiTxnRef").value.trim();
+      if (!paymentRef) return alert("Please enter UPI Transaction / UTR Ref ID.");
+    } else {
+      paymentRef = "RZP_PAYMENT_SUCCESS";
+    }
+  }
+
+  const pass = {
+    id: "SYN26-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+    title: item.title,
+    attendeeName: document.getElementById("regName").value.trim(),
+    college: document.getElementById("regCollege").value.trim(),
+    phone: document.getElementById("regPhone").value.trim(),
+    email: currentUser.email,
+    amount: effectivePrice,
+    paymentRef: paymentRef,
+    isScanned: false
+  };
+
+  registrations.unshift(pass);
+  localStorage.setItem("synapse_regs_v10", JSON.stringify(registrations));
+
+  updatePassBadge();
+  closeModal("registerModal");
+  displayTicketModalWithQr(pass);
+};
+
+window.handleVerificationSubmit = function(e) {
+  e.preventDefault();
+  if (!currentUser) return openModal("authModal");
+
+  const email = currentUser.email.toLowerCase();
+  if (!verifiedInternalsList.includes(email)) verifiedInternalsList.push(email);
+  localStorage.setItem("synapse_verified_v10", JSON.stringify(verifiedInternalsList));
+
+  currentUser.isVerifiedInternal = true;
+  updateAuthUI();
+  closeModal("verificationModal");
+  alert("Verification proof submitted successfully! You now have access to ₹0 MAMC Gate BR Passes.");
+};
+
+window.openPosterLightbox = function(url, title) {
+  document.getElementById("lightboxImage").src = url || "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80";
+  document.getElementById("lightboxTitle").innerText = title;
+  openModal("posterLightboxModal");
+};
+
+window.openMyPassesModal = function() {
+  if (!currentUser) return openModal("authModal");
+  const myRegs = registrations.filter(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
+  
+  document.getElementById("myPassesSub").innerText = `Passes issued to ${currentUser.email}`;
+  const list = document.getElementById("myPassesList");
+
+  if (myRegs.length === 0) {
+    list.innerHTML = `<div class="text-center py-8 text-muted">No active passes found. Claim a Pass or Event Ticket!</div>`;
+  } else {
+    list.innerHTML = myRegs.map(reg => `
+      <div class="card-bg border rounded-xl p-3 flex justify-between items-center">
+        <div>
+          <span class="font-mono text-tealPrimary font-bold text-[11px]">${reg.id}</span>
+          <h4 class="font-bold text-primary">${reg.title}</h4>
+          <p class="text-muted text-[11px]">${reg.college}</p>
+        </div>
+        <button onclick="closeModal('myPassesModal'); displayTicketModalWithQrById('${reg.id}')" class="bg-teal-500/10 text-tealPrimary border border-teal-500/30 px-3 py-1 rounded-lg font-bold">Show QR</button>
+      </div>
+    `).join("");
+  }
+  openModal("myPassesModal");
+};
+
+window.displayTicketModalWithQrById = function(id) {
+  const pass = registrations.find(r => r.id === id);
+  if (pass) displayTicketModalWithQr(pass);
+};
+
+window.openSponsorModal = function(key) {
+  const content = document.getElementById("sponsorModalContent");
+  if (key === 'canara') {
+    content.innerHTML = `
+      <div class="w-12 h-12 rounded-full bg-teal-500/10 text-tealPrimary flex items-center justify-center mx-auto text-xl font-bold mb-2"><i class="fa-solid fa-building-columns"></i></div>
+      <h3 class="text-lg font-black text-primary">Canara Bank</h3>
+      <p class="text-xs text-muted mt-1">Official Title Partner of SYNAPSE '26. Offering zero-balance student salary accounts, education loans, and instant digital banking desks inside MAMC campus.</p>`;
+  } else if (key === 'redbull') {
+    content.innerHTML = `
+      <div class="w-12 h-12 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto text-xl font-bold mb-2"><i class="fa-solid fa-bolt"></i></div>
+      <h3 class="text-lg font-black text-primary">Red Bull India</h3>
+      <p class="text-xs text-muted mt-1">Official Energy Drink Partner. Sponsoring the Gaming Arena, Pro DJ Night, and providing complimentary sampling for all participants.</p>`;
+  } else {
+    content.innerHTML = `<h3 class="text-lg font-black text-primary">${key.toUpperCase()} Partner</h3><p class="text-xs text-muted mt-1">Official food, dining, or academic partner for MAMC SYNAPSE '26.</p>`;
+  }
+  openModal("sponsorDetailModal");
+};
+
+window.openQRScannerModal = function() {
+  if (!currentUser || !currentUser.isAdmin) return alert("Admin scanner access required.");
+  openModal("qrScannerModal");
+
+  if (!html5QrcodeScanner) {
+    html5QrcodeScanner = new Html5Qrcode("qr-reader");
+  }
+
+  html5QrcodeScanner.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: { width: 220, height: 220 } },
+    onQrCodeScanned
+  ).catch(err => alert("Camera permission denied."));
+};
+
+window.closeQRScannerModal = function() {
+  if (html5QrcodeScanner) {
+    html5QrcodeScanner.stop().then(() => closeModal("qrScannerModal")).catch(() => closeModal("qrScannerModal"));
+  } else {
+    closeModal("qrScannerModal");
+  }
+};
+
+function generateUpiQrCode(amount, title) {
+  const container = document.getElementById("upiQrContainer");
+  if (!container) return;
+  container.innerHTML = "";
+  const upiUri = `upi://pay?pa=synapse.mamc@upi&pn=SYNAPSE26&am=${amount}&tn=${encodeURIComponent(title.substring(0,15))}&cu=INR`;
+  new QRCode(container, { text: upiUri, width: 128, height: 128, colorDark: "#0F172A", colorLight: "#FFFFFF" });
+}
+
+function displayTicketModalWithQr(pass) {
+  document.getElementById("passEvent").innerText = pass.title;
+  document.getElementById("passName").innerText = pass.attendeeName;
+  document.getElementById("passId").innerText = pass.id;
+  document.getElementById("passCollege").innerText = pass.college;
+  document.getElementById("passScanStatus").innerText = pass.isScanned ? "ALREADY SCANNED" : "Active / Valid";
+
+  const qrCanvas = document.getElementById("qrcodeCanvas");
+  qrCanvas.innerHTML = "";
+  new QRCode(qrCanvas, {
+    text: JSON.stringify({ passId: pass.id, email: pass.email }),
+    width: 140,
+    height: 140,
+    colorDark: "#0F172A",
+    colorLight: "#FFFFFF"
+  });
+
+  openModal("ticketModal");
+}
+
+function onQrCodeScanned(qrMessage) {
+  let passId = qrMessage;
+  try {
+    const parsed = JSON.parse(qrMessage);
+    if (parsed.passId) passId = parsed.passId;
+  } catch(e) {}
+
+  const pass = registrations.find(r => r.id === passId);
+  const resultBox = document.getElementById("scanResultBox");
+  resultBox.classList.remove("hidden");
+
+  if (!pass) {
+    resultBox.className = "mt-4 p-4 rounded-2xl border bg-red-500/10 border-red-500/30 text-red-500 text-left text-xs";
+    resultBox.innerHTML = `<strong>INVALID PASS</strong><p>Pass ID ${passId} not found.</p>`;
+    return;
+  }
+
+  if (pass.isScanned) {
+    resultBox.className = "mt-4 p-4 rounded-2xl border bg-yellow-500/10 border-yellow-500/30 text-yellow-600 text-left text-xs";
+    resultBox.innerHTML = `<strong>ALREADY SCANNED</strong><p>${pass.attendeeName} (${pass.title})</p>`;
+    return;
+  }
+
+  pass.isScanned = true;
+  localStorage.setItem("synapse_regs_v10", JSON.stringify(registrations));
+
+  resultBox.className = "mt-4 p-4 rounded-2xl border bg-emerald-500/10 border-emerald-500/30 text-emeraldAccent text-left text-xs";
+  resultBox.innerHTML = `<strong>VERIFIED ENTRY ✓</strong><p>Name: ${pass.attendeeName} (${pass.college})</p>`;
+}
+
+function renderEvents() {
+  const grid = document.getElementById("eventsGrid");
+  const empty = document.getElementById("emptyState");
+  if (!grid) return;
+
+  const query = (document.getElementById("searchInput")?.value || "").toLowerCase();
+
+  const filtered = events.filter(e => {
+    const matchesCat = activeCategoryFilter === "all" || e.category === activeCategoryFilter;
+    const matchesQuery = e.title.toLowerCase().includes(query) || e.venue.toLowerCase().includes(query);
+    return matchesCat && matchesQuery;
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = "";
+    if (empty) empty.classList.remove("hidden");
+    return;
+  }
+
+  if (empty) empty.classList.add("hidden");
+  grid.innerHTML = filtered.map(e => `
+    <div class="card-bg rounded-2xl overflow-hidden border flex flex-col justify-between hover:border-tealPrimary/50 transition group shadow-sm">
+      <div>
+        <div class="relative h-44 overflow-hidden bg-slate-900 cursor-pointer" onclick="openPosterLightbox('${e.posterUrl || ''}', '${e.title}')">
+          <img src="${e.posterUrl || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80'}" alt="${e.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+          <span class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase border border-white/20">
+            ${e.category}
+          </span>
+          <span class="absolute bottom-3 right-3 bg-tealPrimary text-white text-xs font-black px-2.5 py-1 rounded-lg shadow">
+            ${e.price === 0 ? 'FREE' : '₹' + e.price}
+          </span>
+        </div>
+
+        <div class="p-4 space-y-2">
+          <h3 class="text-base font-extrabold text-primary">${e.title}</h3>
+          <p class="text-xs text-muted line-clamp-2">${e.desc}</p>
+          <div class="text-xs text-muted font-medium pt-1 flex justify-between items-center">
+            <span><i class="fa-solid fa-location-dot text-tealPrimary mr-1"></i> ${e.venue}</span>
+            <span><i class="fa-solid fa-clock text-festOrange mr-1"></i> ${e.date}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 pt-0 space-y-2">
+        ${e.brochureUrl ? `
+          <a href="${e.brochureUrl}" target="_blank" class="w-full subtle-bg hover:bg-slate-200 text-tealPrimary font-bold py-1.5 rounded-xl text-xs flex items-center justify-center gap-1.5 border border-teal-500/20 text-decoration-none">
+            <i class="fa-solid fa-file-pdf"></i> Download Rulebook / Brochure
+          </a>
+        ` : ''}
+
+        <div class="flex gap-2">
+          <button onclick="openRegistrationModal('${e.id}', 'event')" class="flex-grow bg-tealPrimary hover:bg-teal-700 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
+            <i class="fa-solid fa-qrcode"></i> Register Event
+          </button>
+          <button onclick="openPosterLightbox('${e.posterUrl || ''}', '${e.title}')" class="subtle-bg border hover:bg-slate-200 text-primary px-3 py-2.5 rounded-xl text-xs" title="View Full Poster">
+            <i class="fa-solid fa-image"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function updateAuthUI() {
+  const container = document.getElementById("authContainer");
+  const scannerBtnContainer = document.getElementById("scannerBtnContainer");
+  const adminEventBtnContainer = document.getElementById("adminEventBtnContainer");
+  const verifyStatusContainer = document.getElementById("verifyStatusContainer");
+
+  if (!currentUser) {
+    if (container) container.innerHTML = `
+      <button onclick="openModal('authModal')" class="bg-slate-900 dark:bg-slate-100 dark:text-slate-900 text-white font-bold px-3.5 py-2 rounded-xl text-xs shadow-md">
+        <i class="fa-solid fa-google mr-1 text-red-500"></i> Login
+      </button>`;
+    if (scannerBtnContainer) scannerBtnContainer.classList.add("hidden");
+    if (adminEventBtnContainer) adminEventBtnContainer.classList.add("hidden");
+    if (verifyStatusContainer) verifyStatusContainer.innerHTML = "";
+    return;
+  }
+
+  if (currentUser.isAdmin) {
+    if (scannerBtnContainer) scannerBtnContainer.classList.remove("hidden");
+    if (adminEventBtnContainer) adminEventBtnContainer.classList.remove("hidden");
+  }
+
+  if (currentUser.isVerifiedInternal) {
+    if (verifyStatusContainer) verifyStatusContainer.innerHTML = `<span class="bg-emerald-500/10 text-emeraldAccent border border-emerald-500/30 text-[10px] font-bold px-2.5 py-1.5 rounded-xl"><i class="fa-solid fa-user-check mr-1"></i> MAMC Internal (₹0 BR Pass)</span>`;
+  } else {
+    if (verifyStatusContainer) verifyStatusContainer.innerHTML = `<button onclick="openModal('verificationModal')" class="subtle-bg hover:bg-teal-500/10 border border-teal-500/30 text-tealPrimary text-xs font-bold px-2.5 py-1.5 rounded-xl"><i class="fa-solid fa-id-card mr-1"></i> MAMC Verification</button>`;
+  }
+
+  if (container) container.innerHTML = `
+    <div class="flex items-center space-x-1.5">
+      <span class="text-xs text-primary font-bold px-2.5 py-1.5 card-bg rounded-xl border truncate max-w-[100px]">${currentUser.name}</span>
+      <button onclick="handleSignOut()" class="text-muted hover:text-red-500 text-xs px-1.5 py-1" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+    </div>`;
+}
+
+function updatePassBadge() {
+  const badge = document.getElementById("passBadgeCount");
+  if (!badge) return;
+  if (!currentUser) { badge.innerText = "0"; return; }
+  const count = registrations.filter(r => r.email.toLowerCase() === currentUser.email.toLowerCase()).length;
+  badge.innerText = count;
+}
+
+function handleUserSession(session) {
+  const email = session.user.email.trim().toLowerCase();
+  const name = session.user.user_metadata?.full_name || email.split("@")[0];
+  const isAdmin = email === SUPER_ADMIN.toLowerCase();
+  const isVerifiedInternal = verifiedInternalsList.includes(email);
+
+  currentUser = { id: session.user.id, email, name, isAdmin, isVerifiedInternal };
+  updateAuthUI();
+  updatePassBadge();
+}
+
+function initSupabase() {
+  if (!window.supabase) return;
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (session?.user) {
+      handleUserSession(session);
+    } else {
+      currentUser = null;
+      updateAuthUI();
+    }
+  });
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  initSupabase();
+  renderEvents();
+  updatePassBadge();
+
+  const searchInp = document.getElementById("searchInput");
+  if (searchInp) searchInp.addEventListener("input", renderEvents);
+});
+</script>
 
 </body>
 </html>

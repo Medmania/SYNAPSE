@@ -191,7 +191,7 @@
       <p class="text-xs sm:text-sm text-muted mt-1">Select your <strong>Pass Tier</strong> for entry privileges, then register for individual <strong>Competitions</strong> inside.</p>
     </div>
 
-    <!-- FULL RICH PASS CARDS RESTORED IN HTML -->
+    <!-- PASS CARDS -->
     <div id="passesGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
       
       <!-- PLATINUM PASS -->
@@ -615,7 +615,7 @@
 
 <!-- MODAL 4: ADMIN DASHBOARD MODAL -->
 <div id="adminDashboardModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-  <div class="card-bg w-full max-w-2xl rounded-3xl p-6 relative border shadow-2xl max-h-[90vh] overflow-y-auto">
+  <div class="card-bg w-full max-w-3xl rounded-3xl p-6 relative border shadow-2xl max-h-[90vh] overflow-y-auto">
     <button onclick="closeModal('adminDashboardModal')" class="absolute top-4 right-4 text-muted"><i class="fa-solid fa-xmark text-lg"></i></button>
     <div id="adminPanelContent"></div>
   </div>
@@ -690,7 +690,7 @@
   </div>
 </div>
 
-<!-- COMPATIBLE JAVASCRIPT APPLICATION SCRIPT -->
+<!-- FULL INTEGRATED SCRIPT -->
 <script>
 const SUPER_ADMIN = "ankitgarg8558@gmail.com";
 const SUPABASE_URL = "https://ccsgewccyyexfgrmflig.supabase.co";
@@ -702,6 +702,198 @@ let selectedPayMethod = "upi";
 let html5QrcodeScanner = null;
 let activeCategoryFilter = "all";
 
+// COMPREHENSIVE MODULAR SPORTS REGISTRY
+const SportsRegistry = {
+    cricket: {
+        label: "Cricket (T10 / Box)",
+        renderCard: (e, r) => {
+            const b1SR = r.b1_balls > 0 ? ((r.b1_runs / r.b1_balls) * 100).toFixed(1) : "0.0";
+            const b2SR = r.b2_balls > 0 ? ((r.b2_runs / r.b2_balls) * 100).toFixed(1) : "0.0";
+            const bowlEcon = r.bw_overs > 0 ? (r.bw_runs / r.bw_overs).toFixed(1) : "0.0";
+            return `
+            <div class="p-3.5 rounded-2xl border border-amber-500/30 bg-slate-950/90 shadow-xl space-y-2 text-xs">
+                <div class="flex justify-between items-center pb-1.5 border-b border-slate-800">
+                    <span class="text-[9px] font-black uppercase text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/30">
+                        <i class="fa-solid fa-baseball-bat-ball mr-1"></i> ${r.format || 'T10 Box Cricket'}
+                    </span>
+                    <span class="text-[10px] font-mono text-emerald-400 font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
+                        ● ${r.status || 'Match In Progress'}
+                    </span>
+                </div>
+                <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 space-y-1">
+                    <div class="flex justify-between items-center"><span class="font-bold text-slate-200">${r.teamA || 'Team A'}</span><span class="font-mono text-amber-400 font-black">${r.runsA || 0}/${r.wicketsA || 0} <span class="text-[10px] text-slate-400 font-normal">(${r.oversA || '0.0'}/${r.maxOvers || 10} ov)</span></span></div>
+                    <div class="flex justify-between items-center"><span class="font-bold text-slate-200">${r.teamB || 'Team B'}</span><span class="font-mono text-amber-400 font-black">${r.runsB || 0}/${r.wicketsB || 0} <span class="text-[10px] text-slate-400 font-normal">(${r.oversB || '0.0'}/${r.maxOvers || 10} ov)</span></span></div>
+                    ${r.equation ? `<div class="mt-1 text-[10px] font-semibold text-emerald-300 bg-emerald-950/50 p-1 rounded text-center border border-emerald-800/40">${r.equation}</div>` : ''}
+                </div>
+                <div class="bg-slate-900/60 p-2 rounded-xl border border-slate-800/80">
+                    <div class="flex justify-between py-0.5 text-slate-200"><span class="font-semibold text-amber-300">${r.b1_name || 'Striker'} *</span><span class="font-mono">${r.b1_runs || 0} (${r.b1_balls || 0}) • <span class="text-emerald-400 font-bold">SR: ${b1SR}</span></span></div>
+                    <div class="flex justify-between py-0.5 text-slate-300"><span>${r.b2_name || 'Non-Striker'}</span><span class="font-mono">${r.b2_runs || 0} (${r.b2_balls || 0}) • <span class="text-emerald-400 font-bold">SR: ${b2SR}</span></span></div>
+                </div>
+                <div class="bg-slate-900/60 p-2 rounded-xl border border-slate-800/80 flex justify-between items-center">
+                    <div><span class="text-[9px] text-slate-400 block uppercase font-semibold">Bowler</span><span class="font-bold text-slate-200">${r.bw_name || 'Bowler'}</span></div>
+                    <div class="text-right font-mono"><span class="text-amber-400 font-bold">${r.bw_wickets || 0}-${r.bw_runs || 0}</span><span class="text-slate-400 text-[10px]"> (${r.bw_overs || '0.0'} ov, Econ: ${bowlEcon})</span></div>
+                </div>
+                ${r.winner ? `<p class="text-amber-300 font-bold pt-1 border-t border-slate-800"><i class="fa-solid fa-trophy mr-1"></i> Winner: ${r.winner}</p>` : ''}
+            </div>`;
+        },
+        renderForm: (e, r) => `
+            <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-xl space-y-2 text-xs">
+                <h5 class="font-bold text-amber-400"><i class="fa-solid fa-baseball-bat-ball"></i> Live Cricket Scorecard Form</h5>
+                <div class="grid grid-cols-3 gap-1.5">
+                    <input type="text" id="crk-teamA-${e.id}" value="${r.teamA || ''}" placeholder="Team A" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="text" id="crk-teamB-${e.id}" value="${r.teamB || ''}" placeholder="Team B" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="text" id="crk-fmt-${e.id}" value="${r.format || 'T10 Box Cricket'}" placeholder="Format" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                </div>
+                <div class="grid grid-cols-4 gap-1.5 bg-slate-950/60 p-1.5 rounded-lg border border-slate-800">
+                    <input type="text" id="crk-scoreA-${e.id}" value="${r.runsA !== undefined ? r.runsA + '/' + r.wicketsA : ''}" placeholder="Score A (85/4)" class="bg-slate-900 border border-slate-800 rounded px-2 py-1 font-mono text-amber-300">
+                    <input type="text" id="crk-oversA-${e.id}" value="${r.oversA || ''}" placeholder="Overs A (10.0)" class="bg-slate-900 border border-slate-800 rounded px-2 py-1">
+                    <input type="text" id="crk-scoreB-${e.id}" value="${r.runsB !== undefined ? r.runsB + '/' + r.wicketsB : ''}" placeholder="Score B (62/3)" class="bg-slate-900 border border-slate-800 rounded px-2 py-1 font-mono text-amber-300">
+                    <input type="text" id="crk-oversB-${e.id}" value="${r.oversB || ''}" placeholder="Overs B (7.2)" class="bg-slate-900 border border-slate-800 rounded px-2 py-1">
+                </div>
+                <div class="grid grid-cols-5 gap-1.5">
+                    <input type="text" id="crk-b1name-${e.id}" value="${r.b1_name || ''}" placeholder="Striker" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="number" id="crk-b1runs-${e.id}" value="${r.b1_runs || 0}" placeholder="Runs" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="number" id="crk-b1balls-${e.id}" value="${r.b1_balls || 0}" placeholder="Balls" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="number" id="crk-b1fours-${e.id}" value="${r.b1_fours || 0}" placeholder="4s" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="number" id="crk-b1sixes-${e.id}" value="${r.b1_sixes || 0}" placeholder="6s" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                </div>
+                <div class="grid grid-cols-5 gap-1.5">
+                    <input type="text" id="crk-b2name-${e.id}" value="${r.b2_name || ''}" placeholder="Non-Striker" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="number" id="crk-b2runs-${e.id}" value="${r.b2_runs || 0}" placeholder="Runs" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="number" id="crk-b2balls-${e.id}" value="${r.b2_balls || 0}" placeholder="Balls" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="number" id="crk-b2fours-${e.id}" value="${r.b2_fours || 0}" placeholder="4s" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="number" id="crk-b2sixes-${e.id}" value="${r.b2_sixes || 0}" placeholder="6s" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                </div>
+                <div class="grid grid-cols-4 gap-1.5">
+                    <input type="text" id="crk-bwname-${e.id}" value="${r.bw_name || ''}" placeholder="Bowler" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="text" id="crk-bwovers-${e.id}" value="${r.bw_overs || ''}" placeholder="Overs (1.4)" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="number" id="crk-bwruns-${e.id}" value="${r.bw_runs || 0}" placeholder="Runs" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="number" id="crk-bwwkts-${e.id}" value="${r.bw_wickets || 0}" placeholder="Wickets" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                </div>
+                <div class="grid grid-cols-2 gap-1.5">
+                    <input type="text" id="crk-equation-${e.id}" value="${r.equation || ''}" placeholder="Equation (Needs 24 runs in 16 balls)" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="text" id="crk-status-${e.id}" value="${r.status || ''}" placeholder="Status (2nd Innings)" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                </div>
+                <input type="text" id="crk-win-${e.id}" value="${r.winner || ''}" placeholder="Winner Team" class="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-amber-300 font-bold">
+                <button onclick="saveSportScore('${e.id}', 'cricket')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs w-full">Update Live Cricket Score</button>
+            </div>`;
+        },
+        extractData: (eventId) => {
+            const sA = (document.getElementById(`crk-scoreA-${eventId}`)?.value || "").split("/");
+            const sB = (document.getElementById(`crk-scoreB-${eventId}`)?.value || "").split("/");
+            return {
+                sportType: "cricket",
+                format: document.getElementById(`crk-fmt-${eventId}`)?.value || "",
+                teamA: document.getElementById(`crk-teamA-${eventId}`)?.value || "",
+                teamB: document.getElementById(`crk-teamB-${eventId}`)?.value || "",
+                runsA: Number(sA[0]) || 0, wicketsA: Number(sA[1]) || 0,
+                oversA: document.getElementById(`crk-oversA-${eventId}`)?.value || "",
+                runsB: Number(sB[0]) || 0, wicketsB: Number(sB[1]) || 0,
+                oversB: document.getElementById(`crk-oversB-${eventId}`)?.value || "",
+                b1_name: document.getElementById(`crk-b1name-${eventId}`)?.value || "",
+                b1_runs: Number(document.getElementById(`crk-b1runs-${eventId}`)?.value) || 0,
+                b1_balls: Number(document.getElementById(`crk-b1balls-${eventId}`)?.value) || 0,
+                b1_fours: Number(document.getElementById(`crk-b1fours-${eventId}`)?.value) || 0,
+                b1_sixes: Number(document.getElementById(`crk-b1sixes-${eventId}`)?.value) || 0,
+                b2_name: document.getElementById(`crk-b2name-${eventId}`)?.value || "",
+                b2_runs: Number(document.getElementById(`crk-b2runs-${eventId}`)?.value) || 0,
+                b2_balls: Number(document.getElementById(`crk-b2balls-${eventId}`)?.value) || 0,
+                b2_fours: Number(document.getElementById(`crk-b2fours-${eventId}`)?.value) || 0,
+                b2_sixes: Number(document.getElementById(`crk-b2sixes-${eventId}`)?.value) || 0,
+                bw_name: document.getElementById(`crk-bwname-${eventId}`)?.value || "",
+                bw_overs: document.getElementById(`crk-bwovers-${eventId}`)?.value || "",
+                bw_runs: Number(document.getElementById(`crk-bwruns-${eventId}`)?.value) || 0,
+                bw_wickets: Number(document.getElementById(`crk-bwwkts-${eventId}`)?.value) || 0,
+                equation: document.getElementById(`crk-equation-${eventId}`)?.value || "",
+                status: document.getElementById(`crk-status-${eventId}`)?.value || "",
+                winner: document.getElementById(`crk-win-${eventId}`)?.value || ""
+            };
+        }
+    },
+
+    football: {
+        label: "Football (Futsal)",
+        renderCard: (e, r) => `
+            <div class="p-3.5 rounded-2xl border border-teal-500/30 bg-slate-950/90 shadow-xl text-xs space-y-2">
+                <div class="flex justify-between items-center"><span class="text-[9px] font-black uppercase text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded-full border border-teal-500/30"><i class="fa-solid fa-futbol mr-1"></i> Futsal</span><span class="text-[10px] font-mono text-emerald-400 font-bold">${r.status || 'Live'}</span></div>
+                <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 flex justify-around items-center text-center">
+                    <div><p class="font-bold text-slate-200">${r.teamA || 'Team A'}</p><p class="text-2xl font-black text-emerald-400 font-mono">${r.scoreA || 0}</p></div>
+                    <span class="text-[10px] text-slate-500 font-bold px-1.5 py-0.5 bg-slate-950 rounded">VS</span>
+                    <div><p class="font-bold text-slate-200">${r.teamB || 'Team B'}</p><p class="text-2xl font-black text-emerald-400 font-mono">${r.scoreB || 0}</p></div>
+                </div>
+                ${r.scorers ? `<p class="text-[10px] text-slate-300 bg-slate-900/50 p-1.5 rounded border border-slate-800 font-mono"><i class="fa-solid fa-bullseye text-teal-400 mr-1"></i> ${r.scorers}</p>` : ''}
+                ${r.winner ? `<p class="text-amber-300 font-bold"><i class="fa-solid fa-trophy mr-1"></i> Winner: ${r.winner}</p>` : ''}
+            </div>`,
+        renderForm: (e, r) => `
+            <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-xl space-y-2 text-xs">
+                <h5 class="font-bold text-teal-400">⚽ Football / Futsal Form</h5>
+                <div class="grid grid-cols-2 gap-1.5">
+                    <input type="text" id="fb-teamA-${e.id}" value="${r.teamA || ''}" placeholder="Team A" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="text" id="fb-teamB-${e.id}" value="${r.teamB || ''}" placeholder="Team B" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="number" id="fb-scoreA-${e.id}" value="${r.scoreA || 0}" placeholder="Goals A" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="number" id="fb-scoreB-${e.id}" value="${r.scoreB || 0}" placeholder="Goals B" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                </div>
+                <input type="text" id="fb-scorers-${e.id}" value="${r.scorers || ''}" placeholder="Scorers (e.g. Ankit 12', Rahul 28')" class="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                <div class="grid grid-cols-2 gap-1.5">
+                    <input type="text" id="fb-status-${e.id}" value="${r.status || ''}" placeholder="Status (2nd Half - 18')" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="text" id="fb-win-${e.id}" value="${r.winner || ''}" placeholder="Winner" class="bg-slate-950 border border-slate-800 rounded px-2 py-1 text-teal-300">
+                </div>
+                <button onclick="saveSportScore('${e.id}', 'football')" class="bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold px-3 py-1.5 rounded-xl w-full">Update Football Score</button>
+            </div>`,
+        extractData: (eventId) => ({
+            sportType: "football",
+            teamA: document.getElementById(`fb-teamA-${eventId}`)?.value || "",
+            teamB: document.getElementById(`fb-teamB-${eventId}`)?.value || "",
+            scoreA: Number(document.getElementById(`fb-scoreA-${eventId}`)?.value) || 0,
+            scoreB: Number(document.getElementById(`fb-scoreB-${eventId}`)?.value) || 0,
+            scorers: document.getElementById(`fb-scorers-${eventId}`)?.value || "",
+            status: document.getElementById(`fb-status-${eventId}`)?.value || "",
+            winner: document.getElementById(`fb-win-${eventId}`)?.value || ""
+        })
+    },
+
+    valorant_cs: {
+        label: "Valorant / CS2 (PC)",
+        renderCard: (e, r) => `
+            <div class="p-3.5 rounded-2xl border border-violet-500/30 bg-slate-950/90 shadow-xl text-xs space-y-2">
+                <div class="flex justify-between items-center"><span class="text-[9px] font-black uppercase text-violet-400 bg-violet-500/10 px-2 py-0.5 rounded-full border border-violet-500/30"><i class="fa-solid fa-crosshairs mr-1"></i> Tactical Shooter</span><span class="font-mono text-emerald-400 font-bold text-[10px]">${r.mapName || 'Map'}</span></div>
+                <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 flex justify-around items-center text-center">
+                    <div><p class="font-bold text-slate-200">${r.teamA || 'Team A'}</p><p class="text-2xl font-black text-violet-400 font-mono">${r.roundsA || 0}</p></div>
+                    <span class="text-[10px] text-slate-500 font-bold">VS</span>
+                    <div><p class="font-bold text-slate-200">${r.teamB || 'Team B'}</p><p class="text-2xl font-black text-violet-400 font-mono">${r.roundsB || 0}</p></div>
+                </div>
+                ${r.mvp ? `<p class="text-[10px] text-violet-300 font-mono bg-violet-950/40 p-1 rounded border border-violet-800/40"><i class="fa-solid fa-crown mr-1"></i> MVP: ${r.mvp}</p>` : ''}
+                ${r.winner ? `<p class="text-amber-300 font-bold"><i class="fa-solid fa-trophy mr-1"></i> Winner: ${r.winner}</p>` : ''}
+            </div>`,
+        renderForm: (e, r) => `
+            <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-xl space-y-2 text-xs">
+                <h5 class="font-bold text-violet-400">🎯 Valorant / CS2 Form</h5>
+                <div class="grid grid-cols-2 gap-1.5">
+                    <input type="text" id="vcs-tA-${e.id}" value="${r.teamA || ''}" placeholder="Team A" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="text" id="vcs-tB-${e.id}" value="${r.teamB || ''}" placeholder="Team B" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="number" id="vcs-rA-${e.id}" value="${r.roundsA || 0}" placeholder="Rounds A" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="number" id="vcs-rB-${e.id}" value="${r.roundsB || 0}" placeholder="Rounds B" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                </div>
+                <div class="grid grid-cols-2 gap-1.5">
+                    <input type="text" id="vcs-map-${e.id}" value="${r.mapName || ''}" placeholder="Map (Ascent)" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                    <input type="text" id="vcs-mvp-${e.id}" value="${r.mvp || ''}" placeholder="MVP (K/D/A)" class="bg-slate-950 border border-slate-800 rounded px-2 py-1">
+                </div>
+                <input type="text" id="vcs-win-${e.id}" value="${r.winner || ''}" placeholder="Winner Team" class="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-amber-300">
+                <button onclick="saveSportScore('${e.id}', 'valorant_cs')" class="bg-violet-500 hover:bg-violet-400 text-slate-950 font-bold px-3 py-1.5 rounded-xl w-full">Update Valorant Score</button>
+            </div>`,
+        extractData: (eventId) => ({
+            sportType: "valorant_cs",
+            teamA: document.getElementById(`vcs-tA-${eventId}`)?.value || "",
+            teamB: document.getElementById(`vcs-tB-${eventId}`)?.value || "",
+            roundsA: Number(document.getElementById(`vcs-rA-${eventId}`)?.value) || 0,
+            roundsB: Number(document.getElementById(`vcs-rB-${eventId}`)?.value) || 0,
+            mapName: document.getElementById(`vcs-map-${eventId}`)?.value || "",
+            mvp: document.getElementById(`vcs-mvp-${eventId}`)?.value || "",
+            winner: document.getElementById(`vcs-win-${eventId}`)?.value || ""
+        })
+    }
+};
+
 // PASS TYPES DEFINITION
 const PASS_TYPES = [
   { id: "pass-platinum", title: "PLATINUM VIP ALL-ACCESS PASS", price: 1499, tier: "Platinum", desc: "All 4 Pro-Nights, Unlimited Competitions, Front Pit VIP" },
@@ -711,7 +903,7 @@ const PASS_TYPES = [
   { id: "pass-squad", title: "SQUAD / TEAM PASS", price: 1999, tier: "Squad", desc: "Single Coordinated Pass for 5 to 11 Team Members" }
 ];
 
-// INITIAL EVENTS CATALOGUE
+// INITIAL LIVE EVENTS CATALOGUE
 let events = JSON.parse(localStorage.getItem("synapse_events_v10") || "null") || [
   { 
     id: "ev-1", 
@@ -722,7 +914,9 @@ let events = JSON.parse(localStorage.getItem("synapse_events_v10") || "null") ||
     date: "Oct 15, 7:00 PM", 
     desc: "International headline DJs with 360-degree laser & pyro production.",
     posterUrl: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80",
-    brochureUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" 
+    brochureUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    sportType: "none",
+    results: {}
   },
   { 
     id: "ev-2", 
@@ -733,7 +927,9 @@ let events = JSON.parse(localStorage.getItem("synapse_events_v10") || "null") ||
     date: "Oct 13, 9:00 AM", 
     desc: "11-a-side knockout football tournament across medical colleges.",
     posterUrl: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=600&q=80",
-    brochureUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" 
+    brochureUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    sportType: "football",
+    results: { teamA: "MAMC FC", teamB: "LHMC FC", scoreA: 2, scoreB: 1, status: "2nd Half 35'", scorers: "Ankit 14', Rahul 28' | Sameer 52'" }
   },
   { 
     id: "ev-3", 
@@ -744,7 +940,9 @@ let events = JSON.parse(localStorage.getItem("synapse_events_v10") || "null") ||
     date: "Oct 14, 5:00 PM", 
     desc: "Western and thematic group dance competition.",
     posterUrl: "https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&w=600&q=80",
-    brochureUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" 
+    brochureUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    sportType: "none",
+    results: {}
   },
   { 
     id: "ev-4", 
@@ -755,7 +953,9 @@ let events = JSON.parse(localStorage.getItem("synapse_events_v10") || "null") ||
     date: "Oct 14, 11:00 AM", 
     desc: "5v5 competitive LAN tournament on high-refresh setups.",
     posterUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80",
-    brochureUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" 
+    brochureUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    sportType: "valorant_cs",
+    results: { teamA: "MAMC Frag", teamB: "AIIMS Esports", roundsA: 13, roundsB: 9, mapName: "Ascent", mvp: "Ankit (28/11/4)", winner: "MAMC Frag" }
   }
 ];
 
@@ -768,6 +968,9 @@ window.scrollToSection = function(id) {
 };
 
 window.openModal = function(id) {
+  if (id === 'adminDashboardModal') {
+    renderAdminPanelUI();
+  }
   document.getElementById(id)?.classList.remove("hidden");
 };
 
@@ -1063,6 +1266,7 @@ function onQrCodeScanned(qrMessage) {
   resultBox.innerHTML = `<strong>VERIFIED ENTRY ✓</strong><p>Name: ${pass.attendeeName} (${pass.college})</p>`;
 }
 
+// RENDER PUBLIC EVENTS GRID
 function renderEvents() {
   const grid = document.getElementById("eventsGrid");
   const empty = document.getElementById("emptyState");
@@ -1083,48 +1287,215 @@ function renderEvents() {
   }
 
   if (empty) empty.classList.add("hidden");
-  grid.innerHTML = filtered.map(e => `
-    <div class="card-bg rounded-2xl overflow-hidden border flex flex-col justify-between hover:border-tealPrimary/50 transition group shadow-sm">
-      <div>
-        <div class="relative h-44 overflow-hidden bg-slate-900 cursor-pointer" onclick="openPosterLightbox('${e.posterUrl || ''}', '${e.title}')">
-          <img src="${e.posterUrl || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80'}" alt="${e.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-          <span class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase border border-white/20">
-            ${e.category}
-          </span>
-          <span class="absolute bottom-3 right-3 bg-tealPrimary text-white text-xs font-black px-2.5 py-1 rounded-lg shadow">
-            ${e.price === 0 ? 'FREE' : '₹' + e.price}
-          </span>
+
+  grid.innerHTML = filtered.map(e => {
+    const liveScorecardHtml = (e.sportType && e.sportType !== "none" && SportsRegistry[e.sportType]?.renderCard) 
+      ? SportsRegistry[e.sportType].renderCard(e, e.results || {}) 
+      : "";
+
+    return `
+      <div class="card-bg rounded-2xl overflow-hidden border flex flex-col justify-between hover:border-tealPrimary/50 transition group shadow-sm">
+        <div>
+          <div class="relative h-44 overflow-hidden bg-slate-900 cursor-pointer" onclick="openPosterLightbox('${e.posterUrl || ''}', '${e.title}')">
+            <img src="${e.posterUrl || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80'}" alt="${e.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+            <span class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase border border-white/20">
+              ${e.category}
+            </span>
+            <span class="absolute bottom-3 right-3 bg-tealPrimary text-white text-xs font-black px-2.5 py-1 rounded-lg shadow">
+              ${e.price === 0 ? 'FREE' : '₹' + e.price}
+            </span>
+          </div>
+
+          <div class="p-4 space-y-2">
+            <h3 class="text-base font-extrabold text-primary">${e.title}</h3>
+            <p class="text-xs text-muted line-clamp-2">${e.desc}</p>
+
+            ${liveScorecardHtml ? `<div class="mt-2">${liveScorecardHtml}</div>` : ''}
+
+            <div class="text-xs text-muted font-medium pt-1 flex justify-between items-center">
+              <span><i class="fa-solid fa-location-dot text-tealPrimary mr-1"></i> ${e.venue}</span>
+              <span><i class="fa-solid fa-clock text-festOrange mr-1"></i> ${e.date}</span>
+            </div>
+          </div>
         </div>
 
-        <div class="p-4 space-y-2">
-          <h3 class="text-base font-extrabold text-primary">${e.title}</h3>
-          <p class="text-xs text-muted line-clamp-2">${e.desc}</p>
-          <div class="text-xs text-muted font-medium pt-1 flex justify-between items-center">
-            <span><i class="fa-solid fa-location-dot text-tealPrimary mr-1"></i> ${e.venue}</span>
-            <span><i class="fa-solid fa-clock text-festOrange mr-1"></i> ${e.date}</span>
+        <div class="p-4 pt-0 space-y-2">
+          ${e.brochureUrl ? `
+            <a href="${e.brochureUrl}" target="_blank" class="w-full subtle-bg hover:bg-slate-200 text-tealPrimary font-bold py-1.5 rounded-xl text-xs flex items-center justify-center gap-1.5 border border-teal-500/20 text-decoration-none">
+              <i class="fa-solid fa-file-pdf"></i> Download Rulebook
+            </a>
+          ` : ''}
+
+          <div class="flex gap-2">
+            <button onclick="openRegistrationModal('${e.id}', 'event')" class="flex-grow bg-tealPrimary hover:bg-teal-700 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
+              <i class="fa-solid fa-qrcode"></i> Register Event
+            </button>
+            <button onclick="openPosterLightbox('${e.posterUrl || ''}', '${e.title}')" class="subtle-bg border hover:bg-slate-200 text-primary px-3 py-2.5 rounded-xl text-xs" title="View Poster">
+              <i class="fa-solid fa-image"></i>
+            </button>
           </div>
         </div>
       </div>
+    `;
+  }).join("");
+}
 
-      <div class="p-4 pt-0 space-y-2">
-        ${e.brochureUrl ? `
-          <a href="${e.brochureUrl}" target="_blank" class="w-full subtle-bg hover:bg-slate-200 text-tealPrimary font-bold py-1.5 rounded-xl text-xs flex items-center justify-center gap-1.5 border border-teal-500/20 text-decoration-none">
-            <i class="fa-solid fa-file-pdf"></i> Download Rulebook / Brochure
-          </a>
-        ` : ''}
+// FULL DYNAMIC ADMIN PANEL BUILDER
+function renderAdminPanelUI() {
+  const panel = document.getElementById("adminPanelContent");
+  if (!panel) return;
 
-        <div class="flex gap-2">
-          <button onclick="openRegistrationModal('${e.id}', 'event')" class="flex-grow bg-tealPrimary hover:bg-teal-700 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
-            <i class="fa-solid fa-qrcode"></i> Register Event
+  panel.innerHTML = `
+    <div class="space-y-6 text-xs text-primary">
+      <div class="flex justify-between items-center border-b pb-3">
+        <div>
+          <h3 class="text-xl font-black text-primary">⚙️ Live Admin Control Center</h3>
+          <p class="text-xs text-muted">Manage events, live sports scoreboards & registrations</p>
+        </div>
+        <span class="text-xs font-mono text-tealPrimary bg-teal-500/10 px-3 py-1 rounded-full border border-teal-500/30 font-bold">
+          Super Admin Mode
+        </span>
+      </div>
+
+      <!-- SECTION 1: CREATE NEW EVENT LIVE -->
+      <div class="card-bg p-4 rounded-2xl border space-y-3">
+        <h4 class="font-extrabold text-festOrange uppercase tracking-wider flex items-center gap-1.5">
+          <i class="fa-solid fa-plus-circle"></i> Create New Event / Competition
+        </h4>
+        <form onsubmit="addNewEventFromAdmin(event)" class="space-y-2">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input type="text" id="newEventTitle" required placeholder="Event Title (e.g. T10 Cricket Knockout)" class="card-bg border rounded-xl px-3 py-2">
+            <select id="newEventCategory" required class="card-bg border rounded-xl px-3 py-2">
+              <option value="Flagship">Flagship</option>
+              <option value="Sports">Sports</option>
+              <option value="Cultural">Cultural</option>
+              <option value="E-Sports">E-Sports</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <input type="text" id="newEventVenue" required placeholder="Venue (e.g. Central Grounds)" class="card-bg border rounded-xl px-3 py-2">
+            <input type="text" id="newEventDate" required placeholder="Date/Time (Oct 14, 10:00 AM)" class="card-bg border rounded-xl px-3 py-2">
+            <input type="number" id="newEventPrice" required placeholder="Price (0 for Free)" class="card-bg border rounded-xl px-3 py-2">
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <select id="newEventSportType" class="card-bg border rounded-xl px-3 py-2 font-bold text-tealPrimary">
+              <option value="none">No Live Scorecard Module</option>
+              <option value="cricket">Cricket (T10 / Box)</option>
+              <option value="football">Football (Futsal)</option>
+              <option value="valorant_cs">Valorant / CS2</option>
+            </select>
+            <input type="url" id="newEventPoster" placeholder="Poster Image URL (optional)" class="card-bg border rounded-xl px-3 py-2">
+          </div>
+          <textarea id="newEventDesc" rows="2" required placeholder="Event Description..." class="w-full card-bg border rounded-xl px-3 py-2"></textarea>
+          <button type="submit" class="w-full bg-festOrange hover:bg-orange-600 text-white font-extrabold py-2.5 rounded-xl shadow-md transition">
+            🚀 Publish Event Live
           </button>
-          <button onclick="openPosterLightbox('${e.posterUrl || ''}', '${e.title}')" class="subtle-bg border hover:bg-slate-200 text-primary px-3 py-2.5 rounded-xl text-xs" title="View Full Poster">
-            <i class="fa-solid fa-image"></i>
-          </button>
+        </form>
+      </div>
+
+      <!-- SECTION 2: LIVE SCOREBOARD EDITOR -->
+      <div class="card-bg p-4 rounded-2xl border space-y-3">
+        <h4 class="font-extrabold text-tealPrimary uppercase tracking-wider flex items-center gap-1.5">
+          <i class="fa-solid fa-trophy"></i> Live Sports & Esports Scoreboard Editors
+        </h4>
+        <div class="space-y-3 max-h-72 overflow-y-auto pr-1">
+          ${events.map(ev => `
+            <div class="subtle-bg p-3 rounded-xl border space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="font-extrabold text-primary">${ev.title} (${ev.category})</span>
+                <select onchange="updateEventSportType('${ev.id}', this.value)" class="card-bg border text-xs text-tealPrimary font-bold rounded-lg px-2 py-1">
+                  <option value="none" ${!ev.sportType || ev.sportType === 'none' ? 'selected' : ''}>No Live Scorecard</option>
+                  <option value="cricket" ${ev.sportType === 'cricket' ? 'selected' : ''}>Cricket (T10/Box)</option>
+                  <option value="football" ${ev.sportType === 'football' ? 'selected' : ''}>Football (Futsal)</option>
+                  <option value="valorant_cs" ${ev.sportType === 'valorant_cs' ? 'selected' : ''}>Valorant / CS2</option>
+                </select>
+              </div>
+              ${(ev.sportType && ev.sportType !== "none" && SportsRegistry[ev.sportType]?.renderForm) 
+                ? SportsRegistry[ev.sportType].renderForm(ev, ev.results || {}) 
+                : `<p class="text-muted text-[11px]">No modular scorecard selected for this event.</p>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- SECTION 3: PUBLISHED EVENTS MANAGEMENT -->
+      <div class="card-bg p-4 rounded-2xl border space-y-3">
+        <h4 class="font-extrabold text-primary uppercase tracking-wider">Published Events (${events.length})</h4>
+        <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+          ${events.map(ev => `
+            <div class="subtle-bg p-2.5 rounded-xl border flex justify-between items-center">
+              <div>
+                <span class="font-bold text-primary">${ev.title}</span>
+                <span class="text-muted block text-[10px]">${ev.category} • ${ev.venue} • ₹${ev.price}</span>
+              </div>
+              <button onclick="deleteEventLive('${ev.id}')" class="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white px-2.5 py-1 rounded-lg font-bold transition">
+                Delete
+              </button>
+            </div>
+          `).join('')}
         </div>
       </div>
     </div>
-  `).join("");
+  `;
 }
+
+// ADMIN FORM HANDLERS (LIVE UPDATES)
+window.addNewEventFromAdmin = function(e) {
+  e.preventDefault();
+  const title = document.getElementById("newEventTitle").value.trim();
+  const category = document.getElementById("newEventCategory").value;
+  const venue = document.getElementById("newEventVenue").value.trim();
+  const date = document.getElementById("newEventDate").value.trim();
+  const price = Number(document.getElementById("newEventPrice").value) || 0;
+  const sportType = document.getElementById("newEventSportType").value;
+  const posterUrl = document.getElementById("newEventPoster").value.trim() || "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80";
+  const desc = document.getElementById("newEventDesc").value.trim();
+
+  const newEv = {
+    id: "ev-" + Date.now(),
+    title, category, venue, date, price, sportType, posterUrl, brochureUrl: "", desc, results: {}
+  };
+
+  events.unshift(newEv);
+  localStorage.setItem("synapse_events_v10", JSON.stringify(events));
+
+  renderEvents();
+  renderAdminPanelUI();
+  alert(`Event "${title}" is now published live!`);
+};
+
+window.saveSportScore = function(eventId, sportType) {
+  const event = events.find(ev => ev.id === eventId);
+  if (!event) return alert("Event not found.");
+
+  if (SportsRegistry[sportType] && SportsRegistry[sportType].extractData) {
+    event.results = SportsRegistry[sportType].extractData(eventId);
+    event.sportType = sportType;
+
+    localStorage.setItem("synapse_events_v10", JSON.stringify(events));
+
+    renderEvents();
+    renderAdminPanelUI();
+    alert(`Live scorecard updated for ${event.title}!`);
+  }
+};
+
+window.updateEventSportType = function(eventId, sportType) {
+  const event = events.find(e => e.id === eventId);
+  if (!event) return;
+  event.sportType = sportType;
+  localStorage.setItem("synapse_events_v10", JSON.stringify(events));
+  renderAdminPanelUI();
+  renderEvents();
+};
+
+window.deleteEventLive = function(eventId) {
+  if (!confirm("Delete this event live from portal?")) return;
+  events = events.filter(e => e.id !== eventId);
+  localStorage.setItem("synapse_events_v10", JSON.stringify(events));
+  renderEvents();
+  renderAdminPanelUI();
+};
 
 function updateAuthUI() {
   const container = document.getElementById("authContainer");
@@ -1178,6 +1549,9 @@ function handleUserSession(session) {
   currentUser = { id: session.user.id, email, name, isAdmin, isVerifiedInternal };
   updateAuthUI();
   updatePassBadge();
+  if (isAdmin) {
+    renderAdminPanelUI();
+  }
 }
 
 function initSupabase() {
